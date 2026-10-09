@@ -305,6 +305,34 @@ theorem Mq_Inj : (MqF TA TE).Valid Inj := by
   injection h' with hab hcd
   exact ((MqF TA TE).holds_conj _ _ _ _).mpr ⟨((MqF TA TE).holds_teq _ _ _ _).mpr hab, ((MqF TA TE).holds_teq _ _ _ _).mpr hcd⟩
 
+theorem Mq_tr_Slogan : (MqF TA TE).Holds Slogan (fun i => i.elim0) () ↔
+    ∀ (x : Unit) (b : Code Empty) (y : univQ.El b → (Bool → Prop)), ¬ ((Code.e : Code Empty) = .arr b .t ∧ HEq x y) := Iff.rfl
+
+theorem Mq_Slogan : (MqF TA TE).Valid Slogan :=
+  ((MqF TA TE).valid_iff_tr _).mpr ((Mq_tr_Slogan TA TE).mpr fun _ _ _ h => nomatch h.1)
+
+theorem Mq_tr_PExt : (MqF TA TE).Holds PExt (fun i => i.elim0) () ↔
+    ∀ (a c d : Code Empty) (f : univQ.El a → univQ.El c) (g : univQ.El a → univQ.El d),
+      (∀ x, c = d ∧ HEq (f x) (g x)) → (Code.arr a c = Code.arr a d ∧ HEq f g) := Iff.rfl
+
+theorem Mq_PExt : (MqF TA TE).Valid PExt :=
+  ((MqF TA TE).valid_iff_tr _).mpr ((Mq_tr_PExt TA TE).mpr fun a c d f g h => by
+    have x0 := Classical.choice (Univ.El_nonempty (U := univQ) a)
+    have hcd : c = d := (h x0).1
+    subst hcd
+    exact ⟨rfl, heq_of_eq (funext fun x => eq_of_heq (h x).2)⟩)
+
+theorem Mq_tr_Cong : (MqF TA TE).Holds Cong (fun i => i.elim0) () ↔
+    ∀ (a b c d : Code Empty) (f : univQ.El a → univQ.El c) (g : univQ.El b → univQ.El d) x y,
+      (Code.arr a c = Code.arr b d ∧ HEq f g) ∧ (a = b ∧ HEq x y) → (c = d ∧ HEq (f x) (g y)) := Iff.rfl
+
+theorem Mq_Cong : (MqF TA TE).Valid Cong :=
+  ((MqF TA TE).valid_iff_tr _).mpr ((Mq_tr_Cong TA TE).mpr fun a b c d f g x y ⟨⟨h1, h2⟩, ⟨_, h4⟩⟩ => by
+    injection h1 with hab hcd
+    subst hab; subst hcd
+    cases h2; cases h4
+    exact ⟨rfl, HEq.rfl⟩)
+
 end Mq
 
 /-- `𝔐_q,A`: at the other world, type-universal claims are false and type-existential ones true. -/
@@ -418,7 +446,7 @@ theorem MhwG_LLEqv : (MhwG TA TE).Valid LLEqv := by
 
 theorem MhwG_top {n : Nat} {Γ : Ctx n} (ρ : (MhwG TA TE).U.TEnv n) (env : (MhwG TA TE).U.Env Γ ρ) :
     (MhwG TA TE).eval (topF : Fm Γ) ρ env = ((fun _ => True), true) :=
-  Prod.ext (funext fun w => propext ⟨fun _ => trivial, fun _ h => (h ((fun _ => False), true) : False)⟩) rfl
+  Prod.ext (funext fun _ => propext ⟨fun _ => trivial, fun _ h => (h ((fun _ => False), true) : False)⟩) rfl
 
 end MhwG
 
@@ -451,6 +479,140 @@ theorem MhwC_not_TNec : ¬ MhwC.Valid TNec := fun h => by
   have hb := (MhwC.holds_tall _ _ _).mp (h (fun i => i.elim0) ()) .e
   have e := (hrW_inj .t _ _ ((MhwC.holds_eqv_t _ _ _ _).mp hb).1).trans (MhwG_top _ _ (Γ := Ctx.nil.text) _ _)
   exact (cast (congrFun (congrArg Prod.fst e) false).symm trivial : False)
+
+
+theorem Mhw_TNec : MhwF.Valid TNec := by
+  intro ρ env
+  refine (MhwF.holds_tall _ _ _).mpr fun a => ?_
+  have hv : MhwF.eval (Tm.tex (Tm.teq tv1 tv0) : Fm Ctx.nil.text) (scons a ρ) env = ((fun _ => True), true) := by
+    refine Prod.ext (funext fun w => propext ⟨fun _ => trivial, fun _ => ?_⟩) rfl
+    cases w
+    · have hne : ∃ b : Code Empty, a ≠ b := by
+        cases a
+        · exact ⟨.t, fun h => nomatch h⟩
+        · exact ⟨.e, fun h => nomatch h⟩
+        · exact ⟨.e, fun h => nomatch h⟩
+        · exact ⟨.e, fun h => nomatch h⟩
+      obtain ⟨b, hb⟩ := hne
+      exact ⟨b, show (if false = true then a = b else a ≠ b) by simp; exact hb⟩
+    · exact ⟨a, show (if true = true then a = a else a ≠ a) by simp⟩
+  exact (MhwF.holds_eqv_t _ _ _ _).mpr ⟨congrArg (hrW .t) (hv.trans (Mhw_topF (Γ := Ctx.nil.text) _ _).symm), rfl⟩
+
+/-! ### `𝔐_cq,A` and `𝔐_cq,C`: Collapse without T, and without TBF or TCBF (PI⁻)
+
+Two worlds; the propositions true at the actual world, together with the proposition `p₀` true only
+at the other world, are identified with each other; nothing else is identified with anything but
+itself. The type quantifiers act at the other world as in `𝔐_q,A` and `𝔐_q,C`. -/
+
+def p0Q : Bool → Prop := fun w => w = false
+
+def Scq : (c : Code Empty) → univQ.El c → Prop
+  | .t, x => x true ∨ x = p0Q
+  | _, _ => False
+
+def McqF (TA TE : (Code Empty → (Bool → Prop)) → Prop) : Frame where
+  U := univQ
+  eqv := fun a b x y _ => a = b ∧ (HEq x y ∨ (Scq a x ∧ Scq b y))
+  teq := fun a b _ => a = b
+  neg := fun p w => ¬ p w
+  imp := fun p q w => p w → q w
+  cnj := fun p q w => p w ∧ q w
+  dsj := fun p q w => p w ∨ q w
+  bic := fun p q w => p w ↔ q w
+  all := fun _ f w => ∀ x, f x w
+  ex := fun _ f w => ∃ x, f x w
+  tall := fun Q w => cond w (∀ a, Q a true) (TA Q)
+  tex := fun Q w => cond w (∃ a, Q a true) (TE Q)
+  hneg := fun _ => Iff.rfl
+  himp := fun _ _ => Iff.rfl
+  hcnj := fun _ _ => Iff.rfl
+  hdsj := fun _ _ => Iff.rfl
+  hbic := fun _ _ => Iff.rfl
+  hall := fun _ _ => Iff.rfl
+  hex := fun _ _ => Iff.rfl
+  htall := fun _ => Iff.rfl
+  htex := fun _ => Iff.rfl
+
+section Mcq
+variable (TA TE : (Code Empty → (Bool → Prop)) → Prop)
+
+theorem Mcq_model : (McqF TA TE).IsModelPIm :=
+  (McqF TA TE).model_of_equiv (fun _ _ => Iff.rfl) (fun _ _ => ⟨rfl, Or.inl HEq.rfl⟩)
+    (fun _ _ _ _ h => ⟨h.1.symm, h.2.elim (fun e => Or.inl e.symm) (fun ⟨p, q⟩ => Or.inr ⟨q, p⟩)⟩)
+    (fun a b c x y z h1 h2 => by
+      obtain ⟨hab, e1⟩ := h1
+      obtain ⟨hbc, e2⟩ := h2
+      subst hab; subst hbc
+      refine ⟨rfl, ?_⟩
+      rcases e1 with e1 | ⟨s1, s2⟩ <;> rcases e2 with e2 | ⟨s3, s4⟩
+      · exact Or.inl (e1.trans e2)
+      · exact Or.inr ⟨eq_of_heq e1 ▸ s3, s4⟩
+      · exact Or.inr ⟨s1, eq_of_heq e2 ▸ s2⟩
+      · exact Or.inr ⟨s1, s4⟩)
+
+theorem Mcq_top {n : Nat} {Γ : Ctx n} (ρ : (McqF TA TE).U.TEnv n) (env : (McqF TA TE).U.Env Γ ρ) :
+    (McqF TA TE).eval (topF : Fm Γ) ρ env = fun _ => True := by
+  funext w
+  have e := (McqF TA TE).eval_all (Γ := Γ) tyT (.var .here) ρ env
+  refine propext ⟨fun _ => trivial, fun _ => ?_⟩
+  show ¬ (McqF TA TE).eval (botF : Fm Γ) ρ env w
+  rw [botF, e]
+  exact fun h => h (fun _ => False)
+
+theorem Mcq_Collapse : (McqF TA TE).Valid Collapse := by
+  intro ρ env
+  refine ((McqF TA TE).holds_all _ _ _ _).mpr fun p => ((McqF TA TE).holds_imp _ _ _ _).mpr fun hp => ?_
+  refine ((McqF TA TE).holds_eqv_t _ _ _ _).mpr ⟨rfl, Or.inr ⟨Or.inl hp, Or.inl ?_⟩⟩
+  exact cast (congrFun (Mcq_top TA TE (Γ := Ctx.nil.ext tyT) ρ (env, p)) true).symm trivial
+
+end Mcq
+
+abbrev McqA : Frame := McqF (fun _ => False) (fun _ => True)
+abbrev McqC : Frame := McqF (fun _ => True) (fun _ => False)
+
+theorem McqA_not_TBF : ¬ ∀ χ, TBFSch χ → McqA.Valid χ := fun h => by
+  have h0 := h _ ⟨Tm.tex botF, rfl⟩ (fun i => i.elim0) ()
+  have hv : ∀ a, McqA.eval (Tm.tex (botF : Fm Ctx.nil.text.text) : Fm Ctx.nil.text) (scons a fun i => i.elim0) () = p0Q := by
+    intro a; funext w
+    cases w
+    · exact propext ⟨fun _ => rfl, fun _ => trivial⟩
+    · refine propext ⟨fun ⟨b, hb⟩ => ?_, fun h => nomatch h⟩
+      exact ((cast (congrFun (McqA.eval_all (Γ := Ctx.nil.text.text) tyT (.var .here) (scons b (scons a fun i => i.elim0)) ()) true) hb : ∀ x : Bool → Prop, x true) (fun _ => False)).elim
+  have hp : McqA.Holds (Tm.tall (boxF (Tm.tex botF)) : Fm Ctx.nil) (fun i => i.elim0) () :=
+    (McqA.holds_tall _ _ _).mpr fun a => (McqA.holds_eqv_t _ _ _ _).mpr ⟨rfl, Or.inr ⟨Or.inr (hv a),
+      Or.inl (cast (congrFun (Mcq_top _ _ (Γ := Ctx.nil.text) _ _) true).symm trivial)⟩⟩
+  have hb := (McqA.holds_imp _ _ _ _).mp h0 hp
+  rcases ((McqA.holds_eqv_t _ _ _ _).mp hb).2 with e | ⟨s, _⟩
+  · have e' := (eq_of_heq e).trans (Mcq_top _ _ (Γ := Ctx.nil) _ _)
+    exact (cast (congrFun e' false).symm trivial : False)
+  · rcases s with s | s
+    · obtain ⟨b, hb⟩ := (s .e : ∃ b, McqA.eval (botF : Fm Ctx.nil.text.text) (scons b (scons .e fun i => i.elim0)) () true)
+      exact (cast (congrFun (McqA.eval_all (Γ := Ctx.nil.text.text) tyT (.var .here) (scons b (scons .e fun i => i.elim0)) ()) true) hb : ∀ x : Bool → Prop, x true) (fun _ => False)
+    · exact (cast (congrFun s false).symm rfl : False)
+
+theorem McqC_not_TCBF : ¬ ∀ χ, TCBFSch χ → McqC.Valid χ := fun h => by
+  have h0 := h _ ⟨botF, rfl⟩ (fun i => i.elim0) ()
+  have hv : McqC.eval (Tm.tall (botF : Fm Ctx.nil.text) : Fm Ctx.nil) (fun i => i.elim0) () = p0Q := by
+    funext w
+    cases w
+    · exact propext ⟨fun _ => rfl, fun _ => trivial⟩
+    · refine propext ⟨fun h => ?_, fun h => nomatch h⟩
+      exact ((cast (congrFun (McqC.eval_all (Γ := Ctx.nil.text) tyT (.var .here) (scons .e fun i => i.elim0) ()) true) (h .e) : ∀ x : Bool → Prop, x true) (fun _ => False)).elim
+  have hp : McqC.Holds (boxF (Tm.tall (botF : Fm Ctx.nil.text)) : Fm Ctx.nil) (fun i => i.elim0) () :=
+    (McqC.holds_eqv_t _ _ _ _).mpr ⟨rfl, Or.inr ⟨Or.inr hv, Or.inl (cast (congrFun (Mcq_top _ _ (Γ := Ctx.nil) _ _) true).symm trivial)⟩⟩
+  have hb := (McqC.holds_tall _ _ _).mp ((McqC.holds_imp _ _ _ _).mp h0 hp) .e
+  rcases ((McqC.holds_eqv_t _ _ _ _).mp hb).2 with e | ⟨s, _⟩
+  · have e' := (eq_of_heq e).trans (Mcq_top _ _ (Γ := Ctx.nil.text) _ _)
+    exact (cast (congrFun e' true).symm trivial : (McqC.eval (botF : Fm Ctx.nil.text) _ () true))
+      |> fun hb' => (cast (congrFun (McqC.eval_all (Γ := Ctx.nil.text) tyT (.var .here) (scons .e fun i => i.elim0) ()) true) hb' :
+        ∀ x : Bool → Prop, x true) (fun _ => False)
+  · rcases s with s | s
+    · exact (cast (congrFun (McqC.eval_all (Γ := Ctx.nil.text) tyT (.var .here) (scons .e fun i => i.elim0) ()) true) s :
+        ∀ x : Bool → Prop, x true) (fun _ => False)
+    · have := congrFun s false
+      exact (cast this.symm rfl : McqC.eval (botF : Fm Ctx.nil.text) _ () false) |> fun hb' =>
+        (cast (congrFun (McqC.eval_all (Γ := Ctx.nil.text) tyT (.var .here) (scons .e fun i => i.elim0) ()) false) hb' :
+          ∀ x : Bool → Prop, x false) (fun _ => False)
 
 end Al
 
