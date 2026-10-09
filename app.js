@@ -61,7 +61,7 @@
 
   // ------------------------------------------------------------------ state
   // sel: id -> true (assumed) | false (negation assumed)
-  const state = { logic: "PI", sel: {}, focus: null };
+  const state = { logic: "PI", sel: {}, focus: null, opened: [] };
 
   function readHash() {
     const h = decodeURIComponent(location.hash.replace(/^#/, ""));
@@ -253,7 +253,7 @@
         state.focus = state.focus === id ? null : state.focus;
         update();
       }));
-      el.querySelector(".pname").addEventListener("click", () => { state.focus = id; update(); scrollToDetails(); });
+      el.querySelector(".pname").addEventListener("click", () => openPrinciple(id));
     });
   }
   function syncChecklist() {
@@ -323,8 +323,8 @@
       const t = el("text", { "text-anchor": "middle", y: 4.5 }, g);
       t.textContent = p.tag;
       const edge = el("path", { class: "edge" }, edgeLayer);
-      g.addEventListener("click", () => { state.focus = p.id; update(); scrollToDetails(); });
-      g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); state.focus = p.id; update(); scrollToDetails(); } });
+      g.addEventListener("click", () => openPrinciple(p.id));
+      g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPrinciple(p.id); } });
       g.addEventListener("mouseenter", () => { g.classList.add("hover"); edge.classList.add("hover"); });
       g.addEventListener("mouseleave", () => { g.classList.remove("hover"); edge.classList.remove("hover"); });
       nodeEls[p.id] = { g, r, t, edge, x: CX, y: CY };
@@ -428,13 +428,28 @@
   }
 
   // ------------------------------------------------------------------ rendering: details
+  function openPrinciple(id) {
+    state.focus = id;
+    state.opened = [id].concat(state.opened.filter(x => x !== id));
+    update();
+    scrollToDetails();
+  }
+  // One box per principle clicked on (newest first), then the axioms of the base logic.
   function renderDetails(an) {
     const box = $("#details");
-    const id = state.focus;
-    if (!id) {
-      box.innerHTML = `<div class="hint">Click any principle (in the list or the graph) to see its statement and <em>why</em> it has the status shown: the derivation, or the model that shows it does not follow.</div>`;
-      return;
-    }
+    box.innerHTML = "";
+    state.opened.forEach(id => box.appendChild(principleCard(an, id)));
+    const lc = document.createElement("div");
+    lc.className = "details logiccard";
+    lc.innerHTML = (state.opened.length ? "" : `<div class="hint">Click any principle (in the list or the graph) to see its statement and <em>why</em> it has the status shown: the derivation, or the model that shows it does not follow. Each principle you click on gets its own box here.</div>`) +
+      `<div class="dhead"><h3>The axioms of ${logicName()}</h3><button class="linkbtn" type="button">Axioms and rules common to all three logics</button></div>` +
+      identityHTML(state.logic);
+    lc.querySelector(".linkbtn").addEventListener("click", openCommon);
+    box.appendChild(lc);
+  }
+  function principleCard(an, id) {
+    const card = document.createElement("div");
+    card.className = "details" + (state.focus === id ? " current" : "");
     const p = P[id];
     const assumedLit = an.A.find(a => a.id === id);
     let body;
@@ -459,8 +474,8 @@
     }
     const lock = isLocked(id);
     const cur = state.sel[id];
-    box.innerHTML = `
-      <div class="dhead"><h3>${p.tag}</h3><span class="dgroup">${p.group}</span></div>
+    card.innerHTML = `
+      <div class="dhead"><h3>${p.tag}</h3><span class="dgroup">${p.group}</span><button class="dclose" aria-label="Close ${p.tag}" title="Close">✕</button></div>
       <div class="formula">${tex(p.tex, true)}</div>
       <p class="gloss">${p.gloss} ${p.lean ? leanBadge(p.lean, "Lean definition") : ""}</p>
       ${body}
@@ -468,11 +483,17 @@
         <button data-a="yes" ${lock ? "disabled" : ""} aria-pressed="${cur === true || lock}">${cur === true ? "Stop assuming it" : "Assume it"}</button>
         <button data-a="no" ${lock ? "disabled" : ""} aria-pressed="${cur === false}">${cur === false ? "Stop assuming its negation" : "Assume its negation"}</button>
       </div>`;
-    box.querySelectorAll(".dactions button").forEach(b => b.addEventListener("click", () => {
+    card.querySelector(".dclose").addEventListener("click", () => {
+      state.opened = state.opened.filter(x => x !== id);
+      if (state.focus === id) state.focus = state.opened[0] || null;
+      update();
+    });
+    card.querySelectorAll(".dactions button").forEach(b => b.addEventListener("click", () => {
       const want = b.dataset.a === "yes";
       if (state.sel[id] === want) delete state.sel[id]; else state.sel[id] = want;
       update();
     }));
+    return card;
   }
   function scrollToDetails() {
     if (window.innerWidth < 900) $("#details").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -696,22 +717,13 @@
       .filter(sec => !sec.common && (onlyNew ? sec.level === key : L.levels.includes(sec.level)))
       .map(sec => secHTML(sec, sec.level !== "PI-" && !onlyNew ? "added in " + lvName(sec.level) : "")).join("");
   }
-  function renderIdentityDrawer() {
-    $("#idtitle").textContent = "Identity axioms of " + logicName();
-    $("#idbody").innerHTML = identityHTML(state.logic);
-  }
-  function setDrawer(open) {
-    $("#iddrawer").classList.toggle("open", open);
-    $("#idtoggle").setAttribute("aria-expanded", open);
-    try { localStorage.setItem("pi-iddrawer", open ? "1" : "0"); } catch (e) {}
-  }
+  function openCommon() { $("#logicbody").innerHTML = commonHTML(); $("#logicdlg").showModal(); }
 
   // ------------------------------------------------------------------ main
   function update() {
     writeHash();
     const an = analyse();
     syncChecklist();
-    renderIdentityDrawer();
     renderGraph(an);
     renderDetails(an);
     if (!$("#strength").hidden) renderStrength();
@@ -725,14 +737,10 @@
       state.logic = b.dataset.logic;
       update();
     }));
-    $("#showlogic").addEventListener("click", () => { $("#logicbody").innerHTML = commonHTML(); $("#logicdlg").showModal(); });
+    $("#showlogic").addEventListener("click", openCommon);
     $("#logicdlg .lclose").addEventListener("click", () => $("#logicdlg").close());
-    let drawerOpen = window.innerWidth >= 1400;
-    try { const v = localStorage.getItem("pi-iddrawer"); if (v !== null) drawerOpen = v === "1"; } catch (e) {}
-    setDrawer(drawerOpen);
-    $("#idtoggle").addEventListener("click", () => setDrawer(!$("#iddrawer").classList.contains("open")));
     $("#logicdlg").addEventListener("click", e => { if (e.target.id === "logicdlg") e.target.close(); });
-    $("#reset").addEventListener("click", () => { state.sel = {}; state.focus = null; update(); });
+    $("#reset").addEventListener("click", () => { state.sel = {}; state.focus = null; state.opened = []; update(); });
     document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
       document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", x === b));
       document.querySelectorAll(".tabpanel").forEach(x => x.hidden = x.id !== b.dataset.tab);
