@@ -47,3 +47,6 @@ lean_lib PICanonical
 
 @[default_target]
 lean_lib PIModal
+
+@[default_target]
+lean_lib PIWorlds
