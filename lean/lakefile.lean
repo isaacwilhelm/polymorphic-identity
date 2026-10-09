@@ -38,3 +38,6 @@ lean_lib PISyntax
 
 @[default_target]
 lean_lib PIEnum
+
+@[default_target]
+lean_lib PICompleteness
