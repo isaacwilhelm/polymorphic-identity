@@ -724,6 +724,66 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2644
  ],
+ "Mhm_Hae": [
+  "PIHae.lean",
+  267
+ ],
+ "Mhm_Inj": [
+  "PIHae.lean",
+  269
+ ],
+ "Mhm_Twin": [
+  "PIHae.lean",
+  268
+ ],
+ "Mhm_model": [
+  "PIHae.lean",
+  266
+ ],
+ "Mhm_not_LLEqv": [
+  "PIHae.lean",
+  291
+ ],
+ "Mhm_not_PCong": [
+  "PIHae.lean",
+  294
+ ],
+ "Mhm_not_WCong": [
+  "PIHae.lean",
+  300
+ ],
+ "Mhp_Hae": [
+  "PIHae.lean",
+  193
+ ],
+ "Mhp_Inj": [
+  "PIHae.lean",
+  195
+ ],
+ "Mhp_LLEqv": [
+  "PIHae.lean",
+  192
+ ],
+ "Mhp_Twin": [
+  "PIHae.lean",
+  194
+ ],
+ "Mhp_model": [
+  "PIHae.lean",
+  191
+ ],
+ "Mhp_not_ExtT": [
+  "PIHae.lean",
+  237
+ ],
+ "Mhp_not_IntT": [
+  "PIHae.lean",
+  250
+ ],
+ "Mhp_not_PCong": [
+  "PIHae.lean",
+  229
+ ],
  "Mk_Disjoint": [
   "PIFoundation.lean",
   2704

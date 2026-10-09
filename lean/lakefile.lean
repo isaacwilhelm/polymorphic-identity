@@ -14,3 +14,6 @@ lean_lib PISchemas
 
 @[default_target]
 lean_lib PIExplore
+
+@[default_target]
+lean_lib PIHae
