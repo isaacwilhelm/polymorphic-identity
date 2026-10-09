@@ -139,9 +139,8 @@
     if (!u) return "";
     return `<a class="leanb" href="${u}" target="_blank" rel="noopener" title="Checked in Lean: PIF.${name}">${label || "Lean ✓"}</a>`;
   }
-  function srcBadge(src, added) {
-    return `<span class="src${added ? " added" : ""}" title="${added ? "Observed when building this site; not stated in the notes. Please check." : D.SOURCE}">${src}${added ? " ◆" : ""}</span>`;
-  }
+  // Where a result was first recorded is not shown on the site.
+  function srcBadge() { return ""; }
   function describeClause(c) {
     const i = c.info;
     if (c.kind === "thm") return `PI⁻ proves ${tag(i.to)}`;
@@ -196,7 +195,7 @@
   function modelHTML(m, id) {
     const w = m.why[id];
     let reason;
-    if (w && w.model) reason = `${srcBadge(w.src, w.added)}`;
+    if (w && w.model) reason = "by the construction of the model";
     else if (w) reason = `follows in the model: ${w.used.map(u => litText(u.id, u.pos)).join(", ")} with ${describeClause(w.clause)} ${srcBadge(w.clause.info.src, w.clause.info.added)}`;
     const assumed = assumptions().map(a => litText(a.id, a.pos)).join(", ");
     const lv = w && w.model && m.lean ? leanBadge(m.lean[id]) : "";
@@ -213,7 +212,7 @@
     consistent:   { label: "Consistent", cls: "k-cons", desc: "consistent with the selection; whether it follows is open" },
     notderivable: { label: "Does not follow", cls: "k-notder", desc: "not derivable; whether it is consistent with the selection is open" },
     refuted:      { label: "Inconsistent", cls: "k-refuted", desc: "inconsistent with the selection (its negation follows)" },
-    open:         { label: "Open", cls: "k-open", desc: "neither settled by the results in the notes" },
+    open:         { label: "Open", cls: "k-open", desc: "not settled by the results recorded here" },
   };
   const ORDER = ["follows", "independent", "consistent", "notderivable", "open", "refuted"];
 
@@ -468,8 +467,8 @@
       } else {
         if (s.counter) body += `<h4>Does not follow: a countermodel</h4>` + modelHTML(s.counter, id);
         if (s.witness) body += `<h4>Consistent: a model</h4>` + modelHTML(s.witness, id);
-        if (!s.counter) body += `<p class="openq">No model in the notes shows that ${p.tag} fails while the selection holds.</p>`;
-        if (!s.witness) body += `<p class="openq">No model in the notes shows ${p.tag} true together with the selection.</p>`;
+        if (!s.counter) body += `<p class="openq">No model recorded here shows that ${p.tag} fails while the selection holds.</p>`;
+        if (!s.witness) body += `<p class="openq">No model recorded here shows ${p.tag} true together with the selection.</p>`;
       }
     }
     const lock = isLocked(id);
@@ -664,38 +663,32 @@
   function renderCatalogue() {
     const pr = D.principles.map(p => `<tr><td class="ctag">${p.tag}</td><td>${tex(p.tex)}<div class="cg">${p.gloss}</div></td></tr>`).join("");
     const thms = D.pimTheorems.map(t => `<li>PI⁻ ⊢ <b>${tag(t.to)}</b> ${srcBadge(t.src)} ${leanBadge(t.lean)} <span class="cn">${t.note || ""}</span></li>`).join("");
-    const rl = D.rules.map(r => `<li${r.added ? ' class="isnew"' : ""}>PI⁻ + ${r.from.map(tag).join(" + ")} ⊢ <b>${tag(r.to)}</b> ${srcBadge(r.src, r.added)} ${leanBadge(r.lean) || '<span class="cn">(not yet checked in Lean)</span>'} <span class="cn">${r.note || ""}</span></li>`).join("");
-    const inc = D.inconsistent.map(s => `<li${s.added ? ' class="isnew"' : ""}>PI⁻ + ${s.set.map(tag).join(" + ")} ⊢ ⊥ ${srcBadge(s.src, s.added)} ${leanBadge(s.lean)} <span class="cn">${s.note || ""}</span></li>`).join("");
+    const rl = D.rules.map(r => `<li>PI⁻ + ${r.from.map(tag).join(" + ")} ⊢ <b>${tag(r.to)}</b> ${srcBadge(r.src, r.added)} ${leanBadge(r.lean) || '<span class="cn">(not yet checked in Lean)</span>'} <span class="cn">${r.note || ""}</span></li>`).join("");
+    const inc = D.inconsistent.map(s => `<li>PI⁻ + ${s.set.map(tag).join(" + ")} ⊢ ⊥ ${srcBadge(s.src, s.added)} ${leanBadge(s.lean)} <span class="cn">${s.note || ""}</span></li>`).join("");
     const md = models.map(m => {
       const vals = D.principles.filter(p => p.id in m.val).map(p => {
         const w = m.why[p.id];
         const stated = w && w.model;
         const ln = stated && m.lean && m.lean[p.id] && window.LEANINDEX && (m.lean[p.id] in window.LEANINDEX);
-        const inner = `${m.val[p.id] ? "" : "¬"}${p.tag}${w && w.added ? " ◆" : ""}${ln ? " ✓" : ""}`;
-        const title = (stated ? w.src : "follows in this model by the rules") + (ln ? " — checked in Lean: PIF." + m.lean[p.id] : "");
-        const cls = `mv ${m.val[p.id] ? "t" : "f"}${stated ? "" : " derived"}${w && w.added ? " isnew" : ""}`;
+        const inner = `${m.val[p.id] ? "" : "¬"}${p.tag}${ln ? " ✓" : ""}`;
+        const title = (stated ? "by the construction of the model" : "follows in this model by the rules") + (ln ? " — checked in Lean: PIF." + m.lean[p.id] : "");
+        const cls = `mv ${m.val[p.id] ? "t" : "f"}${stated ? "" : " derived"}`;
         return ln ? `<a class="${cls}" href="${leanURL(m.lean[p.id])}" target="_blank" rel="noopener" title="${title}">${inner}</a>`
                   : `<span class="${cls}" title="${title}">${inner}</span>`;
       }).join(" ");
       const lm = m.lean ? leanBadge(m.lean.model, "Lean ✓ model") : "";
       const ln = m.leanNote ? `<div class="mdesc"><i>Lean:</i> ${m.leanNote}</div>` : "";
-      const hasNew = m.src === "observed" || Object.values(m.why).some(w => w && w.model && w.added);
-      return `<div class="mcard${hasNew ? " isnew" : ""}"><div class="mname">${m.name} ${srcBadge(m.src)} ${lm}</div><div class="mdesc">${m.desc}</div>${ln}<div class="mvals">${vals}</div></div>`;
+      return `<div class="mcard"><div class="mname">${m.name} ${srcBadge(m.src)} ${lm}</div><div class="mdesc">${m.desc}</div>${ln}<div class="mvals">${vals}</div></div>`;
     }).join("");
     const other = D.otherResults.map(o => `<li><b>${o.title}.</b> ${o.text} ${srcBadge(o.src)}</li>`).join("");
     $("#catalogue").innerHTML = `
-      <label class="onlynew"><input type="checkbox" id="onlynew"> Show only results marked ◆ (not stated in the notes; observed while building this site, and to be checked)</label>
       <section class="nonew"><h2>The base logics</h2><h3>Common to all three</h3>${commonHTML()}${["PI-", "PI", "PIC"].map(k => `<h3>${D.logicSpec.logics[k].name}</h3>${identityHTML(k, k !== "PI-")}`).join("")}</section>
       <section class="nonew"><h2>Principles</h2><table class="ctable">${pr}</table></section>
       <section class="nonew"><h2>Theorems of PI⁻</h2><ul class="clist">${thms}</ul></section>
       <section><h2>Derivations</h2><ul class="clist">${rl}</ul></section>
       <section><h2>Inconsistencies</h2><ul class="clist">${inc}</ul></section>
-      <section><h2>Models</h2><p>All are models of PI⁻; those in which LL≡ is true are models of PI. Faded entries are not stated in the notes but follow in the model from the derivations above. Entries marked ✓ are checked in Lean: click one to see the proof.</p>${md}</section>
+      <section><h2>Models</h2><p>All are models of PI⁻; those in which LL≡ is true are models of PI. Faded entries are not part of the construction of the model, but follow in it from the derivations above. Entries marked ✓ are checked in Lean: click one to see the proof.</p>${md}</section>
       <section class="nonew"><h2>Other results</h2><ul class="clist">${other}</ul></section>`;
-    const cb = $("#onlynew");
-    try { cb.checked = localStorage.getItem("pi-onlynew") === "1"; } catch (e) {}
-    const apply = () => { $("#catalogue").classList.toggle("only-new", cb.checked); try { localStorage.setItem("pi-onlynew", cb.checked ? "1" : "0"); } catch (e) {} };
-    cb.addEventListener("change", apply); apply();
   }
 
   // ------------------------------------------------------------------ base logics

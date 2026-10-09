@@ -7,7 +7,7 @@ The most general semantics with full function spaces used on this site. The item
 an arbitrary non-empty set `P` with a truth predicate `V`; each frame supplies the operations for
 the connectives and quantifiers, and the values of `≡` and `≈`, subject only to the truth
 conditions (`V (neg p) ↔ ¬ V p`, `V (all a f) ↔ ∀ x, V (f x)`, and so on). A formula is true when its
-value satisfies `V`. The semantics of the notes, the tagged semantics, and the sets-of-worlds
+value satisfies `V`. The standard semantics, the tagged semantics, and the sets-of-worlds
 semantics are special cases. This file repeats the soundness proof for these models.
 -/
 set_option autoImplicit false

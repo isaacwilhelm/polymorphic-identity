@@ -176,7 +176,7 @@ theorem d_TCBF_of_Class (hC : ∀ χ, ClassSch χ → S χ) (hLL : S LLEqv) : �
 
 end Derivs
 
-/-! ## Every model of PI in the semantics of the notes is a model of Classicism -/
+/-! ## Every model of PI in the standard semantics is a model of Classicism -/
 
 namespace Frame
 variable (F : Frame)

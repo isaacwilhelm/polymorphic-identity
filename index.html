@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
-<link rel="stylesheet" href="style.css?v=20261010d">
+<link rel="stylesheet" href="style.css?v=20261011">
 </head>
 <body>
 <header>
@@ -57,32 +57,30 @@
   <div id="about" class="tabpanel about" hidden>
     <section>
       <h2>About this site</h2>
-      <p>This site collects the derivations and independence results in Isaac Wilhelm's <em>Formal Results</em> (Draft 5), the companion note to the paper on polymorphic identity. Theorem numbers refer to that draft.</p>
-      <p><b>PI</b>, the logic of polymorphic identity, is formulated in the predicative calculus of constructions. It has classical propositional logic, quantifiers over items of each type and over types, β-conversion, and the identity axioms Ref≡, Sym≡, Trans≡, LL≡, Ref≈ and LL≈. <b>PI⁻</b> is PI without LL≡. <b>PIᶜ</b> is PI with Classicism added: whenever PI proves φ ↔ ψ, the propositions φ and ψ are identical, and so are the properties λx.φ and λx.ψ. This is the polymorphic version of the thesis that logical equivalence suffices for identity.</p>
+      <p>This site maps what follows from what among principles of polymorphic identity: identity between items of different types, and identity between types. Pick some principles, and the site shows, for every other principle, whether it follows from them, is inconsistent with them, or is independent of them, together with the derivation or the model that shows it.</p>
+      <p><b>PI</b>, the logic of polymorphic identity, is formulated in the predicative calculus of constructions. It has classical propositional logic, quantifiers over items of each type and over types, β-conversion, and the identity axioms Ref≡, Sym≡, Trans≡, LL≡, Ref≈ and LL≈. <b>PI⁻</b> is PI without LL≡. <b>PIᶜ</b> is PI with Classicism added: whenever PI proves φ ↔ ψ, the propositions φ and ψ are identical, and so are the properties λx.φ and λx.ψ. In other words, logical equivalence suffices for identity. The axioms common to all three logics are listed in the window opened from the Explorer tab, and the identity axioms of the chosen logic are listed below the graph.</p>
+      <p>In a <em>standard model</em>, each type denotes a set, each function type denotes the set of all functions between the relevant sets, <i>t</i> denotes the two truth values, ≈ is an equivalence relation on types, and ≡ identifies some items of some types with items of others. Several of the models here use broader semantics, described below.</p>
       <h3>How the statuses are computed</h3>
-      <p>Each result in the notes is entered as data: a <em>derivation</em> (given PI⁻, these principles prove that one), an <em>inconsistency</em> (given PI⁻, these principles prove ⊥), or a <em>model</em> (a model of PI⁻ in which certain principles are true and others false). For any selection, the site then reasons as follows.</p>
+      <p>Each result is entered as data: a <em>derivation</em> (given PI⁻, these principles prove that one), an <em>inconsistency</em> (given PI⁻, these principles prove ⊥), or a <em>model</em> (a model of PI⁻ in which certain principles are true and others false). For any selection, the site then reasons as follows.</p>
       <ul>
         <li><b>Follows</b>: the derivations, chained together (including by contraposition), yield the principle. The derivation is shown step by step.</li>
         <li><b>Inconsistent</b>: the derivations yield the principle's negation, or the principle together with the selection hits a known inconsistency.</li>
         <li><b>Independent</b>: some model makes every selected principle true and this one false, and some model makes them all true together. By soundness, it neither follows nor is refuted.</li>
         <li><b>Consistent</b> / <b>Does not follow</b>: only one of those two models is known.</li>
-        <li><b>Open</b>: the results in the notes do not settle it.</li>
+        <li><b>Open</b>: the recorded results do not settle it.</li>
       </ul>
-      <p>The chaining is sound but not complete: “open” means only that the recorded results, combined in this simple way, do not settle the question. Values inside a model that are not stated in the notes but follow from the recorded derivations are filled in automatically.</p>
-      <p>Facts marked <span class="src added">◆</span> are not stated in the notes; they were observed when the site was built, and each comes with a one-line argument. They should be checked.</p>
+      <p>The chaining is sound but not complete: “open” means only that the recorded results, combined in this simple way, do not settle the question. Values inside a model that are not part of its construction, but follow from the recorded derivations, are filled in automatically.</p>
       <h3>What is checked in Lean</h3>
       <p>The folder <code>lean/</code> contains a formalization of PI in the Lean proof assistant: the language, the proof system, the models, and a proof that the proof system is sound (whatever PI proves is true in every model). With soundness, a model in which a principle is false is a proof that PI does not prove it.</p>
       <ul>
-        <li><b>Checked:</b> every model on this site is a model of PI⁻ (and of PI where LL≡ is true in it), and every true/false value recorded for it in the notes. Each principle's <span class="leanb">Lean definition</span> links to the sentence as written in Lean.</li>
-        <li><b>Checked:</b> the derivations and inconsistencies, written out as formal derivations in PI (file <code>lean/PIDerivations.lean</code>). Each step of a “Follows” or “Inconsistent” explanation that rests on one of them carries a <span class="leanb">Lean ✓</span> badge.</li>
-        <li><b>Checked:</b> the two schemas, theorem 3 (LL≡ ⊢ LL≡/≈) and the second half of theorem 11 (Disjoint + LL≡ ⊢ LL≡-Poly), for every polymorphic predicate <i>P</i> (file <code>lean/PISchemas.lean</code>). So every derivation, inconsistency, and model in the notes is now checked.</li>
-        <li><b>Checked:</b> every result marked <span class="src added">◆</span>, including the new models built while exploring (files <code>lean/PIExplore.lean</code> and <code>lean/PIHae.lean</code>).</li>
-        <li><b>A broader semantics:</b> in the models of the notes, the items of type <i>t</i> are the two truth values, and in every such model of PI, Int≈ and Ext≈ agree. The file <code>lean/PITagged.lean</code> repeats the semantics and the soundness proof for models in which propositions are finer than truth values (a truth value with a tag). One such model, 𝔐_int, shows that PI + Int≈ does not prove Ext≈.</li>
-        <li><b>A semantics with worlds:</b> the file <code>lean/PIWorlds.lean</code> repeats the semantics and the soundness proof once more, for models in which propositions are sets of worlds, a sentence is true when it is true at the actual world, and identity may hold at some worlds and not others. These models separate the principles of necessity and grain (T, Collapse, NI≡, NI≈, ND≈, Booleanism, and the Identity Identity), which come from Classicism (the view that provably equivalent formulas of classical higher-order logic express identical propositions and properties); their derivations are in <code>lean/PIModal.lean</code>.</li>
-        <li><b>The most general semantics with full function spaces:</b> <code>lean/PIAlg.lean</code> repeats the soundness proof for models in which propositions form any set with a truth predicate, and each model supplies the operations for the connectives and quantifiers, subject only to their truth conditions; the semantics of the notes, the tagged semantics, and the semantics with worlds are special cases. <code>lean/PIAlgI.lean</code> does the same for models in which, in addition, items of a function type are finer than their graphs (PI has neither η-conversion nor extensionality). The models built in them are in <code>lean/PIAlgModels.lean</code> and <code>lean/PIAlgIModels.lean</code>.</li>
-        <li><b>Checked:</b> soundness and completeness for <em>general models</em>, a broader class of models in which function types need not contain every function, propositions need only have truth values, and types need not be freely generated. A formula is provable in PI⁻ together with any set of further sentences just in case it is true in every general model in which those sentences are true. Since PI is PI⁻ with LL≡ added, this covers PI too. Files <code>lean/PIGeneral.lean</code> (the definition, and soundness) and <code>lean/PISyntax.lean</code>, <code>lean/PIEnum.lean</code>, <code>lean/PICompleteness.lean</code>, <code>lean/PICanonical.lean</code> (completeness, by a Henkin construction); the final theorem is <code>sound_complete</code>.</li>
+        <li><b>Models:</b> every model on this site is checked to be a model of PI⁻ (and of PI where LL≡ is true in it), and every true/false value recorded for it is checked. Each principle's <span class="leanb">Lean definition</span> links to the sentence as written in Lean.</li>
+        <li><b>Derivations:</b> the derivations and inconsistencies are written out as formal derivations in PI (files <code>lean/PIDerivations.lean</code>, <code>lean/PISchemas.lean</code>, <code>lean/PIModal.lean</code>, <code>lean/PIBarcan.lean</code> and <code>lean/PIClass.lean</code>, among others). Each step of a “Follows” or “Inconsistent” explanation that rests on one of them carries a <span class="leanb">Lean ✓</span> badge.</li>
+        <li><b>A broader semantics:</b> in standard models, the items of type <i>t</i> are the two truth values, and in every such model of PI, Int≈ and Ext≈ agree. The file <code>lean/PITagged.lean</code> repeats the semantics and the soundness proof for models in which propositions are more fine-grained than truth values (a truth value with a tag). One such model, 𝔐_int, shows that PI + Int≈ does not prove Ext≈.</li>
+        <li><b>A semantics with worlds:</b> the file <code>lean/PIWorlds.lean</code> repeats the semantics and the soundness proof once more, for models in which propositions are sets of worlds, a sentence is true when it is true at the actual world, and identity may hold at some worlds and not others. These models separate the principles of necessity and grain (T, Collapse, NI≡, NI≈, ND≈, Booleanism, the Identity Identity, and the Barcan formulas for types).</li>
+        <li><b>The most general semantics with full function spaces:</b> <code>lean/PIAlg.lean</code> repeats the soundness proof for models in which propositions form any set with a truth predicate, and each model supplies the operations for the connectives and quantifiers, subject only to their truth conditions; the standard, tagged, and world semantics are special cases. <code>lean/PIAlgI.lean</code> does the same for models in which, in addition, items of a function type are more fine-grained than their graphs (PI has neither η-conversion nor extensionality).</li>
+        <li><b>Soundness and completeness:</b> for <em>general models</em>, a broader class of models in which function types need not contain every function, propositions need only have truth values, and types need not be freely generated. A formula is provable in PI⁻ together with any set of further sentences just in case it is true in every general model in which those sentences are true. Since PI is PI⁻ with LL≡ added, this covers PI too. Files <code>lean/PIGeneral.lean</code> (the definition, and soundness) and <code>lean/PISyntax.lean</code>, <code>lean/PIEnum.lean</code>, <code>lean/PICompleteness.lean</code>, <code>lean/PICanonical.lean</code> (completeness, by a Henkin construction); the final theorem is <code>sound_complete</code>.</li>
       </ul>
-      <p>Three Lean models (for 𝔐_κ, 𝔐_card, and 𝔐_ρ) are simpler constructions than the paper's, with the same pattern of true and false principles; they establish the same independence results. Each model's Lean note says how it is built.</p>
+      <p>For a few models (𝔐_κ, 𝔐_card, and 𝔐_ρ), the Lean model is a simpler construction than the one described, with the same pattern of true and false principles. Each model's Lean note says how it is built.</p>
       <h3>Sharing a configuration</h3>
       <p>The address bar records the current selection, so a link reproduces exactly what you are looking at.</p>
       <h3>Updating the results</h3>
@@ -100,10 +98,10 @@
 </dialog>
 
 
-<footer class="wrap">Results from Isaac Wilhelm, <em>Formal Results</em>, Draft 5 (October 2026).</footer>
+<footer class="wrap">Isaac Wilhelm · Polymorphic identity: derivations, models, and Lean proofs.</footer>
 
-<script src="data.js?v=20261010d"></script>
-<script src="lean-index.js?v=20261010d"></script>
-<script defer src="app.js?v=20261010d"></script>
+<script src="data.js?v=20261011"></script>
+<script src="lean-index.js?v=20261011"></script>
+<script defer src="app.js?v=20261011"></script>
 </body>
 </html>

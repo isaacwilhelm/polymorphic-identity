@@ -1,16 +1,15 @@
 /-!
 # The logic of polymorphic identity, PI: a deep embedding
 
-Isaac Wilhelm, *Formal Results* (Draft 5) and the paper on polymorphic identity.
+Isaac Wilhelm.
 
 This file writes out, as data, the language of PI (a fragment of the predicative calculus of
 constructions), its proof system, and its models; it then proves that the proof system is
-**sound**: whatever PI proves is true in every model. Unlike the earlier shallow embedding
-(`Drafts/Lean/PolymorphicIdentity.lean`), derivations here are derivations in PI itself, and
-models are arbitrary interpretations of `≡` and `≈`; nothing forces `≈` to be identity.
+**sound**: whatever PI proves is true in every model. Derivations here are derivations in PI
+itself, and models are arbitrary interpretations of `≡` and `≈`; nothing forces `≈` to be identity.
 
 With soundness in hand, a model in which a principle is false shows that PI does not prove it.
-That is how the independence results of *Formal Results* will be checked, in later files.
+That is how the independence results are checked, in later files.
 
 Contents
 1. Categories (the types `σ` and the kinds `Πα:∗.K`), with renaming and substitution.
@@ -26,24 +25,24 @@ Contents
 No Mathlib. Checked with Lean 4.34.1: `lean PIFoundation.lean` prints nothing when every proof
 checks.
 
-## Representation choices (and where they depart from the paper)
+## Representation choices
 
-* **Types are kept in normal form.** By lemma `normaltypes`(a) of *Formal Results*, every type is
+* **Types are kept in normal form.** Every type is
   β-equivalent to a simple normal type, built from `e`, `t`, and type variables by `→`. So types
   are represented only in that form, and type-level λ-abstraction (type operators such as
   `λα:∗.α→t`) is left out. The categories are the simple normal types together with the kinds
   `Πα:∗.K` and arrows between categories (for instance `(Πα:∗.t)→t`, the category of `𝔸`).
 * **Bound variables are de Bruijn indices**, so terms differing only in bound variables are
-  literally equal, which is the paper's convention that such terms are identified.
+  literally equal, which matches the convention that such terms are identified.
 * **Terms are intrinsically typed**: a term is indexed by its context and its category, so only
   well-formed terms exist.
-* **Term variables have types**, as in the paper (the term variables of lemma `normaltypes`(b));
+* **Term variables have types** (simple normal types);
   terms of a `Π`-category arise only as constants, type abstractions, and their applications.
-* **Variables live in contexts.** The paper gives each variable a fixed type. Here a derivation
+* **Variables live in contexts.** One might give each variable a fixed type. Here a derivation
   is of a formula in a context, and three structural rules (renaming, and discarding an unused
   term or type variable) do the work that the fixed typing does implicitly. Discarding a variable
-  is sound because every type is non-empty, which is the role non-emptiness plays in the paper.
-* **The connectives `∧`, `∨`, `↔` are constants**, as in the paper. The propositional axioms are
+  is sound because every type is non-empty.
+* **The connectives `∧`, `∨`, `↔` are constants**. The propositional axioms are
   all instances of tautologies, which is what "all instances of the axioms of classical
   propositional logic" amounts to.
 -/
@@ -271,8 +270,8 @@ theorem Cat.ren_fs_inst {n : Nat} (K : Cat n) (σ : Ty n) : (K.ren fs).sub (inst
 /-! ## 2. Contexts, variables, constants, and terms -/
 
 /-- Contexts. `ext Γ σ` adds a term variable of type `σ`; `text Γ` adds a type variable,
-which becomes the type variable `fz`, the older ones being shifted by `fs`. As in the paper,
-every term variable has a type (a simple normal type) as its category. -/
+which becomes the type variable `fz`, the older ones being shifted by `fs`.
+Every term variable has a type (a simple normal type) as its category. -/
 inductive Ctx : Nat → Type where
   | nil : Ctx 0
   | ext {n : Nat} : Ctx n → Ty n → Ctx n
@@ -284,7 +283,7 @@ inductive Var : {n : Nat} → Ctx n → Cat n → Type where
   | there {n : Nat} {Γ : Ctx n} {K : Cat n} {σ : Ty n} : Var Γ K → Var (.ext Γ σ) K
   | tthere {n : Nat} {Γ : Ctx n} {K : Cat n} : Var Γ K → Var (.text Γ) (K.ren fs)
 
-/-- The constants of PI and their categories (table in §1 of *Formal Results*). -/
+/-- The constants of PI and their categories . -/
 inductive Const : (n : Nat) → Cat n → Type where
   | neg {n : Nat} : Const n (.arr .t .t)
   | imp {n : Nat} : Const n (.arr .t (.arr .t .t))
@@ -972,8 +971,8 @@ def Bot : Fm Ctx.nil := all tyT (.var .here)
 end Axioms
 
 /-- Derivability in PI⁻ together with the extra sentences `Ax`. A derivation is of a formula in a
-context. The axioms are those of §2 of *Formal Results*, apart from LL≡; the three structural rules
-at the end account for the paper's fixed typing of variables. -/
+context. The axioms are those of PI, apart from LL≡; the three structural rules
+at the end handle the typing of variables in contexts. -/
 inductive Prov (Ax : Fm Ctx.nil → Prop) : {n : Nat} → (Γ : Ctx n) → Fm Γ → Prop where
   /-- the propositional axioms: every instance of a tautology -/
   | taut {n : Nat} {Γ : Ctx n} {k : Nat} (P : PF k) (as : Fin k → Fm Γ) : P.Taut → Prov Ax Γ (P.inst as)
@@ -1240,7 +1239,7 @@ end Frame
 /-! ## 8. Consistency: the diagonal model
 
 The type universe has one entity; `≡` relates an item only to itself, at one and the same type,
-and `≈` is identity of types. This is the model `𝔐(HF⁺, ∼₀)` of *Formal Results*,
+and `≈` is identity of types. This is the model `𝔐(HF⁺, ∼₀)`,
 in miniature. -/
 
 def unitUniv : Univ where
@@ -1293,13 +1292,12 @@ theorem PI_consistent : ¬ PI (fun _ => False) Ctx.nil Bot :=
 
 /-! ## 9. Invariance (parametricity)
 
-*Formal Results*, Definition 12 and Lemma 7 (invariance): if a model carries a family of bijections
+The invariance lemma: if a model carries a family of bijections
 between members of its type universe which respects `→`, `≡`, and `≈`, then no sentence can tell
 related items apart. Here the lemma is proved in the relational form of Reynolds' parametricity
 theorem: a model carries a family of *admissible relations* between members of its type universe,
 and every term is related to itself. The graph of each bijection in a family of bijections is an
-admissible relation, so the paper's lemma is a special case. Two consequences, the analogue of
-Lemma 8 of *Formal Results*, give conditions under which LL≈ and LL≡-Poly hold; they are what is
+admissible relation, so the bijection form of the lemma is a special case. Two consequences give conditions under which LL≈ and LL≡-Poly hold; they are what is
 needed for models such as `𝔐_κ`, `𝔐_card`, `𝔐_tot`, and `𝔐_fn`. -/
 
 /-- A family of admissible relations for a frame. -/
@@ -1583,7 +1581,7 @@ theorem pi_t_invariant {n : Nat} {Γ : Ctx n} (Q : Tm Γ (.pi .t)) (ρ : F.U.TEn
   I.fundamental Q ρ ρ _ (fun i => I.refl (ρ i)) env env (I.envRel_refl Γ ρ env) a b R hR
 
 /-- **LL≈ holds** in a frame with a family of admissible relations, if types identified by `≈` are
-related by some admissible relation (*Formal Results*, Lemma 8(b)). -/
+related by some admissible relation. -/
 theorem llTeq_valid (hteq : ∀ a b, F.teq a b → ∃ R, I.Adm a b R) {n : Nat} {Γ : Ctx n}
     (Q : Tm Γ (.pi .t)) : F.Valid (LLTeq Q) := by
   intro ρ env a b hab hq
@@ -1599,7 +1597,7 @@ theorem llTeq_valid (hteq : ∀ a b, F.teq a b → ∃ R, I.Adm a b R) {n : Nat}
   exact cast (eq_of_heq h0).symm ((I.pi_t_invariant Q ρ env hR).mp (cast (eq_of_heq h1) hq))
 
 /-- **LL≡-Poly holds** in a frame with a family of admissible relations, if any two identified
-items are related by some admissible relation (*Formal Results*, Lemma 8(a)). -/
+items are related by some admissible relation. -/
 theorem llPoly_valid (hE : ∀ a b u v, F.eqv a b u v → ∃ R, I.Adm a b R ∧ R u v) {n : Nat} {Γ : Ctx n}
     (P : Tm Γ (.pi (.arr (.var fz) .t))) : F.Valid (LLPoly P) := by
   intro ρ env a b
@@ -1652,7 +1650,7 @@ def diagInv : Invariance diag where
     have e2 := eq_of_heq ((hS v v').mp hv)
     subst e1; subst e2; exact Iff.rfl
 
-/-- Every instance of LL≡-Poly is true in the diagonal model (cf. *Formal Results*, Thm 19), by
+/-- Every instance of LL≡-Poly is true in the diagonal model, by
 the invariance lemma. -/
 theorem diag_LLPoly {n : Nat} {Γ : Ctx n} (P : Tm Γ (.pi (.arr (.var fz) .t))) : diag.Valid (LLPoly P) :=
   diagInv.llPoly_valid (fun a b u v h => by
@@ -1660,7 +1658,7 @@ theorem diag_LLPoly {n : Nat} {Γ : Ctx n} (P : Tm Γ (.pi (.arr (.var fz) .t)))
     subst e
     exact ⟨fun x y => HEq x y, ⟨rfl, fun _ _ => Iff.rfl⟩, huv⟩) P
 
-/-! ## 10. The principles of *Formal Results*, as sentences -/
+/-! ## 10. The principles, as sentences -/
 
 section Principles
 open Tm
@@ -1744,10 +1742,10 @@ def Bridge {n : Nat} {Γ : Ctx n} (P : Tm Γ (.pi (.arr (.var fz) .t))) : Fm Γ 
   tall (tall (all tv1 (all tv0 (imp (conj (eqv tv1 tv0 (.var (.there .here)) (.var .here)) (teq tv1 tv0))
     (imp (.app (.tapp P' tv1) (.var (.there .here))) (.app (.tapp P' tv0) (.var .here)))))))
 
-/-- The polymorphic predicate `λγ:∗.λz:γ.(γ ≈ e)` (*Formal Results*, Thm 13). -/
+/-- The polymorphic predicate `λγ:∗.λz:γ.(γ ≈ e)`. -/
 def PredE : Tm Ctx.nil (.pi (.arr (.var fz) .t)) := .tlam (.lam tv0 (teq tv0 tyE))
 
-/-- The predicate `R` of *Formal Results*, Thm 12:
+/-- The predicate `R`:
 `λγ:∗.λz:γ.∃_{γ→t}F (F z ∧ ∃_{γ→t}G (F ≡ G ∧ ¬ G z))`. -/
 def PredR : Tm Ctx.nil (.pi (.arr (.var fz) .t)) :=
   .tlam (.lam tv0 (ex tv0.pred (conj (.app (.var .here) (.var (.there .here)))
@@ -1774,7 +1772,7 @@ theorem valid_iff_tr (φ : Fm Ctx.nil) : F.Valid φ ↔ F.Tr φ := by
     have : ρ = (fun i => i.elim0) := funext fun i => i.elim0
     subst this; exact h
 
-/-- `R z` for the predicate `R` of Thm 12. -/
+/-- `R z` for the predicate `R`. -/
 def Rf (a : Code F.U.Base) (z : F.U.El a) : Prop :=
   ∃ P : F.U.El a → Prop, P z ∧ ∃ G : F.U.El a → Prop, F.eqv (.arr a .t) (.arr a .t) P G ∧ ¬ G z
 
@@ -1912,7 +1910,7 @@ theorem Cong_valid (hrec : ∀ a b c d, D.K (.arr a c) = D.K (.arr b d) → D.K 
 
 end KeyData
 
-/-- **Identification models** (*Formal Results*, Definition 11): `≈` is identity of types, and `≡`
+/-- **Identification models**: `≈` is identity of types, and `≡`
 is an equivalence relation on items. -/
 structure IdentData where
   U : Univ
@@ -1981,7 +1979,7 @@ theorem Inj_valid : D.frame.Valid Inj :=
     injection h with h1 h2; exact ⟨h1, h2⟩
 
 /-- Admissible relations from a family of permutations of the members of the type universe,
-closed under `→` and respected by `≡` (*Formal Results*, Definition 12, with `≈` identity). -/
+closed under `→` and respected by `≡` (with `≈` identity). -/
 def permInv (allowed : (a : Code D.U.Base) → Perm (D.U.El a) → Prop)
     (hid : ∀ a, allowed a Perm.idp)
     (harr : ∀ a c θ φ, allowed a θ → allowed c φ → allowed (.arr a c) (Perm.arrow θ φ))
@@ -2031,9 +2029,9 @@ theorem LLPoly_perm (allowed : (a : Code D.U.Base) → Perm (D.U.El a) → Prop)
 
 end IdentData
 
-/-! ## 13. The models of *Formal Results*
+/-! ## 13. The models
 
-Each model is rebuilt over a type universe of codes. Where the paper's model uses facts about
+Each model is rebuilt over a type universe of codes. Where a model uses facts about
 particular hereditarily finite sets (for instance that `E = 2→2` is the very same set as the value
 of `t→t`), the Lean model makes the corresponding identification explicit, by a map on codes. In
 three cases (`𝔐_κ`, `𝔐_card`, `𝔐_ρ`) the Lean model is a simpler construction which has the same
@@ -2385,7 +2383,7 @@ theorem classIdent_Disjoint (U : Univ) (S : (c : Code U.Base) → U.El c → Pro
 def chi0 : Fin 3 → Prop := fun v => v = 0
 def zeta0 : Fin 3 → Prop := fun _ => False
 
-/-- `𝔐_D` (Thm 12): `0 ∼ 1` at `e`, and `χ ∼ ζ` at `e→t`. -/
+/-- `𝔐_D`: `0 ∼ 1` at `e`, and `χ ∼ ζ` at `e→t`. -/
 def SD : (c : Code Empty) → univ3.El c → Prop
   | .e, v => v = (0 : Fin 3) ∨ v = (1 : Fin 3)
   | .arr .e .t, v => v = chi0 ∨ v = zeta0
@@ -2418,7 +2416,7 @@ theorem MD_not_Bridge : ¬ MD.Valid (Bridge PredR) := fun h =>
   MD_not_R1 (MD.tr_BridgeR.mp ((MD.valid_iff_tr _).mp h) .e .e (0 : Fin 3) (1 : Fin 3)
     ⟨⟨rfl, Or.inr ⟨Or.inl rfl, Or.inr rfl⟩⟩, rfl⟩ MD_R0)
 
-/-- `𝔐_E` (Thm 28(c)): `0 ∼ 1` at `e`, and nothing else. -/
+/-- `𝔐_E`: `0 ∼ 1` at `e`, and nothing else. -/
 def SE : (c : Code Empty) → univ3.El c → Prop
   | .e, v => v = (0 : Fin 3) ∨ v = (1 : Fin 3)
   | _, _ => False
@@ -2474,7 +2472,7 @@ theorem Mtot_LLPoly {n : Nat} {Γ : Ctx n} (P : Tm Γ (.pi (.arr (.var fz) .t)))
       subst h
       exact ⟨rfl, Perm.swap x y, trivial, heq_of_eq (swapF_u x y)⟩) P
 
-/-- `𝔐_fn` (Thm 15): any two items of the same function type are identified. -/
+/-- `𝔐_fn`: any two items of the same function type are identified. -/
 def isArr {B : Type} : Code B → Prop
   | .arr _ _ => True
   | _ => False
@@ -2511,7 +2509,7 @@ theorem Mfn_LLPoly {n : Nat} {Γ : Ctx n} (P : Tm Γ (.pi (.arr (.var fz) .t))) 
     · exact ⟨rfl, Perm.idp, Or.inr fun _ => rfl, hxy⟩
     · exact ⟨rfl, Perm.swap x y, Or.inl ha, heq_of_eq (swapF_u x y)⟩
 
-/-! ### 𝔐(HF⁺, ∼ₕ): each item is identified with its haecceity (*Formal Results*, Thm 24). -/
+/-! ### 𝔐(HF⁺, ∼ₕ): each item is identified with its haecceity. -/
 
 abbrev Item := Σ c, unitUniv.El c
 
@@ -2688,7 +2686,7 @@ theorem Mh_ExtT : Mh.Valid ExtT := by
       refine not_hh_false hD (hn j ⟨b, y1⟩).2 ?_
       exact (cast_heq _ _).symm.trans hsnd
 
-/-! ### Further facts and models found while exploring (not stated in *Formal Results*) -/
+/-! ### Further facts and models found while exploring -/
 
 theorem KeyData.Slogan_valid (D : KeyData) (h : ∀ b, D.K .e ≠ D.K (.arr b .t)) : D.frame.Valid Slogan :=
   (D.frame.valid_iff_tr _).mpr <| D.frame.tr_Slogan.mpr fun _ b _ ⟨hk, _⟩ => h b hk

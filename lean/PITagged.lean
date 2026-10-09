@@ -3,7 +3,7 @@ import PIHae
 /-!
 # Propositions finer than truth values
 
-In the semantics of `PIFoundation.lean`, as in *Formal Results*, the items of type `t` are the two
+In the semantics of `PIFoundation.lean`, the items of type `t` are the two
 truth values. Here they are pairs `(p, b)` of a truth value `p` and a tag `b`, which records whether
 the proposition is quantified. The logical constants act on truth values as before, and give `true`
 as the tag, except that the quantifiers give `false`. A sentence is true when its value has first

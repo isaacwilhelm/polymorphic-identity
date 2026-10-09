@@ -3,7 +3,7 @@ import PIFoundation
 /-!
 # Derivations in PI
 
-The derivations of *Formal Results*, written out in the proof system of `PIFoundation.lean` and
+The derivations, written out in the proof system of `PIFoundation.lean` and
 checked by Lean.
 -/
 set_option autoImplicit false
@@ -12,7 +12,7 @@ namespace PIF
 
 /-! ## 14. Derivations
 
-A small toolkit for writing derivations in PI, and then the derivations of *Formal Results*.
+A small toolkit for writing derivations in PI, and then the derivations.
 
 `Ent Ax Γ Hs φ` says that PI⁻ + `Ax` derives `H₁ → (H₂ → ⋯ → φ)` in context `Γ`, where `Hs` is the list
 `H₁, H₂, …`: that is, it derives `φ` from the hypotheses `Hs`. Since this is just a derivation of an
@@ -462,7 +462,7 @@ theorem Ent.exE {σ : Ty n} {φ : Fm (.ext Γ σ)} {χ : Fm Γ} (h : Ent Ax Γ H
 
 end Rules
 
-/-! ### Basic theory: Lemma 9 and Theorem 2 -/
+/-! ### Basic theory -/
 
 section Basic
 variable {S : Fm Ctx.nil → Prop}
@@ -471,7 +471,7 @@ abbrev Δ1 : Ctx 1 := Ctx.nil.text
 abbrev Δ2 : Ctx 2 := Ctx.nil.text.text
 abbrev Δ3 : Ctx 3 := Ctx.nil.text.text.text
 
-/-- (Sym≈), Lemma 9: with `Q = λγ.(γ ≈ α)` in LL≈, and Ref≈. -/
+/-- (Sym≈): with `Q = λγ.(γ ≈ α)` in LL≈, and Ref≈. -/
 theorem d_SymTeq : Prov S Ctx.nil SymTeq := by
   have hQ : Ent S Δ2 [] (LLTeq (Tm.tlam (Tm.teq tv0 tv2))) := Ent.ofProv (Prov.llTeq _)
   have h1 : Ent S Δ2 [] ((Tm.teq tv1 tv0).imp ((Tm.teq tv1 tv1).imp (Tm.teq tv0 tv1))) :=
@@ -482,7 +482,7 @@ theorem d_SymTeq : Prov S Ctx.nil SymTeq := by
       (v3 (Tm.teq tv1 tv0) (Tm.teq tv1 tv1) (Tm.teq tv0 tv1)) (fun _ f b a => f a b)) h1 hr
   exact Ent.toProv (Ent.tgen (Ent.tgen h2))
 
-/-- (Trans≈), Lemma 9: with `Q = λδ.(α ≈ δ)` in LL≈. -/
+/-- (Trans≈): with `Q = λδ.(α ≈ δ)` in LL≈. -/
 theorem d_TransTeq : Prov S Ctx.nil TransTeq := by
   have hQ : Ent S Δ3 [] (LLTeq (Tm.tlam (Tm.teq tv3 tv0))) := Ent.ofProv (Prov.llTeq _)
   have h1 : Ent S Δ3 [] ((Tm.teq tv1 tv0).imp ((Tm.teq tv2 tv1).imp (Tm.teq tv2 tv0))) :=
@@ -492,7 +492,7 @@ theorem d_TransTeq : Prov S Ctx.nil TransTeq := by
       (v3 (Tm.teq tv1 tv0) (Tm.teq tv2 tv1) (Tm.teq tv2 tv0)) (fun _ f h => f h.2 h.1)) h1
   exact Ent.toProv (Ent.tgen (Ent.tgen (Ent.tgen h2)))
 
-/-- Theorem 2 (Link): with `Q = λγ.∀_α x ∃_γ y (x ≡ y)` in LL≈, and Ref≡. -/
+/-- (Link): with `Q = λγ.∀_α x ∃_γ y (x ≡ y)` in LL≈, and Ref≡. -/
 theorem d_Link : Prov S Ctx.nil Link := by
   have hQ : Ent S Δ2 [] (LLTeq (Tm.tlam (Tm.all tv2 (Tm.ex tv0 (Tm.eqv tv2 tv0 (.var (.there .here)) (.var .here))))))
     := Ent.ofProv (Prov.llTeq _)
@@ -585,7 +585,7 @@ theorem d_Truth (hLL : S LLEqv) : Prov S Ctx.nil Truth := by
     exact Ent.beta h3 (BetaEq.imp (.step (.beta _ _)) (.step (.beta _ _)))
   exact Ent.toProv (Ent.gen tyT (Ent.gen tyT (Ent.intro h2)))
 
-/-- Lemma 13: `⊤ ≢ ⊥` follows from LL≡. -/
+/-- `⊤ ≢ ⊥` follows from LL≡. -/
 theorem d_TopBot (hLL : S LLEqv) : Prov S Ctx.nil TopBot := by
   have h0 := Ent.inst (Ent.inst ((Ent.ofProv (Γ := Ctx.nil) (Hs := [Tm.eqv tyT tyT topF botF]) (Prov.ax hLL)).tinst tyT) topF) botF
   have h1 := Ent.inst (Ent.mp h0 (Ent.hyp _ 0 (by decide))) (.lam tyT (.var .here))
@@ -595,7 +595,7 @@ theorem d_TopBot (hLL : S LLEqv) : Prov S Ctx.nil TopBot := by
   exact Ent.toProv (Ent.notI h3 Ent.top)
 
 set_option maxHeartbeats 4000000 in
-/-- Theorem 27(a): PCong follows from Cong (with Ref≡). -/
+/-- PCong follows from Cong (with Ref≡). -/
 theorem d_PCong (hC : S Cong) : Prov S Ctx.nil PCong := by
   -- context: α γ δ, f : α→γ, g : α→δ, x : α
   have h0 := (((((Ent.axm (Γ := (((Δ3.ext (tv2.arrow tv1)).ext (tv2.arrow tv0)).ext tv2)) (Hs := []) hC).tinst tv2).tinst tv2).tinst tv1).tinst tv0)
@@ -620,7 +620,7 @@ abbrev Fx22 : Fm C22 := .app (.var .here) (.var (.there (.there .here)))
 abbrev Fy22 : Fm C22 := .app (.var .here) (.var (.there .here))
 
 set_option maxHeartbeats 4000000 in
-/-- Theorem 22: LL≡ follows from Cong and Truth. -/
+/-- LL≡ follows from Cong and Truth. -/
 theorem d_LLEqv_of_Cong_Truth (hC : S Cong) (hT : S Truth) : Prov S Ctx.nil LLEqv := by
   have hc0 : Ent S C22 [E22', Fx22] _ := ((((Ent.axm (Γ := C22) (Hs := [E22', Fx22]) hC).tinst tv0).tinst tv0).tinst tyT).tinst tyT
   have hc : Ent S C22 [E22', Fx22] (((Tm.eqv tv0.pred tv0.pred (.var .here) (.var .here)).conj E22').imp
@@ -639,7 +639,7 @@ theorem d_LLEqv_of_Cong_Truth (hC : S Cong) (hT : S Truth) : Prov S Ctx.nil LLEq
 
 end Cong
 
-/-! ### Disjoint and LL≡-Poly: Theorem 11, first half -/
+/-! ### Disjoint and LL≡-Poly -/
 
 section Disj
 variable {S : Fm Ctx.nil → Prop}
@@ -650,7 +650,7 @@ def PredA : Tm Δ1 (.pi (.arr (.var fz) .t)) := Tm.tlam (Tm.lam tv0 (Tm.teq tv0 
 abbrev C11 : Ctx 2 := (Δ2.ext tv1).ext tv0
 abbrev Exy11 : Fm C11 := Tm.eqv tv1 tv0 (.var (.there .here)) (.var .here)
 
-/-- Theorem 11, first half: Disjoint follows from the instances of LL≡-Poly (here, the one for
+/-- Disjoint follows from the instances of LL≡-Poly (here, the one for
 `λγ.λz.(γ ≈ α)`), with Ref≈ and Sym≈. -/
 theorem d_Disjoint_of_LLPoly (hP : S (Tm.tall (LLPoly PredA))) : Prov S Ctx.nil Disjoint := by
   have h0 := Ent.inst (Ent.inst ((((Ent.axm (Γ := C11) (Hs := []) hP).tinst tv1).tinst tv1).tinst tv0) (.var (.there .here))) (.var .here)
@@ -674,7 +674,7 @@ theorem d_Disjoint_of_LLPoly (hP : S (Tm.tall (LLPoly PredA))) : Prov S Ctx.nil 
 end Disj
 
 
-/-! ### Cantor: Theorem 6 -/
+/-! ### Cantor -/
 
 section Cantor
 variable {S : Fm Ctx.nil → Prop}
@@ -729,7 +729,7 @@ theorem cantor_step (hLL : S LLEqv) : Ent S CF [H1', Ry', Fiy.conj Fy.neg] botF 
   exact Ent.absurd (Ent.mp h2 hR) hnF
 
 set_option maxHeartbeats 4000000 in
-/-- Theorem 6 (Cantor), from LL≡. -/
+/-- Cantor, from LL≡. -/
 theorem d_Cantor (hLL : S LLEqv) : Prov S Ctx.nil Cantor := by
   -- (a) R ≡ y ⊢ ¬ R y
   have hE : Ent S Cy ([H1] ++ [Ry]) E1 := Ent.beta (Ent.last (Hs := [H1])) (.step (.beta _ _))
@@ -745,7 +745,7 @@ theorem d_Cantor (hLL : S LLEqv) : Prov S Ctx.nil Cantor := by
 
 end Cantor
 
-/-! ### Corollary 6, Theorem 26, and two inconsistencies -/
+/-! ### No type is the type of its properties; Twin; two inconsistencies -/
 
 section Hae
 variable {S : Fm Ctx.nil → Prop}
@@ -762,7 +762,7 @@ abbrev GeqY : Fm CGy := Tm.eqv tv0.pred tv0 (.var (.there .here)) (.var .here)
 abbrev ExY : Fm CG := Tm.ex tv0 (Tm.eqv tv0.pred tv0 (.var (.there .here)) (.var .here))
 
 set_option maxHeartbeats 4000000 in
-/-- Corollary 6: no type is identical to the type of its properties (from Cantor, Link, Sym≈). -/
+/-- No type is identical to the type of its properties (from Cantor, Link, Sym≈). -/
 theorem d_NoSelf (hCan : S Cantor) : Prov S Ctx.nil NoSelfF := by
   -- inside: G : α→t with ∀y ¬(G ≡ y); and hypothesis α ≈ α→t
   have hN : Ent S CG [NS, AllNotG] NS := Ent.hyp _ 0 (by decide)
@@ -785,7 +785,7 @@ abbrev Cx : Ctx 1 := Δ1.ext tv0
 abbrev HaeX : Tm Cx (Cat.arr (Cat.var fz) Cat.t) := Tm.lam tv0 (Tm.eqv tv0 tv0 (.var .here) (.var (.there .here)))
 
 set_option maxHeartbeats 4000000 in
-/-- Theorem 26: Twin follows from Haecceitism (with Corollary 6, hence Cantor). -/
+/-- Twin follows from Haecceitism (with the fact that no type is the type of its properties, hence Cantor). -/
 theorem d_Twin (hH : S Hae) (hCan : S Cantor) : Prov S Ctx.nil Twin := by
   have hh : Ent S Cx [] (Tm.eqv tv0 tv0.pred (.var .here) HaeX) :=
     Ent.inst ((Ent.axm (Γ := Cx) (Hs := []) hH).tinst tv0) (.var .here)
@@ -825,7 +825,7 @@ abbrev Ce : Ctx 0 := Ctx.nil.ext tyE
 abbrev HaeE : Tm Ce (Cat.arr Cat.e Cat.t) := Tm.lam tyE (Tm.eqv tyE tyE (.var .here) (.var (.there .here)))
 
 set_option maxHeartbeats 4000000 in
-/-- Slogan and Haecceitism are jointly inconsistent (observed, not stated in the notes): each entity
+/-- Slogan and Haecceitism are jointly inconsistent: each entity
 would be identical to its haecceity, a property of entities. -/
 theorem d_Slogan_Hae (hS : S Slogan) (hH : S Hae) : Prov S Ctx.nil Bot := by
   have hh : Ent S Ce [] (Tm.eqv tyE tyE.pred (.var .here) HaeE) :=
@@ -837,7 +837,7 @@ theorem d_Slogan_Hae (hS : S Slogan) (hH : S Hae) : Prov S Ctx.nil Bot := by
 
 end Hae
 
-/-! ### Theorem 25: Haecceitism and Cong are incompatible -/
+/-! ### Haecceitism and Cong are incompatible -/
 
 section Thm25
 variable {S : Fm Ctx.nil → Prop}
@@ -852,7 +852,7 @@ abbrev b25 {n : Nat} {Γ : Ctx n} : Tm Γ (.arr .t .t) := Tm.lam tyT topF
 abbrev Hb25 : Tm Ctx.nil (.arr (.arr .t .t) .t) := Tm.lam tyT.pred (Tm.eqv tyT.pred tyT.pred (.var .here) b25)
 
 set_option maxHeartbeats 8000000 in
-/-- Theorem 25: given LL≡, Haecceitism and Cong are jointly inconsistent. -/
+/-- Given LL≡, Haecceitism and Cong are jointly inconsistent. -/
 theorem d_Hae_Cong (hLL : S LLEqv) (hH : S Hae) (hC : S Cong) : Prov S Ctx.nil Bot := by
   have h1 : Ent S Ctx.nil [] (Tm.eqv tyT tyT.pred botF a25) :=
     Ent.inst ((Ent.ofProv (Prov.ax hH)).tinst tyT) botF
@@ -883,7 +883,7 @@ theorem d_Hae_Cong (hLL : S LLEqv) (hH : S Hae) (hC : S Cong) : Prov S Ctx.nil B
 
 end Thm25
 
-/-! ### Theorem 4: WCong -/
+/-! ### WCong -/
 
 section WCong
 variable {S : Fm Ctx.nil → Prop}
@@ -955,7 +955,7 @@ abbrev Concl4 : Fm C4 := Tm.eqv tv1 tv0 (.app (.var (.there (.there (.there .her
   (.app (.var (.there (.there .here))) (.var .here))
 
 set_option maxHeartbeats 16000000 in
-/-- Theorem 4 (WCong), from LL≡. -/
+/-- WCong, from LL≡. -/
 theorem d_WCong (hLL : S LLEqv) : Prov S Ctx.nil WCong := by
   have hstep : Ent S C4 [Hyp4] Qg :=
     Ent.ofProv (Ent.gen (Hs := []) (tv3.arrow tv1) (Ent.gen (Hs := []) tv3 (Ent.intro (Hs := []) (wcong_hstep hLL))))
@@ -980,7 +980,7 @@ theorem d_WCong (hLL : S LLEqv) : Prov S Ctx.nil WCong := by
 
 end WCong
 
-/-! ### Theorem 20: given LL≡ and LL≡-Poly, Cong is equivalent to Recovery -/
+/-! ### Given LL≡ and LL≡-Poly, Cong is equivalent to Recovery -/
 
 section Thm20
 variable {S : Fm Ctx.nil → Prop}
@@ -1001,7 +1001,7 @@ abbrev xy4 : Fm C4 := Tm.eqv tv3 tv2 (.var (.there .here)) (.var .here)
 abbrev R4 {Γ : Ctx 4} : Fm Γ := Tm.conj (Tm.teq (tv3.arrow tv1) (tv2.arrow tv0)) (Tm.teq tv3 tv2)
 
 set_option maxHeartbeats 16000000 in
-/-- Theorem 20, first half: Cong follows from LL≡, LL≡-Poly, and Recovery. -/
+/-- Cong follows from LL≡, LL≡-Poly, and Recovery. -/
 theorem d_Cong_of_Recovery (hLL : S LLEqv) (hP : S (Tm.tall (LLPoly PredA))) (hR : S Recovery) :
     Prov S Ctx.nil Cong := by
   have hH : Ent S C4 [fg4.conj xy4] (fg4.conj xy4) := Ent.hyp _ 0 (by decide)
@@ -1039,7 +1039,7 @@ abbrev fxR : Tm Cfxyg tv1.1 := .app (.var (.there (.there (.there .here)))) (.va
 abbrev gyR : Tm Cfxyg tv0.1 := .app (.var .here) (.var (.there .here))
 
 set_option maxHeartbeats 16000000 in
-/-- Theorem 20, second half: Recovery follows from LL≡, LL≡-Poly, and Cong. -/
+/-- Recovery follows from LL≡, LL≡-Poly, and Cong. -/
 theorem d_Recovery_of_Cong (hP : S (Tm.tall (LLPoly PredA))) (hC : S Cong) : Prov S Ctx.nil Recovery := by
   -- innermost: f x y g, with x ≡ y and f ≡ g
   have inner : Ent S Cfxyg ([R4, ExyR'] ++ [EfgR]) (Tm.teq tv1 tv0) := by

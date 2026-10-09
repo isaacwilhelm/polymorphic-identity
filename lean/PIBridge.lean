@@ -105,8 +105,8 @@ theorem MEk_not_Bridge : ¬ MEk.Valid (Bridge PredK) := fun h =>
 /-! ## `𝔐_hae,R`: Haecceitism without LL≡/≈
 
 A haecceity tower (as in `PIHae.lean`) over `E = {0,1,2}`, in which `1` has the root of `0`, and the
-property `λy.(y = 1)`, which is not a haecceity, also has the root of `0`. Then `R(0)` (Thm 12's
-predicate) holds, witnessed by the haecceity of `0` and `λy.(y = 1)`; but `R(1)` fails, since every
+property `λy.(y = 1)`, which is not a haecceity, also has the root of `0`. Then `R(0)` (for the
+predicate `R` of `PIFoundation.lean`) holds, witnessed by the haecceity of `0` and `λy.(y = 1)`; but `R(1)` fails, since every
 property identified with a different one holds of `1`. -/
 
 theorem fin3_cases (x : Fin 3) : x = 0 ∨ x = 1 ∨ x = 2 := by

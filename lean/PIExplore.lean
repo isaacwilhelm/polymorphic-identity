@@ -3,8 +3,7 @@ import PISchemas
 /-!
 # Exploring PI⁻
 
-Further models of PI⁻ (in which LL≡ fails), and further truth values for the models of PI⁻ in
-*Formal Results*, found while building the site.
+Further models of PI⁻ (in which LL≡ fails), and further truth values for the models of PI⁻.
 -/
 set_option autoImplicit false
 

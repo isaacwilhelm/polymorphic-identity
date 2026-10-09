@@ -1,7 +1,7 @@
 import PIDerivations
 
 /-!
-# Schemas: Theorem 3 and the second half of Theorem 11
+# Schemas: LL≡ ⊢ LL≡/≈, and Disjoint + LL≡ ⊢ LL≡-Poly
 
 These results are about an arbitrary polymorphic predicate `P`. Lean cannot compute inside `P`, so
 the derivations use the fact that a closed term, renamed or substituted into any context, is the
@@ -191,7 +191,7 @@ theorem d_BridgeB (hLL : S LLEqv) : Ent S Γb [] (BridgeB (Pc P Γb)) := by
       (.app (.tapp (Pc P Γb) tv1) (.var (.there .here))) (.app (.tapp (Pc P Γb) tv0) (.var .here)))
     (fun _ f h => f h.2 h.1)) h8
 
-/-- Theorem 3: LL≡ proves every instance of LL≡/≈. -/
+/-- LL≡ proves every instance of LL≡/≈. -/
 theorem d_Bridge (hLL : S LLEqv) : Prov S Ctx.nil (Bridge P) := by
   rw [bridge_eq]
   exact Ent.toProv (Ent.tgen (Ent.tgen (Ent.gen tv1 (Ent.gen tv0 (d_BridgeB P hLL)))))
@@ -204,7 +204,7 @@ theorem llPoly_eq : LLPoly P = LLPolyT (Pc P Γb) := by
   exact eq_of_heq (by pc_heq)
 
 set_option maxHeartbeats 4000000 in
-/-- Theorem 11, second half: Disjoint and LL≡ prove every instance of LL≡-Poly. -/
+/-- Disjoint and LL≡ prove every instance of LL≡-Poly. -/
 theorem d_LLPoly_of_Disjoint (hLL : S LLEqv) (hD : S Disjoint) : Prov S Ctx.nil (LLPoly P) := by
   have h1 : Ent S Γb [] ((neg (teq tv1 tv0)).imp (all tv1 (all tv0 (neg (eqv tv1 tv0 (.var (.there .here)) (.var .here)))))) :=
     ((Ent.axm (Γ := Γb) (Hs := []) hD).tinst tv1).tinst tv0

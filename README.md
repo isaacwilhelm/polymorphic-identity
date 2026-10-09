@@ -1,6 +1,6 @@
 # Polymorphic Identity: what follows from what
 
-An interactive map of the derivations and independence results for the logic of polymorphic identity, PI, and its weakening PI⁻ (PI without LL≡), from Isaac Wilhelm's *Formal Results* (Draft 5).
+An interactive map of the derivations and independence results for the logic of polymorphic identity, PI, and its weakening PI⁻ (PI without LL≡) and PIᶜ (PI plus Classicism), by Isaac Wilhelm.
 
 Live site: https://isaacwilhelm.github.io/polymorphic-identity/
 
