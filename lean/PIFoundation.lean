@@ -468,6 +468,7 @@ inductive Code (Base : Type) : Type where
   | t : Code Base
   | base : Base → Code Base
   | arr : Code Base → Code Base → Code Base
+  deriving DecidableEq
 
 structure Univ where
   E : Type
@@ -954,8 +955,9 @@ def RefTeq : Fm Ctx.nil := tall (teq tv0 tv0)
 def LLTeq {n : Nat} {Γ : Ctx n} (Q : Tm Γ (.pi .t)) : Fm Γ :=
   tall (tall (imp (teq tv1 tv0) (imp (.tapp Q.twk.twk tv1) (.tapp Q.twk.twk tv0))))
 
-/-- The type `t`. -/
+/-- The types `t` and `e`. -/
 def tyT {n : Nat} : Ty n := ⟨.t, trivial⟩
+def tyE {n : Nat} : Ty n := ⟨.e, trivial⟩
 
 /-- (LL≡-Poly), the instance for a polymorphic predicate `P` of category `Πγ:∗.γ→t`:
 `𝔸α 𝔸β ∀_α x ∀_β y (x ≡_{α,β} y → (P_α x → P_β y))`. -/
@@ -1658,13 +1660,1040 @@ theorem diag_LLPoly {n : Nat} {Γ : Ctx n} (P : Tm Γ (.pi (.arr (.var fz) .t)))
     subst e
     exact ⟨fun x y => HEq x y, ⟨rfl, fun _ _ => Iff.rfl⟩, huv⟩) P
 
+/-! ## 10. The principles of *Formal Results*, as sentences -/
+
+section Principles
+open Tm
+
+abbrev tv3 {n : Nat} : Ty (n+4) := tvar (fs (fs (fs fz)))
+
+/-- The type `σ → τ`. -/
+def Ty.arrow {n : Nat} (σ τ : Ty n) : Ty n := ⟨.arr σ.1 τ.1, ⟨σ.2, τ.2⟩⟩
+
+/-- `⊥` and `⊤` in any context. -/
+def botF {n : Nat} {Γ : Ctx n} : Fm Γ := all tyT (.var .here)
+def topF {n : Nat} {Γ : Ctx n} : Fm Γ := neg botF
+
+/-- (Sym≈) -/
+def SymTeq : Fm Ctx.nil := tall (tall (imp (teq tv1 tv0) (teq tv0 tv1)))
+/-- (Trans≈) -/
+def TransTeq : Fm Ctx.nil :=
+  tall (tall (tall (imp (conj (teq tv2 tv1) (teq tv1 tv0)) (teq tv2 tv0))))
+/-- (Link) `𝔸α𝔸β(α ≈ β → ∀_α x ∃_β y (x ≡ y))` -/
+def Link : Fm Ctx.nil :=
+  tall (tall (imp (teq tv1 tv0) (all tv1 (ex tv0 (eqv tv1 tv0 (.var (.there .here)) (.var .here))))))
+/-- (Disjoint) `𝔸α𝔸β(¬(α ≈ β) → ∀_α x ∀_β y ¬(x ≡ y))` -/
+def Disjoint : Fm Ctx.nil :=
+  tall (tall (imp (neg (teq tv1 tv0)) (all tv1 (all tv0 (neg (eqv tv1 tv0 (.var (.there .here)) (.var .here)))))))
+/-- (Slogan) `∀_e x 𝔸β ∀_{β→t} y ¬(x ≡ y)` -/
+def Slogan : Fm Ctx.nil :=
+  all tyE (tall (all tv0.pred (neg (eqv tyE tv0.pred (.var (.there (.tthere .here))) (.var .here)))))
+/-- (Twin) `𝔸α ∀_α x 𝔼β (¬(α ≈ β) ∧ ∃_β y (x ≡ y))` -/
+def Twin : Fm Ctx.nil :=
+  tall (all tv0 (tex (conj (neg (teq tv1 tv0)) (ex tv0 (eqv tv1 tv0 (.var (.there (.tthere .here))) (.var .here))))))
+/-- (Haecceitism) `𝔸α ∀_α x (x ≡_{α,α→t} λy:α.(y ≡_α x))` -/
+def Hae : Fm Ctx.nil :=
+  tall (all tv0 (eqv tv0 tv0.pred (.var .here) (.lam tv0 (eqv tv0 tv0 (.var .here) (.var (.there .here))))))
+/-- (Cong) -/
+def Cong : Fm Ctx.nil :=
+  tall (tall (tall (tall (all (tv3.arrow tv1) (all (tv2.arrow tv0) (all tv3 (all tv2
+    (imp (conj (eqv (tv3.arrow tv1) (tv2.arrow tv0) (.var (.there (.there (.there .here)))) (.var (.there (.there .here))))
+               (eqv tv3 tv2 (.var (.there .here)) (.var .here)))
+         (eqv tv1 tv0 (.app (.var (.there (.there (.there .here)))) (.var (.there .here)))
+                      (.app (.var (.there (.there .here))) (.var .here)))))))))))
+/-- (WCong) -/
+def WCong : Fm Ctx.nil :=
+  tall (tall (tall (tall (all (tv3.arrow tv1) (all (tv2.arrow tv0) (all tv3 (all tv2
+    (imp (conj (conj (teq tv3 tv2) (teq tv1 tv0))
+               (conj (eqv (tv3.arrow tv1) (tv2.arrow tv0) (.var (.there (.there (.there .here)))) (.var (.there (.there .here))))
+                     (eqv tv3 tv2 (.var (.there .here)) (.var .here))))
+         (eqv tv1 tv0 (.app (.var (.there (.there (.there .here)))) (.var (.there .here)))
+                      (.app (.var (.there (.there .here))) (.var .here)))))))))))
+/-- (PCong) -/
+def PCong : Fm Ctx.nil :=
+  tall (tall (tall (all (tv2.arrow tv1) (all (tv2.arrow tv0) (all tv2
+    (imp (eqv (tv2.arrow tv1) (tv2.arrow tv0) (.var (.there (.there .here))) (.var (.there .here)))
+         (eqv tv1 tv0 (.app (.var (.there (.there .here))) (.var .here)) (.app (.var (.there .here)) (.var .here)))))))))
+/-- (Inj≈) -/
+def Inj : Fm Ctx.nil :=
+  tall (tall (tall (tall (imp (teq (tv3.arrow tv1) (tv2.arrow tv0)) (conj (teq tv3 tv2) (teq tv1 tv0))))))
+/-- (Recovery) -/
+def Recovery : Fm Ctx.nil :=
+  tall (tall (tall (tall (imp (conj (teq (tv3.arrow tv1) (tv2.arrow tv0)) (teq tv3 tv2)) (teq tv1 tv0)))))
+/-- (Truth) `∀_t p ∀_t q (p ≡_t q → (p → q))` -/
+def Truth : Fm Ctx.nil :=
+  all tyT (all tyT (imp (eqv tyT tyT (.var (.there .here)) (.var .here)) (imp (.var (.there .here)) (.var .here))))
+/-- (Cantor) `𝔸α ∃_{α→t} G ∀_α y ¬(G ≡ y)` -/
+def Cantor : Fm Ctx.nil :=
+  tall (ex tv0.pred (all tv0 (neg (eqv tv0.pred tv0 (.var (.there .here)) (.var .here)))))
+/-- `⊤ ≢_t ⊥` -/
+def TopBot : Fm Ctx.nil := neg (eqv tyT tyT topF botF)
+/-- `α ⊑ β`, that is `∀_α x ∃_β y (x ≡ y)`, for the two innermost type variables. -/
+def subT {n : Nat} {Γ : Ctx (n+2)} : Fm Γ := all tv1 (ex tv0 (eqv tv1 tv0 (.var (.there .here)) (.var .here)))
+def supT {n : Nat} {Γ : Ctx (n+2)} : Fm Γ := all tv0 (ex tv1 (eqv tv1 tv0 (.var .here) (.var (.there .here))))
+/-- (Ext≈) -/
+def ExtT : Fm Ctx.nil := tall (tall (imp (conj subT supT) (teq tv1 tv0)))
+/-- `□φ`, that is `φ ≡_t ⊤`. -/
+def boxF {n : Nat} {Γ : Ctx n} (φ : Fm Γ) : Fm Γ := eqv tyT tyT φ topF
+/-- (Int≈) -/
+def IntT : Fm Ctx.nil := tall (tall (imp (conj (boxF subT) (boxF supT)) (teq tv1 tv0)))
+
+/-- (LL≡/≈), the instance for a polymorphic predicate `P`. -/
+def Bridge {n : Nat} {Γ : Ctx n} (P : Tm Γ (.pi (.arr (.var fz) .t))) : Fm Γ :=
+  let P' := (P.twk.twk.wk tv1).wk tv0
+  tall (tall (all tv1 (all tv0 (imp (conj (eqv tv1 tv0 (.var (.there .here)) (.var .here)) (teq tv1 tv0))
+    (imp (.app (.tapp P' tv1) (.var (.there .here))) (.app (.tapp P' tv0) (.var .here)))))))
+
+/-- The polymorphic predicate `λγ:∗.λz:γ.(γ ≈ e)` (*Formal Results*, Thm 13). -/
+def PredE : Tm Ctx.nil (.pi (.arr (.var fz) .t)) := .tlam (.lam tv0 (teq tv0 tyE))
+
+/-- The predicate `R` of *Formal Results*, Thm 12:
+`λγ:∗.λz:γ.∃_{γ→t}F (F z ∧ ∃_{γ→t}G (F ≡ G ∧ ¬ G z))`. -/
+def PredR : Tm Ctx.nil (.pi (.arr (.var fz) .t)) :=
+  .tlam (.lam tv0 (ex tv0.pred (conj (.app (.var .here) (.var (.there .here)))
+    (ex tv0.pred (conj (eqv tv0.pred tv0.pred (.var (.there .here)) (.var .here))
+      (neg (.app (.var .here) (.var (.there (.there .here))))))))))
+
+end Principles
+
+/-! ## 11. What the principles say in a frame
+
+Each lemma below is proved by `Iff.rfl`: the truth condition of the sentence, computed by Lean,
+*is* the displayed statement. -/
+
+namespace Frame
+variable (F : Frame)
+
+/-- Truth of a sentence in a frame. -/
+def Tr (φ : Fm Ctx.nil) : Prop := F.Holds φ (fun i => i.elim0) ()
+
+theorem valid_iff_tr (φ : Fm Ctx.nil) : F.Valid φ ↔ F.Tr φ := by
+  constructor
+  · intro h; exact h _ _
+  · intro h ρ env
+    have : ρ = (fun i => i.elim0) := funext fun i => i.elim0
+    subst this; exact h
+
+/-- `R z` for the predicate `R` of Thm 12. -/
+def Rf (a : Code F.U.Base) (z : F.U.El a) : Prop :=
+  ∃ P : F.U.El a → Prop, P z ∧ ∃ G : F.U.El a → Prop, F.eqv (.arr a .t) (.arr a .t) P G ∧ ¬ G z
+
+theorem tr_RefEqv : F.Tr RefEqv ↔ ∀ a (x : F.U.El a), F.eqv a a x x := Iff.rfl
+theorem tr_SymEqv : F.Tr SymEqv ↔ ∀ a b (x : F.U.El a) (y : F.U.El b), F.eqv a b x y → F.eqv b a y x := Iff.rfl
+theorem tr_TransEqv : F.Tr TransEqv ↔ ∀ a b c (x : F.U.El a) (y : F.U.El b) (z : F.U.El c),
+    F.eqv a b x y ∧ F.eqv b c y z → F.eqv a c x z := Iff.rfl
+theorem tr_RefTeq : F.Tr RefTeq ↔ ∀ a, F.teq a a := Iff.rfl
+theorem tr_LLEqv : F.Tr LLEqv ↔ ∀ a (x y : F.U.El a), F.eqv a a x y → ∀ P : F.U.El a → Prop, P x → P y := Iff.rfl
+theorem tr_SymTeq : F.Tr SymTeq ↔ ∀ a b, F.teq a b → F.teq b a := Iff.rfl
+theorem tr_TransTeq : F.Tr TransTeq ↔ ∀ a b c, F.teq a b ∧ F.teq b c → F.teq a c := Iff.rfl
+theorem tr_Link : F.Tr Link ↔ ∀ a b, F.teq a b → ∀ x : F.U.El a, ∃ y : F.U.El b, F.eqv a b x y := Iff.rfl
+theorem tr_Disjoint : F.Tr Disjoint ↔ ∀ a b, ¬ F.teq a b → ∀ (x : F.U.El a) (y : F.U.El b), ¬ F.eqv a b x y := Iff.rfl
+theorem tr_Slogan : F.Tr Slogan ↔ ∀ x : F.U.E, ∀ b (y : F.U.El b → Prop), ¬ F.eqv .e (.arr b .t) x y := Iff.rfl
+theorem tr_Twin : F.Tr Twin ↔ ∀ a (x : F.U.El a), ∃ b, ¬ F.teq a b ∧ ∃ y : F.U.El b, F.eqv a b x y := Iff.rfl
+theorem tr_Hae : F.Tr Hae ↔ ∀ a (x : F.U.El a), F.eqv a (.arr a .t) x (fun y => F.eqv a a y x) := Iff.rfl
+theorem tr_Cong : F.Tr Cong ↔ ∀ a b c d (f : F.U.El a → F.U.El c) (g : F.U.El b → F.U.El d) x y,
+    F.eqv (.arr a c) (.arr b d) f g ∧ F.eqv a b x y → F.eqv c d (f x) (g y) := Iff.rfl
+theorem tr_WCong : F.Tr WCong ↔ ∀ a b c d (f : F.U.El a → F.U.El c) (g : F.U.El b → F.U.El d) x y,
+    (F.teq a b ∧ F.teq c d) ∧ (F.eqv (.arr a c) (.arr b d) f g ∧ F.eqv a b x y) → F.eqv c d (f x) (g y) := Iff.rfl
+theorem tr_PCong : F.Tr PCong ↔ ∀ a c d (f : F.U.El a → F.U.El c) (g : F.U.El a → F.U.El d) x,
+    F.eqv (.arr a c) (.arr a d) f g → F.eqv c d (f x) (g x) := Iff.rfl
+theorem tr_Inj : F.Tr Inj ↔ ∀ a b c d, F.teq (.arr a c) (.arr b d) → F.teq a b ∧ F.teq c d := Iff.rfl
+theorem tr_Recovery : F.Tr Recovery ↔ ∀ a b c d, F.teq (.arr a c) (.arr b d) ∧ F.teq a b → F.teq c d := Iff.rfl
+theorem tr_Truth : F.Tr Truth ↔ ∀ p q : Prop, F.eqv .t .t p q → p → q := Iff.rfl
+theorem tr_Cantor : F.Tr Cantor ↔ ∀ a, ∃ G : F.U.El a → Prop, ∀ y : F.U.El a, ¬ F.eqv (.arr a .t) a G y := Iff.rfl
+theorem tr_TopBot : F.Tr TopBot ↔ ¬ F.eqv .t .t (¬ ∀ p : Prop, p) (∀ p : Prop, p) := Iff.rfl
+theorem tr_ExtT : F.Tr ExtT ↔ ∀ a b, ((∀ x : F.U.El a, ∃ y : F.U.El b, F.eqv a b x y) ∧
+    (∀ y : F.U.El b, ∃ x : F.U.El a, F.eqv a b x y)) → F.teq a b := Iff.rfl
+theorem tr_LLPolyE : F.Tr (LLPoly PredE) ↔
+    ∀ a b (x : F.U.El a) (y : F.U.El b), F.eqv a b x y → F.teq a .e → F.teq b .e := Iff.rfl
+theorem tr_LLPolyR : F.Tr (LLPoly PredR) ↔
+    ∀ a b (x : F.U.El a) (y : F.U.El b), F.eqv a b x y → F.Rf a x → F.Rf b y := Iff.rfl
+theorem tr_BridgeR : F.Tr (Bridge PredR) ↔
+    ∀ a b (x : F.U.El a) (y : F.U.El b), F.eqv a b x y ∧ F.teq a b → F.Rf a x → F.Rf b y := Iff.rfl
+
+/-- A frame is a model of PI⁻ when `≡` is an equivalence relation, `≈` is reflexive, and LL≈ holds. -/
+theorem isModel_of (h1 : ∀ a (x : F.U.El a), F.eqv a a x x)
+    (h2 : ∀ a b (x : F.U.El a) (y : F.U.El b), F.eqv a b x y → F.eqv b a y x)
+    (h3 : ∀ a b c (x : F.U.El a) (y : F.U.El b) (z : F.U.El c), F.eqv a b x y ∧ F.eqv b c y z → F.eqv a c x z)
+    (h4 : ∀ a, F.teq a a) (hLL : ∀ {n : Nat} {Γ : Ctx n} (Q : Tm Γ (.pi .t)), F.Valid (LLTeq Q)) :
+    F.IsModelPIm :=
+  ⟨(F.valid_iff_tr _).mpr h1, (F.valid_iff_tr _).mpr h2, (F.valid_iff_tr _).mpr h3,
+    (F.valid_iff_tr _).mpr h4, hLL⟩
+
+end Frame
+
+/-! ## 12. Two ways of building models -/
+
+theorem fun_heq_iff {A A' C C' : Type} (hA : A = A') (hC : C = C') {R : A → A' → Prop} {S : C → C' → Prop}
+    (hR : ∀ x y, R x y ↔ HEq x y) (hS : ∀ x y, S x y ↔ HEq x y) (f : A → C) (f' : A' → C') :
+    (∀ u u', R u u' → S (f u) (f' u')) ↔ HEq f f' := by
+  subst hA; subst hC
+  constructor
+  · intro h; exact heq_of_eq (funext fun u => eq_of_heq ((hS _ _).mp (h u u ((hR u u).mpr HEq.rfl))))
+  · intro h u u' hu
+    have e1 := eq_of_heq h
+    have e2 := eq_of_heq ((hR u u').mp hu)
+    subst e1; subst e2; exact (hS _ _).mpr HEq.rfl
+
+/-- **Key models.** Types are identified (`≈`) when their `T`-keys agree; an item of one type is
+identified (`≡`) with an item of another when their `K`-keys agree and they are the same value.
+`T` must be at least as fine as `K`, and compatible with `→`. -/
+structure KeyData where
+  U : Univ
+  T : Code U.Base → Code U.Base
+  K : Code U.Base → Code U.Base
+  hK : ∀ a b, K a = K b → U.El a = U.El b
+  hTK : ∀ a b, T a = T b → K a = K b
+  hT : ∀ a a' c c', T a = T a' → T c = T c' → T (.arr a c) = T (.arr a' c')
+
+namespace KeyData
+variable (D : KeyData)
+
+def frame : Frame where
+  U := D.U
+  eqv := fun a b x y => D.K a = D.K b ∧ HEq x y
+  teq := fun a b => D.T a = D.T b
+
+/-- Admissible relations: identity between types with the same `T`-key. -/
+def inv : Invariance D.frame where
+  Adm := fun a a' R => D.T a = D.T a' ∧ ∀ x y, R x y ↔ HEq x y
+  refl := fun _ => ⟨rfl, fun _ _ => ⟨fun h => h ▸ HEq.rfl, eq_of_heq⟩⟩
+  arrow := by
+    rintro a a' c c' R S ⟨h1, hR⟩ ⟨h2, hS⟩
+    exact ⟨D.hT _ _ _ _ h1 h2, fun f f' =>
+      fun_heq_iff (D.hK _ _ (D.hTK _ _ h1)) (D.hK _ _ (D.hTK _ _ h2)) hR hS f f'⟩
+  total := by
+    rintro a a' R ⟨h, hR⟩ u
+    exact ⟨cast (D.hK _ _ (D.hTK _ _ h)) u, (hR _ _).mpr (cast_heq _ _).symm⟩
+  onto := by
+    rintro a a' R ⟨h, hR⟩ u
+    exact ⟨cast (D.hK _ _ (D.hTK _ _ h)).symm u, (hR _ _).mpr (cast_heq _ _)⟩
+  teq := by
+    rintro a a' b b' R S ⟨h1, -⟩ ⟨h2, -⟩
+    show D.T a = D.T b ↔ D.T a' = D.T b'
+    rw [h1, h2]
+  eqv := by
+    rintro a a' b b' R S ⟨h1, hR⟩ ⟨h2, hS⟩ u u' v v' hu hv
+    show (D.K a = D.K b ∧ HEq u v) ↔ (D.K a' = D.K b' ∧ HEq u' v')
+    rw [D.hTK _ _ h1, D.hTK _ _ h2]
+    have hu' := (hR u u').mp hu
+    have hv' := (hS v v').mp hv
+    exact ⟨fun ⟨h, huv⟩ => ⟨h, hu'.symm.trans (huv.trans hv')⟩, fun ⟨h, huv⟩ => ⟨h, hu'.trans (huv.trans hv'.symm)⟩⟩
+
+theorem model : D.frame.IsModelPIm :=
+  D.frame.isModel_of (fun _ _ => ⟨rfl, HEq.rfl⟩) (fun _ _ _ _ ⟨h, e⟩ => ⟨h.symm, e.symm⟩)
+    (fun _ _ _ _ _ _ ⟨⟨h1, e1⟩, ⟨h2, e2⟩⟩ => ⟨h1.trans h2, e1.trans e2⟩) (fun _ => rfl)
+    (fun Q => D.inv.llTeq_valid (fun _ _ h => ⟨fun x y => HEq x y, h, fun _ _ => Iff.rfl⟩) Q)
+
+theorem LLEqv_valid : D.frame.Valid LLEqv :=
+  (D.frame.valid_iff_tr _).mpr <| D.frame.tr_LLEqv.mpr fun _ _ _ ⟨_, h⟩ _ hP => eq_of_heq h ▸ hP
+
+/-- If `K` is as fine as `T`, every instance of LL≡-Poly holds. -/
+theorem LLPoly_valid (hKT : ∀ a b, D.K a = D.K b → D.T a = D.T b) {n : Nat} {Γ : Ctx n}
+    (P : Tm Γ (.pi (.arr (.var fz) .t))) : D.frame.Valid (LLPoly P) :=
+  D.inv.llPoly_valid (fun _ _ _ _ ⟨hk, huv⟩ => ⟨fun x y => HEq x y, ⟨hKT _ _ hk, fun _ _ => Iff.rfl⟩, huv⟩) P
+
+theorem Disjoint_valid (hKT : ∀ a b, D.K a = D.K b → D.T a = D.T b) : D.frame.Valid Disjoint :=
+  (D.frame.valid_iff_tr _).mpr <| D.frame.tr_Disjoint.mpr fun _ _ hab _ _ ⟨hk, _⟩ => hab (hKT _ _ hk)
+
+theorem ExtT_valid (hKT : ∀ a b, D.K a = D.K b → D.T a = D.T b) : D.frame.Valid ExtT :=
+  (D.frame.valid_iff_tr _).mpr <| D.frame.tr_ExtT.mpr fun a _ ⟨h1, _⟩ =>
+    let ⟨_, hk, _⟩ := h1 (Classical.choice (Univ.El_nonempty a)); hKT _ _ hk
+
+theorem not_Twin (hKT : ∀ a b, D.K a = D.K b → D.T a = D.T b) : ¬ D.frame.Valid Twin := fun h =>
+  let ⟨_, hab, _, hk, _⟩ := D.frame.tr_Twin.mp ((D.frame.valid_iff_tr _).mp h) .e
+    (Classical.choice (Univ.El_nonempty (U := D.U) .e))
+  hab (hKT _ _ hk)
+
+theorem Cong_valid (hrec : ∀ a b c d, D.K (.arr a c) = D.K (.arr b d) → D.K a = D.K b → D.K c = D.K d) :
+    D.frame.Valid Cong :=
+  (D.frame.valid_iff_tr _).mpr <| D.frame.tr_Cong.mpr fun _ _ _ _ _ _ _ _ ⟨⟨h1, hf⟩, ⟨h2, hx⟩⟩ =>
+    ⟨hrec _ _ _ _ h1 h2, heq_app (D.hK _ _ h2) (D.hK _ _ (hrec _ _ _ _ h1 h2)) hf hx⟩
+
+end KeyData
+
+/-- **Identification models** (*Formal Results*, Definition 11): `≈` is identity of types, and `≡`
+is an equivalence relation on items. -/
+structure IdentData where
+  U : Univ
+  rel : (Σ c, U.El c) → (Σ c, U.El c) → Prop
+  refl : ∀ p, rel p p
+  symm : ∀ {p q}, rel p q → rel q p
+  trans : ∀ {p q r}, rel p q → rel q r → rel p r
+
+/-- A permutation, with its inverse. -/
+structure Perm (A : Type) where
+  f : A → A
+  g : A → A
+  fg : ∀ x, f (g x) = x
+  gf : ∀ x, g (f x) = x
+
+def Perm.idp {A : Type} : Perm A := ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
+
+def Perm.arrow {A C : Type} (θ : Perm A) (φ : Perm C) : Perm (A → C) where
+  f := fun h x => φ.f (h (θ.g x))
+  g := fun h x => φ.g (h (θ.f x))
+  fg := fun h => funext fun x => by simp only [θ.fg, φ.fg]
+  gf := fun h => funext fun x => by simp only [θ.gf, φ.gf]
+
+section Swap
+open Classical
+
+/-- The permutation exchanging `u` and `v`. -/
+noncomputable def swapF {A : Type} (u v x : A) : A := if x = u then v else if x = v then u else x
+
+theorem swapF_u {A : Type} (u v : A) : swapF u v u = v := by simp [swapF]
+
+theorem swapF_swapF {A : Type} (u v x : A) : swapF u v (swapF u v x) = x := by
+  unfold swapF
+  by_cases h1 : x = u
+  · subst h1
+    by_cases h2 : v = x
+    · subst h2; simp
+    · simp [h2]
+  · by_cases h2 : x = v
+    · subst h2; simp [h1]
+    · simp [h1, h2]
+
+noncomputable def Perm.swap {A : Type} (u v : A) : Perm A :=
+  ⟨swapF u v, swapF u v, swapF_swapF u v, swapF_swapF u v⟩
+
+end Swap
+
+namespace IdentData
+variable (D : IdentData)
+
+def frame : Frame where
+  U := D.U
+  eqv := fun a b x y => D.rel ⟨a, x⟩ ⟨b, y⟩
+  teq := fun a b => a = b
+
+theorem model : D.frame.IsModelPIm :=
+  D.frame.isModel_of (fun _ _ => D.refl _) (fun _ _ _ _ h => D.symm h)
+    (fun _ _ _ _ _ _ ⟨h1, h2⟩ => D.trans h1 h2) (fun _ => rfl)
+    (fun Q => D.frame.llTeq_of_teq_eq (fun _ _ h => h) Q)
+
+theorem LLEqv_valid (hw : ∀ c (x y : D.U.El c), D.rel ⟨c, x⟩ ⟨c, y⟩ → x = y) : D.frame.Valid LLEqv :=
+  (D.frame.valid_iff_tr _).mpr <| D.frame.tr_LLEqv.mpr fun _ _ _ h _ hP => hw _ _ _ h ▸ hP
+
+theorem Inj_valid : D.frame.Valid Inj :=
+  (D.frame.valid_iff_tr _).mpr <| D.frame.tr_Inj.mpr fun _ _ _ _ h => by
+    injection h with h1 h2; exact ⟨h1, h2⟩
+
+/-- Admissible relations from a family of permutations of the members of the type universe,
+closed under `→` and respected by `≡` (*Formal Results*, Definition 12, with `≈` identity). -/
+def permInv (allowed : (a : Code D.U.Base) → Perm (D.U.El a) → Prop)
+    (hid : ∀ a, allowed a Perm.idp)
+    (harr : ∀ a c θ φ, allowed a θ → allowed c φ → allowed (.arr a c) (Perm.arrow θ φ))
+    (hrel : ∀ a b (θ : Perm (D.U.El a)) (φ : Perm (D.U.El b)) x y, allowed a θ → allowed b φ →
+      (D.rel ⟨a, x⟩ ⟨b, y⟩ ↔ D.rel ⟨a, θ.f x⟩ ⟨b, φ.f y⟩)) : Invariance D.frame where
+  Adm := fun a a' R => ∃ _ : a = a', ∃ θ : Perm (D.U.El a), allowed a θ ∧ ∀ x y, R x y ↔ HEq (θ.f x) y
+  refl := fun a => ⟨rfl, Perm.idp, hid a, fun _ _ => ⟨fun h => h ▸ HEq.rfl, eq_of_heq⟩⟩
+  arrow := by
+    rintro a a' c c' R S ⟨rfl, θ, hθ, hR⟩ ⟨rfl, φ, hφ, hS⟩
+    refine ⟨rfl, Perm.arrow θ φ, harr _ _ _ _ hθ hφ, fun f f' => ⟨fun h => ?_, fun h u u' hu => ?_⟩⟩
+    · refine heq_of_eq (funext fun u' => ?_)
+      have := h (θ.g u') u' ((hR _ _).mpr (heq_of_eq (θ.fg u')))
+      exact eq_of_heq ((hS _ _).mp this)
+    · have e := eq_of_heq h
+      have e2 := eq_of_heq ((hR u u').mp hu)
+      subst e2; subst e
+      refine (hS _ _).mpr (heq_of_eq ?_)
+      show φ.f (f u) = φ.f (f (θ.g (θ.f u)))
+      exact congrArg (fun z => φ.f (f z)) (θ.gf u).symm
+  total := by
+    rintro a a' R ⟨rfl, θ, -, hR⟩ u
+    exact ⟨θ.f u, (hR _ _).mpr HEq.rfl⟩
+  onto := by
+    rintro a a' R ⟨rfl, θ, -, hR⟩ u
+    exact ⟨θ.g u, (hR _ _).mpr (heq_of_eq (θ.fg u))⟩
+  teq := by
+    rintro a a' b b' R S ⟨rfl, -⟩ ⟨rfl, -⟩
+    exact Iff.rfl
+  eqv := by
+    rintro a a' b b' R S ⟨rfl, θ, hθ, hR⟩ ⟨rfl, φ, hφ, hS⟩ u u' v v' hu hv
+    have e1 := eq_of_heq ((hR _ _).mp hu)
+    have e2 := eq_of_heq ((hS _ _).mp hv)
+    subst e1; subst e2
+    exact hrel _ _ _ _ _ _ hθ hφ
+
+theorem LLPoly_perm (allowed : (a : Code D.U.Base) → Perm (D.U.El a) → Prop)
+    (hid : ∀ a, allowed a Perm.idp)
+    (harr : ∀ a c θ φ, allowed a θ → allowed c φ → allowed (.arr a c) (Perm.arrow θ φ))
+    (hrel : ∀ a b (θ : Perm (D.U.El a)) (φ : Perm (D.U.El b)) x y, allowed a θ → allowed b φ →
+      (D.rel ⟨a, x⟩ ⟨b, y⟩ ↔ D.rel ⟨a, θ.f x⟩ ⟨b, φ.f y⟩))
+    (hcrit : ∀ a b (x : D.U.El a) (y : D.U.El b), D.rel ⟨a, x⟩ ⟨b, y⟩ →
+      ∃ _ : a = b, ∃ θ : Perm (D.U.El a), allowed a θ ∧ HEq (θ.f x) y)
+    {n : Nat} {Γ : Ctx n} (P : Tm Γ (.pi (.arr (.var fz) .t))) : D.frame.Valid (LLPoly P) :=
+  (D.permInv allowed hid harr hrel).llPoly_valid (fun a b u v huv =>
+    let ⟨h, θ, hθ, hx⟩ := hcrit a b u v huv
+    ⟨fun x y => HEq (θ.f x) y, ⟨h, θ, hθ, fun _ _ => Iff.rfl⟩, hx⟩) P
+
+end IdentData
+
+/-! ## 13. The models of *Formal Results*
+
+Each model is rebuilt over a type universe of codes. Where the paper's model uses facts about
+particular hereditarily finite sets (for instance that `E = 2→2` is the very same set as the value
+of `t→t`), the Lean model makes the corresponding identification explicit, by a map on codes. In
+three cases (`𝔐_κ`, `𝔐_card`, `𝔐_ρ`) the Lean model is a simpler construction which has the same
+pattern of true and false principles, and so establishes the same independence results. -/
+
+section Models
+open Frame
+
+theorem sigma_fst_ne {U : Univ} {a b : Code U.Base} {x : U.El a} {y : U.El b}
+    (h : (⟨a, x⟩ : Σ c, U.El c) = ⟨b, y⟩) (hab : a ≠ b) : False := hab (congrArg Sigma.fst h)
+
+theorem arr_congr {B : Type} {a a' c c' : Code B} (h1 : a = a') (h2 : c = c') : Code.arr a c = Code.arr a' c' := by
+  subst h1; subst h2; rfl
+
+/-- Universes used below. -/
+def univPP : Univ := { E := Prop → Prop, Base := Empty, B := Empty.elim, neE := ⟨fun p => p⟩, neB := fun b => b.elim }
+def univK : Univ := { E := Unit, Base := Unit, B := fun _ => Prop, neE := ⟨()⟩, neB := fun _ => ⟨True⟩ }
+def univC : Univ := { E := Unit, Base := Bool, B := fun _ => Unit, neE := ⟨()⟩, neB := fun _ => ⟨()⟩ }
+def univR : Univ := { E := Unit, Base := Unit, B := fun _ => Unit, neE := ⟨()⟩, neB := fun _ => ⟨()⟩ }
+def univP : Univ := { E := Unit, Base := Unit, B := fun _ => Fin 3, neE := ⟨()⟩, neB := fun _ => ⟨0⟩ }
+def univ3 : Univ := { E := Fin 3, Base := Empty, B := Empty.elim, neE := ⟨0⟩, neB := fun b => b.elim }
+
+/-! ### 𝔐(HF⁺, ∼₀) with `E = 1`: nothing is identified across types. -/
+
+def M0D : KeyData where
+  U := unitUniv
+  T := id
+  K := id
+  hK := fun _ _ h => congrArg unitUniv.El h
+  hTK := fun _ _ h => h
+  hT := fun _ _ _ _ h1 h2 => arr_congr h1 h2
+
+abbrev M0 : Frame := M0D.frame
+theorem M0_model : M0.IsModelPIm := M0D.model
+theorem M0_LLEqv : M0.Valid LLEqv := M0D.LLEqv_valid
+theorem M0_Disjoint : M0.Valid Disjoint := M0D.Disjoint_valid (fun _ _ h => h)
+theorem M0_LLPoly {n : Nat} {Γ : Ctx n} (P : Tm Γ (.pi (.arr (.var fz) .t))) : M0.Valid (LLPoly P) :=
+  M0D.LLPoly_valid (fun _ _ h => h) P
+theorem M0_Cong : M0.Valid Cong := M0D.Cong_valid (fun _ _ _ _ h _ => by injection h)
+theorem M0_Inj : M0.Valid Inj :=
+  (M0.valid_iff_tr _).mpr <| M0.tr_Inj.mpr fun _ _ _ _ h => by injection h with h1 h2; exact ⟨h1, h2⟩
+theorem M0_ExtT : M0.Valid ExtT := M0D.ExtT_valid (fun _ _ h => h)
+theorem M0_not_Twin : ¬ M0.Valid Twin := M0D.not_Twin (fun _ _ h => h)
+theorem M0_Slogan : M0.Valid Slogan :=
+  (M0.valid_iff_tr _).mpr <| M0.tr_Slogan.mpr fun _ _ _ ⟨h, _⟩ => by cases h
+
+/-! ### 𝔐(HF⁺, ∼₀) with `E = 2→2`: the type of entities is the type `t→t`. -/
+
+def norm0e : Code Empty → Code Empty
+  | .e => .arr .t .t
+  | .t => .t
+  | .base b => b.elim
+  | .arr a c => .arr (norm0e a) (norm0e c)
+
+theorem El_norm0e : ∀ a, univPP.El (norm0e a) = univPP.El a
+  | .e => rfl
+  | .t => rfl
+  | .base b => b.elim
+  | .arr a c => by
+    show (univPP.El (norm0e a) → univPP.El (norm0e c)) = (univPP.El a → univPP.El c)
+    rw [El_norm0e a, El_norm0e c]
+
+def M0eD : KeyData where
+  U := univPP
+  T := norm0e
+  K := norm0e
+  hK := fun a b h => (El_norm0e a).symm.trans ((congrArg univPP.El h).trans (El_norm0e b))
+  hTK := fun _ _ h => h
+  hT := fun _ _ _ _ h1 h2 => by show Code.arr _ _ = Code.arr _ _; rw [h1, h2]
+
+abbrev M0e : Frame := M0eD.frame
+theorem M0e_model : M0e.IsModelPIm := M0eD.model
+theorem M0e_LLEqv : M0e.Valid LLEqv := M0eD.LLEqv_valid
+theorem M0e_Disjoint : M0e.Valid Disjoint := M0eD.Disjoint_valid (fun _ _ h => h)
+theorem M0e_LLPoly {n : Nat} {Γ : Ctx n} (P : Tm Γ (.pi (.arr (.var fz) .t))) : M0e.Valid (LLPoly P) :=
+  M0eD.LLPoly_valid (fun _ _ h => h) P
+theorem M0e_Cong : M0e.Valid Cong := M0eD.Cong_valid (fun _ _ _ _ h _ => by injection h)
+theorem M0e_Inj : M0e.Valid Inj :=
+  (M0e.valid_iff_tr _).mpr <| M0e.tr_Inj.mpr fun _ _ _ _ h => by injection h with h1 h2; exact ⟨h1, h2⟩
+theorem M0e_ExtT : M0e.Valid ExtT := M0eD.ExtT_valid (fun _ _ h => h)
+theorem M0e_not_Twin : ¬ M0e.Valid Twin := M0eD.not_Twin (fun _ _ h => h)
+theorem M0e_not_Slogan : ¬ M0e.Valid Slogan := fun h =>
+  M0e.tr_Slogan.mp ((M0e.valid_iff_tr _).mp h) (fun p => p) .t (fun p => p) ⟨rfl, HEq.rfl⟩
+
+/-! ### `𝔐_κ`: the function types `e→t` and `e→D` are identified, but `t` and `D` are not. -/
+
+def specialK (x y : Code Unit) : Code Unit := if x = .e ∧ y = .base () then .arr .e .t else .arr x y
+
+def normK : Code Unit → Code Unit
+  | .e => .e
+  | .t => .t
+  | .base u => .base u
+  | .arr a c => specialK (normK a) (normK c)
+
+theorem El_specialK (x y : Code Unit) : univK.El (specialK x y) = (univK.El x → univK.El y) := by
+  unfold specialK
+  split
+  · next h => obtain ⟨rfl, rfl⟩ := h; rfl
+  · rfl
+
+theorem El_normK : ∀ a, univK.El (normK a) = univK.El a
+  | .e => rfl
+  | .t => rfl
+  | .base _ => rfl
+  | .arr a c => (El_specialK _ _).trans (by rw [El_normK a, El_normK c]; rfl)
+
+def MkD : KeyData where
+  U := univK
+  T := normK
+  K := normK
+  hK := fun a b h => (El_normK a).symm.trans ((congrArg univK.El h).trans (El_normK b))
+  hTK := fun _ _ h => h
+  hT := fun _ _ _ _ h1 h2 => by show specialK _ _ = specialK _ _; rw [h1, h2]
+
+abbrev Mk : Frame := MkD.frame
+theorem Mk_model : Mk.IsModelPIm := MkD.model
+theorem Mk_LLEqv : Mk.Valid LLEqv := MkD.LLEqv_valid
+theorem Mk_LLPoly {n : Nat} {Γ : Ctx n} (P : Tm Γ (.pi (.arr (.var fz) .t))) : Mk.Valid (LLPoly P) :=
+  MkD.LLPoly_valid (fun _ _ h => h) P
+theorem Mk_not_Inj : ¬ Mk.Valid Inj := fun h =>
+  absurd (Mk.tr_Inj.mp ((Mk.valid_iff_tr _).mp h) .e .e .t (.base ())
+    (show normK (.arr .e .t) = normK (.arr .e (.base ())) by decide)).2
+    (show ¬ normK .t = normK (.base ()) by decide)
+theorem Mk_not_Cong : ¬ Mk.Valid Cong := fun h =>
+  absurd (Mk.tr_Cong.mp ((Mk.valid_iff_tr _).mp h) .e .e .t (.base ()) (fun _ => True) (fun _ => True) () ()
+    ⟨⟨show normK (.arr .e .t) = normK (.arr .e (.base ())) by decide, HEq.rfl⟩, ⟨rfl, HEq.rfl⟩⟩).1
+    (show ¬ normK .t = normK (.base ()) by decide)
+
+/-! ### `𝔐_card`: `B→t` is identified with `A→t` though `A` and `B` are not identified. -/
+
+def specialC (x y : Code Bool) : Code Bool :=
+  if x = .base false ∧ y = .t then .arr (.base true) .t else .arr x y
+
+def normC : Code Bool → Code Bool
+  | .e => .e
+  | .t => .t
+  | .base u => .base u
+  | .arr a c => specialC (normC a) (normC c)
+
+theorem El_specialC (x y : Code Bool) : univC.El (specialC x y) = (univC.El x → univC.El y) := by
+  unfold specialC
+  split
+  · next h => obtain ⟨rfl, rfl⟩ := h; rfl
+  · rfl
+
+theorem El_normC : ∀ a, univC.El (normC a) = univC.El a
+  | .e => rfl
+  | .t => rfl
+  | .base _ => rfl
+  | .arr a c => (El_specialC _ _).trans (by rw [El_normC a, El_normC c]; rfl)
+
+theorem specialC_inj {x y y' : Code Bool} (h : specialC x y = specialC x y') : y = y' := by
+  unfold specialC at h
+  split at h <;> split at h
+  · next h1 h2 => exact h1.2.trans h2.2.symm
+  · next h1 _ => injection h with h3 _; rw [h1.1] at h3; injection h3 with h4; cases h4
+  · next _ h2 => injection h with h3 _; rw [h2.1] at h3; injection h3 with h4; cases h4
+  · injection h with _ h4
+
+def McardD : KeyData where
+  U := univC
+  T := normC
+  K := normC
+  hK := fun a b h => (El_normC a).symm.trans ((congrArg univC.El h).trans (El_normC b))
+  hTK := fun _ _ h => h
+  hT := fun _ _ _ _ h1 h2 => by show specialC _ _ = specialC _ _; rw [h1, h2]
+
+theorem normC_rec (a b c d : Code Bool) (h1 : normC (.arr a c) = normC (.arr b d)) (h2 : normC a = normC b) :
+    normC c = normC d := by
+  change specialC (normC a) (normC c) = specialC (normC b) (normC d) at h1
+  rw [h2] at h1
+  exact specialC_inj h1
+
+abbrev Mcard : Frame := McardD.frame
+theorem Mcard_model : Mcard.IsModelPIm := McardD.model
+theorem Mcard_LLEqv : Mcard.Valid LLEqv := McardD.LLEqv_valid
+theorem Mcard_LLPoly {n : Nat} {Γ : Ctx n} (P : Tm Γ (.pi (.arr (.var fz) .t))) : Mcard.Valid (LLPoly P) :=
+  McardD.LLPoly_valid (fun _ _ h => h) P
+theorem Mcard_Cong : Mcard.Valid Cong := McardD.Cong_valid normC_rec
+theorem Mcard_Recovery : Mcard.Valid Recovery :=
+  (Mcard.valid_iff_tr _).mpr <| Mcard.tr_Recovery.mpr fun a b c d ⟨h1, h2⟩ => normC_rec a b c d h1 h2
+theorem Mcard_not_Inj : ¬ Mcard.Valid Inj := fun h =>
+  absurd (Mcard.tr_Inj.mp ((Mcard.valid_iff_tr _).mp h) (.base false) (.base true) .t .t
+    (show normC (.arr (.base false) .t) = normC (.arr (.base true) .t) by decide)).1
+    (show ¬ normC (.base false) = normC (.base true) by decide)
+
+/-! ### `𝔐_ρ`: an entity is identified with an item of a type not identical to `e`, and
+congruence still holds. -/
+
+def normR : Code Unit → Code Unit
+  | .e => .e
+  | .t => .t
+  | .base _ => .e
+  | .arr a c => .arr (normR a) (normR c)
+
+theorem El_normR : ∀ a, univR.El (normR a) = univR.El a
+  | .e => rfl
+  | .t => rfl
+  | .base _ => rfl
+  | .arr a c => by
+    show (univR.El (normR a) → univR.El (normR c)) = (univR.El a → univR.El c)
+    rw [El_normR a, El_normR c]
+
+def MrD : KeyData where
+  U := univR
+  T := id
+  K := normR
+  hK := fun a b h => (El_normR a).symm.trans ((congrArg univR.El h).trans (El_normR b))
+  hTK := fun _ _ h => congrArg normR h
+  hT := fun _ _ _ _ h1 h2 => arr_congr h1 h2
+
+abbrev Mr : Frame := MrD.frame
+theorem Mr_model : Mr.IsModelPIm := MrD.model
+theorem Mr_LLEqv : Mr.Valid LLEqv := MrD.LLEqv_valid
+theorem Mr_Cong : Mr.Valid Cong := MrD.Cong_valid (fun _ _ _ _ h _ => by injection h)
+theorem Mr_not_Disjoint : ¬ Mr.Valid Disjoint := fun h =>
+  Mr.tr_Disjoint.mp ((Mr.valid_iff_tr _).mp h) .e (.base ()) (show ¬ (Code.e : Code Unit) = .base () by decide)
+    () () ⟨rfl, HEq.rfl⟩
+theorem Mr_not_LLPoly : ¬ Mr.Valid (LLPoly PredE) := fun h =>
+  absurd (Mr.tr_LLPolyE.mp ((Mr.valid_iff_tr _).mp h) .e (.base ()) () () ⟨rfl, HEq.rfl⟩ rfl)
+    (show ¬ (Code.base () : Code Unit) = .e by decide)
+
+/-! ### Identifications given by a pair of items: `∼₁` and `∼ₚ`. -/
+
+/-- The identification generated by one pair of items of distinct types. -/
+def pairIdent (U : Univ) (p0 q0 : Σ c, U.El c) (hne : p0.1 ≠ q0.1) : IdentData where
+  U := U
+  rel := fun p q => p = q ∨ (p = p0 ∧ q = q0) ∨ (p = q0 ∧ q = p0)
+  refl := fun _ => Or.inl rfl
+  symm := by
+    rintro p q (h | ⟨h1, h2⟩ | ⟨h1, h2⟩)
+    · exact Or.inl h.symm
+    · exact Or.inr (Or.inr ⟨h2, h1⟩)
+    · exact Or.inr (Or.inl ⟨h2, h1⟩)
+  trans := by
+    have hne' : p0 ≠ q0 := fun h => hne (congrArg Sigma.fst h)
+    rintro p q r (h | ⟨h1, h2⟩ | ⟨h1, h2⟩) (h' | ⟨h1', h2'⟩ | ⟨h1', h2'⟩)
+    · exact Or.inl (h.trans h')
+    · exact Or.inr (Or.inl ⟨h.trans h1', h2'⟩)
+    · exact Or.inr (Or.inr ⟨h.trans h1', h2'⟩)
+    · exact Or.inr (Or.inl ⟨h1, h'.symm.trans h2⟩)
+    · exact absurd (h2.symm.trans h1') (Ne.symm hne')
+    · exact Or.inl (h1.trans h2'.symm)
+    · exact Or.inr (Or.inr ⟨h1, h'.symm.trans h2⟩)
+    · exact Or.inl (h1.trans h2'.symm)
+    · exact absurd (h2.symm.trans h1') hne'
+
+theorem pairIdent_within (U : Univ) (p0 q0 : Σ c, U.El c) (hne : p0.1 ≠ q0.1) (c : Code U.Base)
+    (x y : U.El c) (h : (pairIdent U p0 q0 hne).rel ⟨c, x⟩ ⟨c, y⟩) : x = y := by
+  rcases h with h | ⟨h1, h2⟩ | ⟨h1, h2⟩
+  · exact eq_of_heq (Sigma.mk.inj h).2
+  · have e1 : c = p0.1 := congrArg Sigma.fst h1
+    have e2 : c = q0.1 := congrArg Sigma.fst h2
+    exact absurd (e1.symm.trans e2) hne
+  · have e1 : c = q0.1 := congrArg Sigma.fst h1
+    have e2 : c = p0.1 := congrArg Sigma.fst h2
+    exact absurd (e2.symm.trans e1) hne
+
+/-- `∼₁`, with `E = 1`: the entity is identified with the falsehood. -/
+def M1D : IdentData := pairIdent unitUniv ⟨.e, ()⟩ ⟨.t, False⟩ (show ¬ (Code.e : Code Empty) = .t by decide)
+
+abbrev M1 : Frame := M1D.frame
+theorem M1_model : M1.IsModelPIm := M1D.model
+theorem M1_LLEqv : M1.Valid LLEqv := M1D.LLEqv_valid (pairIdent_within _ _ _ _)
+theorem M1_Inj : M1.Valid Inj := M1D.Inj_valid
+theorem M1_not_Disjoint : ¬ M1.Valid Disjoint := fun h =>
+  M1.tr_Disjoint.mp ((M1.valid_iff_tr _).mp h) .e .t (show ¬ (Code.e : Code Empty) = .t by decide) () False
+    (Or.inr (Or.inl ⟨rfl, rfl⟩))
+theorem M1_not_LLPoly : ¬ M1.Valid (LLPoly PredE) := fun h =>
+  absurd (M1.tr_LLPolyE.mp ((M1.valid_iff_tr _).mp h) .e .t () False (Or.inr (Or.inl ⟨rfl, rfl⟩)) rfl)
+    (show ¬ (Code.t : Code Empty) = .e by decide)
+
+theorem true_ne_false_heq (h : (⟨.t, True⟩ : Σ c, unitUniv.El c) = ⟨.t, False⟩) : False := by
+  have e : True = False := eq_of_heq (Sigma.mk.inj h).2
+  exact e ▸ trivial
+
+theorem M1_ExtT : M1.Valid ExtT := by
+  refine (M1.valid_iff_tr _).mpr <| M1.tr_ExtT.mpr fun a b ⟨h1, h2⟩ => Classical.byContradiction fun hab => ?_
+  obtain ⟨y0, hr⟩ := h1 (Classical.choice (Univ.El_nonempty (U := unitUniv) a))
+  rcases hr with h | ⟨ha, hb⟩ | ⟨ha, hb⟩
+  · exact hab (congrArg Sigma.fst h)
+  · have ha' := congrArg Sigma.fst ha
+    have hb' := congrArg Sigma.fst hb
+    simp only at ha' hb'
+    subst ha'; subst hb'
+    obtain ⟨x, hx⟩ := h2 True
+    rcases hx with h | ⟨h3, h4⟩ | ⟨h3, h4⟩
+    · exact hab (congrArg Sigma.fst h)
+    · exact true_ne_false_heq h4
+    · exact sigma_fst_ne h3 (show (Code.e : Code Empty) ≠ .t by decide)
+  · have ha' := congrArg Sigma.fst ha
+    have hb' := congrArg Sigma.fst hb
+    simp only at ha' hb'
+    subst ha'; subst hb'
+    obtain ⟨y, hy⟩ := h1 True
+    rcases hy with h | ⟨h3, h4⟩ | ⟨h3, h4⟩
+    · exact hab (congrArg Sigma.fst h)
+    · exact sigma_fst_ne h3 (show (Code.t : Code Empty) ≠ .e by decide)
+    · exact true_ne_false_heq h3
+
+/-- `∼ₚ`, with `E = 1`: a function in `1→2` is identified with a function in `1→3` whose values
+are not identified. -/
+def f0p : univP.El (.arr .e .t) := fun _ => True
+def g0p : univP.El (.arr .e (.base ())) := fun _ => (2 : Fin 3)
+def MpD : IdentData := pairIdent univP ⟨.arr .e .t, f0p⟩ ⟨.arr .e (.base ()), g0p⟩
+  (show ¬ (Code.arr .e .t : Code Unit) = .arr .e (.base ()) by decide)
+
+abbrev Mp : Frame := MpD.frame
+theorem Mp_model : Mp.IsModelPIm := MpD.model
+theorem Mp_LLEqv : Mp.Valid LLEqv := MpD.LLEqv_valid (pairIdent_within _ _ _ _)
+theorem Mp_Inj : Mp.Valid Inj := MpD.Inj_valid
+theorem Mp_not_Disjoint : ¬ Mp.Valid Disjoint := fun h =>
+  Mp.tr_Disjoint.mp ((Mp.valid_iff_tr _).mp h) (.arr .e .t) (.arr .e (.base ()))
+    (show ¬ (Code.arr .e .t : Code Unit) = .arr .e (.base ()) by decide) f0p g0p
+    (Or.inr (Or.inl ⟨rfl, rfl⟩))
+theorem Mp_not_PCong : ¬ Mp.Valid PCong := fun h => by
+  have := Mp.tr_PCong.mp ((Mp.valid_iff_tr _).mp h) .e .t (.base ()) f0p g0p () (Or.inr (Or.inl ⟨rfl, rfl⟩))
+  rcases this with h | ⟨h3, _⟩ | ⟨h3, _⟩
+  · exact sigma_fst_ne h (show (Code.t : Code Unit) ≠ .base () by decide)
+  · exact sigma_fst_ne h3 (show (Code.t : Code Unit) ≠ .arr .e .t by decide)
+  · exact sigma_fst_ne h3 (show (Code.t : Code Unit) ≠ .arr .e (.base ()) by decide)
+
+/-! ### Identifications within each type: `𝔐_D`, `𝔐_E`, `𝔐_tot`, `𝔐_fn`.
+
+In each, items are identified only with items of the same type; within a type, all items in a
+distinguished class `S` are identified with each other. -/
+
+def classIdent (U : Univ) (S : (c : Code U.Base) → U.El c → Prop) : IdentData where
+  U := U
+  rel := fun p q => p.1 = q.1 ∧ (HEq p.2 q.2 ∨ (S p.1 p.2 ∧ S q.1 q.2))
+  refl := fun _ => ⟨rfl, Or.inl HEq.rfl⟩
+  symm := fun ⟨h, h'⟩ => ⟨h.symm, h'.elim (fun e => Or.inl e.symm) (fun ⟨a, b⟩ => Or.inr ⟨b, a⟩)⟩
+  trans := by
+    rintro ⟨a, x⟩ ⟨b, y⟩ ⟨c, z⟩ ⟨hab, h1⟩ ⟨hbc, h2⟩
+    simp only at hab hbc
+    subst hab; subst hbc
+    refine ⟨rfl, ?_⟩
+    rcases h1 with e1 | ⟨s1, s2⟩ <;> rcases h2 with e2 | ⟨s3, s4⟩
+    · exact Or.inl (e1.trans e2)
+    · exact Or.inr ⟨eq_of_heq e1 ▸ s3, s4⟩
+    · exact Or.inr ⟨s1, eq_of_heq e2 ▸ s2⟩
+    · exact Or.inr ⟨s1, s4⟩
+
+theorem classIdent_Disjoint (U : Univ) (S : (c : Code U.Base) → U.El c → Prop) :
+    (classIdent U S).frame.Valid Disjoint :=
+  ((classIdent U S).frame.valid_iff_tr _).mpr <| (classIdent U S).frame.tr_Disjoint.mpr
+    fun _ _ hab _ _ h => hab h.1
+
+def chi0 : Fin 3 → Prop := fun v => v = 0
+def zeta0 : Fin 3 → Prop := fun _ => False
+
+/-- `𝔐_D` (Thm 12): `0 ∼ 1` at `e`, and `χ ∼ ζ` at `e→t`. -/
+def SD : (c : Code Empty) → univ3.El c → Prop
+  | .e, v => v = (0 : Fin 3) ∨ v = (1 : Fin 3)
+  | .arr .e .t, v => v = chi0 ∨ v = zeta0
+  | _, _ => False
+
+def MDD : IdentData := classIdent univ3 SD
+abbrev MD : Frame := MDD.frame
+theorem MD_model : MD.IsModelPIm := MDD.model
+theorem MD_Disjoint : MD.Valid Disjoint := classIdent_Disjoint univ3 SD
+theorem MD_Inj : MD.Valid Inj := MDD.Inj_valid
+theorem MD_not_LLEqv : ¬ MD.Valid LLEqv := fun h =>
+  absurd (MD.tr_LLEqv.mp ((MD.valid_iff_tr _).mp h) .e (0 : Fin 3) (1 : Fin 3) ⟨rfl, Or.inr ⟨Or.inl rfl, Or.inr rfl⟩⟩
+    (fun (v : Fin 3) => v = 0) rfl) (by decide)
+
+theorem MD_R0 : MD.Rf .e (0 : Fin 3) := ⟨chi0, rfl, zeta0, ⟨rfl, Or.inr ⟨Or.inl rfl, Or.inr rfl⟩⟩, id⟩
+theorem MD_not_R1 : ¬ MD.Rf .e (1 : Fin 3) := by
+  rintro ⟨P, hP, G, ⟨_, hPG⟩, hG⟩
+  rcases hPG with h | ⟨hS, _⟩
+  · have e : P = G := eq_of_heq h
+    exact hG (e ▸ hP)
+  · rcases hS with rfl | rfl
+    · have e : (1 : Fin 3) = 0 := hP
+      exact absurd e (by decide)
+    · exact hP
+
+theorem MD_not_LLPoly : ¬ MD.Valid (LLPoly PredR) := fun h =>
+  MD_not_R1 (MD.tr_LLPolyR.mp ((MD.valid_iff_tr _).mp h) .e .e (0 : Fin 3) (1 : Fin 3)
+    ⟨rfl, Or.inr ⟨Or.inl rfl, Or.inr rfl⟩⟩ MD_R0)
+theorem MD_not_Bridge : ¬ MD.Valid (Bridge PredR) := fun h =>
+  MD_not_R1 (MD.tr_BridgeR.mp ((MD.valid_iff_tr _).mp h) .e .e (0 : Fin 3) (1 : Fin 3)
+    ⟨⟨rfl, Or.inr ⟨Or.inl rfl, Or.inr rfl⟩⟩, rfl⟩ MD_R0)
+
+/-- `𝔐_E` (Thm 28(c)): `0 ∼ 1` at `e`, and nothing else. -/
+def SE : (c : Code Empty) → univ3.El c → Prop
+  | .e, v => v = (0 : Fin 3) ∨ v = (1 : Fin 3)
+  | _, _ => False
+
+def MED : IdentData := classIdent univ3 SE
+abbrev ME : Frame := MED.frame
+theorem ME_model : ME.IsModelPIm := MED.model
+theorem ME_Disjoint : ME.Valid Disjoint := classIdent_Disjoint univ3 SE
+theorem ME_Inj : ME.Valid Inj := MED.Inj_valid
+theorem ME_not_LLEqv : ¬ ME.Valid LLEqv := fun h =>
+  absurd (ME.tr_LLEqv.mp ((ME.valid_iff_tr _).mp h) .e (0 : Fin 3) (1 : Fin 3) ⟨rfl, Or.inr ⟨Or.inl rfl, Or.inr rfl⟩⟩
+    (fun (v : Fin 3) => v = 0) rfl) (by decide)
+theorem ME_PCong : ME.Valid PCong := by
+  refine (ME.valid_iff_tr _).mpr <| ME.tr_PCong.mpr fun a c d f g x ⟨h, hfg⟩ => ?_
+  injection h with _ hcd
+  subst hcd
+  rcases hfg with hfg | ⟨hS, _⟩
+  · have e : f = g := eq_of_heq hfg
+    subst e; exact ⟨rfl, Or.inl HEq.rfl⟩
+  · exact hS.elim
+theorem ME_not_WCong : ¬ ME.Valid WCong := fun h => by
+  have := ME.tr_WCong.mp ((ME.valid_iff_tr _).mp h) .e .e .t .t chi0 chi0 (0 : Fin 3) (1 : Fin 3)
+    ⟨⟨rfl, rfl⟩, ⟨⟨rfl, Or.inl HEq.rfl⟩, ⟨rfl, Or.inr ⟨Or.inl rfl, Or.inr rfl⟩⟩⟩⟩
+  rcases this.2 with h' | ⟨h', _⟩
+  · have e : chi0 0 = chi0 1 := eq_of_heq h'
+    have e2 : chi0 1 := e ▸ (show chi0 0 from rfl)
+    have e3 : (1 : Fin 3) = 0 := e2
+    exact absurd e3 (by decide)
+  · exact h'
+
+/-- `𝔐_tot` (Def 13): any two items of the same type are identified. -/
+def Mtot0 : IdentData := classIdent unitUniv (fun _ _ => True)
+abbrev Mtot : Frame := Mtot0.frame
+theorem Mtot_model : Mtot.IsModelPIm := Mtot0.model
+theorem Mtot_Inj : Mtot.Valid Inj := Mtot0.Inj_valid
+theorem Mtot_not_LLEqv : ¬ Mtot.Valid LLEqv := fun h =>
+  Mtot.tr_LLEqv.mp ((Mtot.valid_iff_tr _).mp h) .t True False ⟨rfl, Or.inr ⟨trivial, trivial⟩⟩ (fun p => p) trivial
+theorem Mtot_not_Truth : ¬ Mtot.Valid Truth := fun h =>
+  Mtot.tr_Truth.mp ((Mtot.valid_iff_tr _).mp h) True False ⟨rfl, Or.inr ⟨trivial, trivial⟩⟩ trivial
+theorem Mtot_not_TopBot : ¬ Mtot.Valid TopBot := fun h =>
+  Mtot.tr_TopBot.mp ((Mtot.valid_iff_tr _).mp h) ⟨rfl, Or.inr ⟨trivial, trivial⟩⟩
+theorem Mtot_Cong : Mtot.Valid Cong :=
+  (Mtot.valid_iff_tr _).mpr <| Mtot.tr_Cong.mpr fun _ _ _ _ _ _ _ _ ⟨⟨h, _⟩, _⟩ => by
+    injection h with _ hcd; exact ⟨hcd, Or.inr ⟨trivial, trivial⟩⟩
+theorem Mtot_ExtT : Mtot.Valid ExtT :=
+  (Mtot.valid_iff_tr _).mpr <| Mtot.tr_ExtT.mpr fun a _ ⟨h1, _⟩ =>
+    (h1 (Classical.choice (Univ.El_nonempty (U := unitUniv) a))).elim fun _ h => h.1
+theorem Mtot_LLPoly {n : Nat} {Γ : Ctx n} (P : Tm Γ (.pi (.arr (.var fz) .t))) : Mtot.Valid (LLPoly P) :=
+  Mtot0.LLPoly_perm (fun _ _ => True) (fun _ => trivial) (fun _ _ _ _ _ _ => trivial)
+    (fun _ _ _ _ _ _ _ _ => ⟨fun ⟨h, _⟩ => ⟨h, Or.inr ⟨trivial, trivial⟩⟩, fun ⟨h, _⟩ => ⟨h, Or.inr ⟨trivial, trivial⟩⟩⟩)
+    (fun a b x y ⟨h, _⟩ => by
+      simp only at h
+      subst h
+      exact ⟨rfl, Perm.swap x y, trivial, heq_of_eq (swapF_u x y)⟩) P
+
+/-- `𝔐_fn` (Thm 15): any two items of the same function type are identified. -/
+def isArr {B : Type} : Code B → Prop
+  | .arr _ _ => True
+  | _ => False
+
+def Mfn0 : IdentData := classIdent unitUniv (fun c _ => isArr c)
+abbrev Mfn : Frame := Mfn0.frame
+theorem Mfn_model : Mfn.IsModelPIm := Mfn0.model
+theorem Mfn_Inj : Mfn.Valid Inj := Mfn0.Inj_valid
+theorem Mfn_not_LLEqv : ¬ Mfn.Valid LLEqv := fun h =>
+  Mfn.tr_LLEqv.mp ((Mfn.valid_iff_tr _).mp h) (.arr .e .t) (fun _ => False) (fun _ => True)
+    ⟨rfl, Or.inr ⟨trivial, trivial⟩⟩ (fun g => ¬ g ()) id trivial
+theorem Mfn_not_WCong : ¬ Mfn.Valid WCong := fun h => by
+  have := Mfn.tr_WCong.mp ((Mfn.valid_iff_tr _).mp h) .e .e .t .t (fun _ => False) (fun _ => True) () ()
+    ⟨⟨rfl, rfl⟩, ⟨⟨rfl, Or.inr ⟨trivial, trivial⟩⟩, ⟨rfl, Or.inl HEq.rfl⟩⟩⟩
+  rcases this.2 with h' | ⟨h', _⟩
+  · have e : False = True := eq_of_heq h'
+    exact e.symm ▸ trivial
+  · exact h'
+theorem Mfn_LLPoly {n : Nat} {Γ : Ctx n} (P : Tm Γ (.pi (.arr (.var fz) .t))) : Mfn.Valid (LLPoly P) := by
+  refine Mfn0.LLPoly_perm (fun a θ => isArr a ∨ ∀ x, θ.f x = x) (fun _ => Or.inr fun _ => rfl)
+    (fun _ _ _ _ _ _ => Or.inl trivial) ?_ ?_ P
+  · intro a b θ φ x y hθ hφ
+    show (a = b ∧ (HEq x y ∨ (isArr a ∧ isArr b))) ↔ (a = b ∧ (HEq (θ.f x) (φ.f y) ∨ (isArr a ∧ isArr b)))
+    by_cases hab : a = b
+    · subst hab
+      by_cases ha : isArr a
+      · exact ⟨fun _ => ⟨rfl, Or.inr ⟨ha, ha⟩⟩, fun _ => ⟨rfl, Or.inr ⟨ha, ha⟩⟩⟩
+      · rw [hθ.resolve_left ha x, hφ.resolve_left ha y]
+    · exact ⟨fun h => absurd h.1 hab, fun h => absurd h.1 hab⟩
+  · intro a b x y ⟨h, hxy⟩
+    simp only at h
+    subst h
+    rcases hxy with hxy | ⟨ha, _⟩
+    · exact ⟨rfl, Perm.idp, Or.inr fun _ => rfl, hxy⟩
+    · exact ⟨rfl, Perm.swap x y, Or.inl ha, heq_of_eq (swapF_u x y)⟩
+
+/-! ### 𝔐(HF⁺, ∼ₕ): each item is identified with its haecceity (*Formal Results*, Thm 24). -/
+
+abbrev Item := Σ c, unitUniv.El c
+
+/-- The haecceity of an item: `(c, x) ↦ (c→t, λy. y = x)`. -/
+def hh (p : Item) : Item := ⟨.arr p.1 .t, fun y => y = p.2⟩
+
+/-- `n` steps along the chain of haecceities. -/
+def hn : Nat → Item → Item
+  | 0, p => p
+  | n+1, p => hh (hn n p)
+
+def csize : Code Empty → Nat
+  | .e => 1
+  | .t => 1
+  | .base _ => 1
+  | .arr a c => csize a + csize c + 1
+
+theorem csize_hn (n : Nat) (p : Item) : csize (hn n p).1 = csize p.1 + 2 * n := by
+  induction n with
+  | zero => rfl
+  | succ k ih => show csize (hn k p).1 + csize Code.t + 1 = _; rw [ih]; simp only [csize]; omega
+
+theorem hh_inj {p q : Item} (h : hh p = hh q) : p = q := by
+  obtain ⟨a, x⟩ := p
+  obtain ⟨b, y⟩ := q
+  have h1 : Code.arr a .t = Code.arr b .t := congrArg Sigma.fst h
+  injection h1 with h1
+  subst h1
+  have h2 : (fun z => z = x) = (fun z => z = y) := eq_of_heq (Sigma.mk.inj h).2
+  have h3 : (x = x) = (x = y) := congrFun h2 x
+  have h4 : x = y := h3 ▸ rfl
+  rw [h4]
+
+theorem hn_inj (n : Nat) {p q : Item} (h : hn n p = hn n q) : p = q := by
+  induction n with
+  | zero => exact h
+  | succ k ih => exact ih (hh_inj h)
+
+theorem hn_add (m n : Nat) (p : Item) : hn (m + n) p = hn m (hn n p) := by
+  induction m with
+  | zero => rw [Nat.zero_add]; rfl
+  | succ k ih => rw [Nat.succ_add]; show hh (hn (k + n) p) = hh (hn k (hn n p)); rw [ih]
+
+/-- `∼ₕ`: two items are identified when they lie on one chain of haecceities. -/
+def relH (p q : Item) : Prop := ∃ m n, hn m p = hn n q
+
+theorem hn_cancel {m n : Nat} {p q : Item} (h : hn m p = hn n q) (hmn : n ≤ m) : hn (m - n) p = q := by
+  have : hn n (hn (m - n) p) = hn n q := by rw [← hn_add, Nat.add_sub_cancel' hmn]; exact h
+  exact hn_inj n this
+
+theorem relH_cases {p q : Item} (h : relH p q) :
+    p = q ∨ (∃ k, q = hn (k+1) p) ∨ (∃ k, p = hn (k+1) q) := by
+  obtain ⟨m, n, h⟩ := h
+  rcases Nat.lt_trichotomy m n with hlt | heq | hgt
+  · right; right
+    refine ⟨n - m - 1, ?_⟩
+    rw [show n - m - 1 + 1 = n - m by omega]
+    exact (hn_cancel h.symm (Nat.le_of_lt hlt)).symm
+  · subst heq; left; exact hn_inj m h
+  · right; left
+    refine ⟨m - n - 1, ?_⟩
+    rw [show m - n - 1 + 1 = m - n by omega]
+    exact (hn_cancel h (Nat.le_of_lt hgt)).symm
+
+theorem relH_size {p q : Item} (k : Nat) (h : q = hn (k+1) p) : csize q.1 = csize p.1 + 2 * (k+1) := by
+  rw [h, csize_hn]
+
+def MhD : IdentData where
+  U := unitUniv
+  rel := relH
+  refl := fun _ => ⟨0, 0, rfl⟩
+  symm := fun ⟨m, n, h⟩ => ⟨n, m, h.symm⟩
+  trans := fun ⟨m, n, h1⟩ ⟨k, l, h2⟩ => ⟨k + m, n + l, by
+    rw [hn_add, h1, ← hn_add, Nat.add_comm k n, hn_add, h2, ← hn_add]⟩
+
+theorem relH_within (c : Code Empty) (x y : unitUniv.El c) (h : relH ⟨c, x⟩ ⟨c, y⟩) : x = y := by
+  rcases relH_cases h with h | ⟨k, h⟩ | ⟨k, h⟩
+  · exact eq_of_heq (Sigma.mk.inj h).2
+  · have := relH_size k h; simp only at this; omega
+  · have := relH_size k h; simp only at this; omega
+
+/-- A haecceity is never the constantly false property. -/
+theorem not_hh_false {D D' : Code Empty} (hD : D = D') (w : unitUniv.El D')
+    (h : HEq (fun _ : unitUniv.El D => False) (fun y : unitUniv.El D' => y = w)) : False := by
+  subst hD
+  have e := congrFun (eq_of_heq h) w
+  exact (e ▸ rfl : False)
+
+abbrev Mh : Frame := MhD.frame
+theorem Mh_model : Mh.IsModelPIm := MhD.model
+theorem Mh_LLEqv : Mh.Valid LLEqv := MhD.LLEqv_valid relH_within
+theorem Mh_Inj : Mh.Valid Inj := MhD.Inj_valid
+
+theorem Mh_Hae : Mh.Valid Hae := by
+  refine (Mh.valid_iff_tr _).mpr <| Mh.tr_Hae.mpr fun a x => ?_
+  have e : (fun y => relH ⟨a, y⟩ ⟨a, x⟩) = (fun y => y = x) :=
+    funext fun y => propext ⟨relH_within a y x, fun h => h ▸ ⟨0, 0, rfl⟩⟩
+  show relH ⟨a, x⟩ ⟨.arr a .t, fun y => relH ⟨a, y⟩ ⟨a, x⟩⟩
+  rw [e]
+  exact ⟨1, 0, rfl⟩
+
+theorem Mh_Twin : Mh.Valid Twin := by
+  refine (Mh.valid_iff_tr _).mpr <| Mh.tr_Twin.mpr fun a x => ⟨.arr a .t, fun h => ?_, fun y => y = x, ⟨1, 0, rfl⟩⟩
+  have := congrArg csize (h : a = .arr a .t)
+  simp only [csize] at this
+  omega
+
+theorem Mh_PCong : Mh.Valid PCong := by
+  refine (Mh.valid_iff_tr _).mpr <| Mh.tr_PCong.mpr fun a c d f g x hfg => ?_
+  rcases relH_cases hfg with h | ⟨k, h⟩ | ⟨k, h⟩
+  · have h1 : Code.arr a c = Code.arr a d := congrArg Sigma.fst h
+    injection h1 with _ hcd
+    subst hcd
+    have e : f = g := eq_of_heq (Sigma.mk.inj h).2
+    subst e
+    exact ⟨0, 0, rfl⟩
+  · have h1 : Code.arr a d = Code.arr (hn k ⟨.arr a c, f⟩).1 .t := congrArg Sigma.fst h
+    injection h1 with h2 _
+    have := congrArg csize h2
+    rw [csize_hn] at this
+    simp only [csize] at this
+    omega
+  · have h1 : Code.arr a c = Code.arr (hn k ⟨.arr a d, g⟩).1 .t := congrArg Sigma.fst h
+    injection h1 with h2 _
+    have := congrArg csize h2
+    rw [csize_hn] at this
+    simp only [csize] at this
+    omega
+
+theorem Mh_not_Cong : ¬ Mh.Valid Cong := fun h => by
+  let f : Prop → Prop := fun _ => True
+  have := Mh.tr_Cong.mp ((Mh.valid_iff_tr _).mp h) .t (.arr .t .t) .t .t f (fun Y => Y = f) False
+    (fun z => z = False) ⟨⟨1, 0, rfl⟩, ⟨1, 0, rfl⟩⟩
+  have e : True = ((fun z : Prop => z = False) = f) := relH_within .t _ _ this
+  have e2 : (fun z : Prop => z = False) = f := e ▸ trivial
+  have e3 : (True = False) = True := congrFun e2 True
+  exact (e3.symm ▸ trivial : True = False) ▸ trivial
+
+theorem Mh_ExtT : Mh.Valid ExtT := by
+  refine (Mh.valid_iff_tr _).mpr <| Mh.tr_ExtT.mpr fun a b ⟨h1, h2⟩ => Classical.byContradiction fun hab => ?_
+  obtain ⟨y0, r0⟩ := h1 (Classical.choice (Univ.El_nonempty (U := unitUniv) a))
+  rcases relH_cases r0 with h | ⟨k, h⟩ | ⟨k, h⟩
+  · exact hab (congrArg Sigma.fst h)
+  · -- `b` is a type of properties, of larger size than `a`.
+    have hs := relH_size k h
+    simp only at hs
+    have hb : b = .arr (hn k ⟨a, _⟩).1 .t := congrArg Sigma.fst h
+    obtain ⟨x1, r1⟩ := h2 (cast (congrArg unitUniv.El hb).symm (fun _ => False))
+    rcases relH_cases r1 with h' | ⟨j, h'⟩ | ⟨j, h'⟩
+    · exact hab (congrArg Sigma.fst h')
+    · have hb' : b = .arr (hn j ⟨a, x1⟩).1 .t := congrArg Sigma.fst h'
+      have hsnd := (Sigma.mk.inj h').2
+      have hbb := hb.symm.trans hb'
+      injection hbb with hD
+      refine not_hh_false hD (hn j ⟨a, x1⟩).2 ?_
+      exact (cast_heq _ _).symm.trans hsnd
+    · have := relH_size j h'
+      simp only at this
+      omega
+  · -- `a` is a type of properties, of larger size than `b`.
+    have hs := relH_size k h
+    simp only at hs
+    have ha : a = .arr (hn k ⟨b, _⟩).1 .t := congrArg Sigma.fst h
+    obtain ⟨y1, r1⟩ := h1 (cast (congrArg unitUniv.El ha).symm (fun _ => False))
+    rcases relH_cases r1 with h' | ⟨j, h'⟩ | ⟨j, h'⟩
+    · exact hab (congrArg Sigma.fst h')
+    · have := relH_size j h'
+      simp only at this
+      omega
+    · have ha' : a = .arr (hn j ⟨b, y1⟩).1 .t := congrArg Sigma.fst h'
+      have hsnd := (Sigma.mk.inj h').2
+      have haa := ha.symm.trans ha'
+      injection haa with hD
+      refine not_hh_false hD (hn j ⟨b, y1⟩).2 ?_
+      exact (cast_heq _ _).symm.trans hsnd
+
+end Models
+
 /-! ## A first derivation
 
 From (Ref≡) and (Inst𝔸), with `e` for `α`, PI⁻ proves `∀_e x (x ≡_e x)`. The derivation is a
 term of type `Prov`; Lean checks that each step is an instance of a rule. -/
-
-/-- The type `e`. -/
-def tyE {n : Nat} : Ty n := ⟨.e, trivial⟩
 
 example (S : Fm Ctx.nil → Prop) :
     PIm S Ctx.nil ((Tm.all tv0 (Tm.eqv tv0 tv0 (.var .here) (.var .here))).tinst tyE) :=

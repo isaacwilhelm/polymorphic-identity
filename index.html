@@ -68,6 +68,13 @@
       </ul>
       <p>The chaining is sound but not complete: “open” means only that the recorded results, combined in this simple way, do not settle the question. Values inside a model that are not stated in the notes but follow from the recorded derivations are filled in automatically.</p>
       <p>Facts marked <span class="src added">◆</span> are not stated in the notes; they were observed when the site was built, and each comes with a one-line argument. They should be checked.</p>
+      <h3>What is checked in Lean</h3>
+      <p>The folder <code>lean/</code> contains a formalization of PI in the Lean proof assistant: the language, the proof system, the models, and a proof that the proof system is sound (whatever PI proves is true in every model). With soundness, a model in which a principle is false is a proof that PI does not prove it.</p>
+      <ul>
+        <li><b>Checked:</b> every model on this site is a model of PI⁻ (and of PI where LL≡ is true in it), and every true/false value recorded for it in the notes. These carry a <span class="leanb">Lean ✓</span> badge, which links to the proof. Each principle's <span class="leanb">Lean definition</span> links to the sentence as written in Lean.</li>
+        <li><b>Not yet checked:</b> the derivations (that given PI⁻, some principles prove another). Statuses which rest on derivations (“Follows”, “Inconsistent”) are not yet verified.</li>
+      </ul>
+      <p>Three Lean models (for 𝔐_κ, 𝔐_card, and 𝔐_ρ) are simpler constructions than the paper's, with the same pattern of true and false principles; they establish the same independence results. Each model's Lean note says how it is built.</p>
       <h3>Sharing a configuration</h3>
       <p>The address bar records the current selection, so a link reproduces exactly what you are looking at.</p>
       <h3>Updating the results</h3>
@@ -79,6 +86,7 @@
 <footer class="wrap">Results from Isaac Wilhelm, <em>Formal Results</em>, Draft 5 (October 2026).</footer>
 
 <script src="data.js"></script>
+<script src="lean-index.js"></script>
 <script defer src="app.js"></script>
 </body>
 </html>

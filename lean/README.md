@@ -21,5 +21,13 @@ No output means every proof checks. It uses no `sorry` and only Lean's standard 
 (`propext`, `Classical.choice`, `Quot.sound`). GitHub re-checks it on every push
 (`.github/workflows/lean.yml`).
 
-Next milestones: the models of *Formal Results* (𝔐_κ, 𝔐_card, 𝔐_ρ, the identifications ∼₀, ∼₁,
-∼ₕ, …), and the derivations as PI proofs.
+8. the **principles** of *Formal Results* as sentences (§10), each with a lemma stating what it
+   says in an arbitrary model (§11);
+9. the **twelve models** of *Formal Results* (§13), each proved to be a model of PI⁻ (or PI), with
+   every truth value the site records for it. 𝔐_κ, 𝔐_card and 𝔐_ρ are simpler constructions
+   than the paper's, with the same pattern of truth values.
+
+The website shows a "Lean ✓" badge on every result checked here; `tools/check_lean_refs.py`
+verifies that each badge names a real declaration.
+
+Next milestone: the derivations, as PI proofs.

@@ -126,6 +126,12 @@
   }
 
   // ------------------------------------------------------------------ explanations
+  const LEANURL = "https://github.com/isaacwilhelm/polymorphic-identity/blob/main/lean/PIFoundation.lean";
+  function leanBadge(name, label) {
+    const idx = window.LEANINDEX || {};
+    if (!name || !(name in idx)) return "";
+    return `<a class="leanb" href="${LEANURL}#L${idx[name]}" target="_blank" rel="noopener" title="Checked in Lean: PIF.${name}">${label || "Lean ✓"}</a>`;
+  }
   function srcBadge(src, added) {
     return `<span class="src${added ? " added" : ""}" title="${added ? "Observed when building this site; not stated in the notes. Please check." : D.SOURCE}">${src}${added ? " ◆" : ""}</span>`;
   }
@@ -186,9 +192,12 @@
     if (w && w.model) reason = `${srcBadge(w.src, w.added)}`;
     else if (w) reason = `follows in the model: ${w.used.map(u => litText(u.id, u.pos)).join(", ")} with ${describeClause(w.clause)} ${srcBadge(w.clause.info.src, w.clause.info.added)}`;
     const assumed = assumptions().map(a => litText(a.id, a.pos)).join(", ");
-    return `<div class="model"><div class="mname">${m.name}</div><div class="mdesc">${m.desc}</div>
-      <div class="mline">Here ${tag(id)} is <b>${m.val[id] ? "true" : "false"}</b> — ${reason}</div>
-      <div class="mline subtle">and every assumption (${assumed || "PI⁻"}) is true.</div></div>`;
+    const lv = w && w.model && m.lean ? leanBadge(m.lean[id]) : "";
+    const lm = m.lean ? leanBadge(m.lean.model, "Lean ✓ model") : "";
+    const ln = m.leanNote ? `<div class="mline subtle">Lean: ${m.leanNote}</div>` : "";
+    return `<div class="model"><div class="mname">${m.name} ${lm}</div><div class="mdesc">${m.desc}</div>
+      <div class="mline">Here ${tag(id)} is <b>${m.val[id] ? "true" : "false"}</b> — ${reason} ${lv}</div>
+      <div class="mline subtle">and every assumption (${assumed || "PI⁻"}) is true.</div>${ln}</div>`;
   }
 
   const KIND = {
@@ -445,7 +454,7 @@
     box.innerHTML = `
       <div class="dhead"><h3>${p.tag}</h3><span class="dgroup">${p.group}</span></div>
       <div class="formula">${tex(p.tex, true)}</div>
-      <p class="gloss">${p.gloss}</p>
+      <p class="gloss">${p.gloss} ${p.lean ? leanBadge(p.lean, "Lean definition") : ""}</p>
       ${body}
       <div class="dactions">
         <button data-a="yes" ${lock ? "disabled" : ""} aria-pressed="${cur === true || lock}">${cur === true ? "Stop assuming it" : "Assume it"}</button>
@@ -633,9 +642,16 @@
       const vals = D.principles.filter(p => p.id in m.val).map(p => {
         const w = m.why[p.id];
         const stated = w && w.model;
-        return `<span class="mv ${m.val[p.id] ? "t" : "f"}${stated ? "" : " derived"}" title="${stated ? w.src : "follows in this model by the rules"}">${m.val[p.id] ? "" : "¬"}${p.tag}${w && w.added ? " ◆" : ""}</span>`;
+        const ln = stated && m.lean && m.lean[p.id] && window.LEANINDEX && (m.lean[p.id] in window.LEANINDEX);
+        const inner = `${m.val[p.id] ? "" : "¬"}${p.tag}${w && w.added ? " ◆" : ""}${ln ? " ✓" : ""}`;
+        const title = (stated ? w.src : "follows in this model by the rules") + (ln ? " — checked in Lean: PIF." + m.lean[p.id] : "");
+        const cls = `mv ${m.val[p.id] ? "t" : "f"}${stated ? "" : " derived"}`;
+        return ln ? `<a class="${cls}" href="${LEANURL}#L${window.LEANINDEX[m.lean[p.id]]}" target="_blank" rel="noopener" title="${title}">${inner}</a>`
+                  : `<span class="${cls}" title="${title}">${inner}</span>`;
       }).join(" ");
-      return `<div class="mcard"><div class="mname">${m.name} ${srcBadge(m.src)}</div><div class="mdesc">${m.desc}</div><div class="mvals">${vals}</div></div>`;
+      const lm = m.lean ? leanBadge(m.lean.model, "Lean ✓ model") : "";
+      const ln = m.leanNote ? `<div class="mdesc"><i>Lean:</i> ${m.leanNote}</div>` : "";
+      return `<div class="mcard"><div class="mname">${m.name} ${srcBadge(m.src)} ${lm}</div><div class="mdesc">${m.desc}</div>${ln}<div class="mvals">${vals}</div></div>`;
     }).join("");
     const other = D.otherResults.map(o => `<li><b>${o.title}.</b> ${o.text} ${srcBadge(o.src)}</li>`).join("");
     $("#catalogue").innerHTML = `
@@ -646,7 +662,7 @@
       <section><h2>Theorems of PI⁻</h2><ul class="clist">${thms}</ul></section>
       <section><h2>Derivations</h2><ul class="clist">${rl}</ul></section>
       <section><h2>Inconsistencies</h2><ul class="clist">${inc}</ul></section>
-      <section><h2>Models</h2><p>All are models of PI⁻; those in which LL≡ is true are models of PI. Faded entries are not stated in the notes but follow in the model from the derivations above.</p>${md}</section>
+      <section><h2>Models</h2><p>All are models of PI⁻; those in which LL≡ is true are models of PI. Faded entries are not stated in the notes but follow in the model from the derivations above. Entries marked ✓ are checked in Lean: click one to see the proof.</p>${md}</section>
       <section><h2>Other results</h2><ul class="clist">${other}</ul></section>`;
   }
 
