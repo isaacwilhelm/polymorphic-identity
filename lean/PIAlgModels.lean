@@ -215,3 +215,56 @@ theorem Mii_not_Bool : ¬ ∀ φ, BoolSch φ → MiiF.Valid φ := fun h => Mii_n
 
 end Al
 end PIF
+
+/-! ## The Identity Identity in some standard models (PI⁻) -/
+
+namespace PIF
+
+theorem Mall_IdId : Mall.Valid IdId :=
+  (Mall.valid_iff_tr _).mpr <| Mall.tr_IdId.mpr fun _ _ _ => trivial
+
+/-- `𝔐_E,k` with, in addition, all propositions identified with each other. -/
+def SEkT : (c : Code Empty) → univ3.El c → Prop
+  | .e, v => v = (0 : Fin 3) ∨ v = (1 : Fin 3)
+  | .arr .e .e, f => f = k1 ∨ f = k2
+  | .t, _ => True
+  | _, _ => False
+
+def MEkTD : IdentData := classIdent univ3 SEkT
+abbrev MEkT : Frame := MEkTD.frame
+theorem MEkT_model : MEkT.IsModelPIm := MEkTD.model
+
+theorem MEkT_IdId : MEkT.Valid IdId :=
+  (MEkT.valid_iff_tr _).mpr <| MEkT.tr_IdId.mpr fun _ _ _ => ⟨rfl, Or.inr ⟨trivial, trivial⟩⟩
+
+theorem MEkT_K0 : MEkT.Kf .e (0 : Fin 3) :=
+  ⟨k1, k2, ⟨rfl, Or.inr ⟨Or.inl rfl, Or.inr rfl⟩⟩, fun P h => (show k1 0 = 0 by decide) ▸ h,
+    fun hL => absurd (hL (fun v : Fin 3 => v = 1) (show k2 0 = 1 by decide)) (show ¬ (0 : Fin 3) = 1 by decide)⟩
+
+theorem MEkT_not_K1 : ¬ MEkT.Kf .e (1 : Fin 3) := by
+  rintro ⟨f, g, ⟨_, hfg⟩, hf, hg⟩
+  rcases hfg with hfg | ⟨hS, _⟩
+  · have e : f = g := eq_of_heq hfg
+    subst e; exact hg hf
+  · have key : ∀ u : Fin 3 → Fin 3, (u = k1 ∨ u = k2) → u 1 = (0 : Fin 3) := by
+      intro u hu; rcases hu with rfl | rfl <;> decide
+    exact absurd (hf (fun v : Fin 3 => v = (0 : Fin 3)) (key f hS)) (show ¬ (1 : Fin 3) = 0 by decide)
+
+theorem MEkT_not_Bridge : ¬ MEkT.Valid (Bridge PredK) := fun h =>
+  MEkT_not_K1 (MEkT.tr_BridgeK.mp ((MEkT.valid_iff_tr _).mp h) .e .e (0 : Fin 3) (1 : Fin 3)
+    ⟨⟨rfl, Or.inr ⟨Or.inl rfl, Or.inr rfl⟩⟩, rfl⟩ MEkT_K0)
+
+theorem MEkT_not_WCong : ¬ MEkT.Valid WCong := fun h => by
+  have := MEkT.tr_WCong.mp ((MEkT.valid_iff_tr _).mp h) .e .e .e .e
+    (fun v : Fin 3 => if v = 0 then (0 : Fin 3) else (2 : Fin 3)) (fun v : Fin 3 => if v = 0 then (0 : Fin 3) else (2 : Fin 3))
+    (0 : Fin 3) (1 : Fin 3)
+    ⟨⟨rfl, rfl⟩, ⟨⟨rfl, Or.inl HEq.rfl⟩, ⟨rfl, Or.inr ⟨Or.inl rfl, Or.inr rfl⟩⟩⟩⟩
+  rcases this.2 with e | ⟨_, s⟩
+  · have e' : (if (0 : Fin 3) = 0 then (0 : Fin 3) else (2 : Fin 3)) = (if (1 : Fin 3) = 0 then (0 : Fin 3) else (2 : Fin 3)) :=
+      eq_of_heq e
+    exact absurd e' (by decide)
+  · have s' : (if (1 : Fin 3) = 0 then (0 : Fin 3) else (2 : Fin 3)) = 0 ∨
+        (if (1 : Fin 3) = 0 then (0 : Fin 3) else (2 : Fin 3)) = 1 := s
+    exact absurd s' (by decide)
+
+end PIF
