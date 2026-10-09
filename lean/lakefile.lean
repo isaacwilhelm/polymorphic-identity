@@ -41,3 +41,6 @@ lean_lib PIEnum
 
 @[default_target]
 lean_lib PICompleteness
+
+@[default_target]
+lean_lib PICanonical
