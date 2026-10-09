@@ -370,7 +370,7 @@ window.LEANINDEX = {
  ],
  "M0_Class": [
   "PIClass.lean",
-  133
+  211
  ],
  "M0_Cong": [
   "PIFoundation.lean",
@@ -418,7 +418,7 @@ window.LEANINDEX = {
  ],
  "M0e_Class": [
   "PIClass.lean",
-  134
+  212
  ],
  "M0e_Cong": [
   "PIFoundation.lean",
@@ -466,7 +466,7 @@ window.LEANINDEX = {
  ],
  "M1_Class": [
   "PIClass.lean",
-  135
+  213
  ],
  "M1_ExtT": [
   "PIFoundation.lean",
@@ -798,7 +798,7 @@ window.LEANINDEX = {
  ],
  "Mbt_Class": [
   "PIClass.lean",
-  140
+  218
  ],
  "Mbt_Cong": [
   "PINew.lean",
@@ -894,7 +894,7 @@ window.LEANINDEX = {
  ],
  "Mcard_Class": [
   "PIClass.lean",
-  144
+  222
  ],
  "Mcard_Cong": [
   "PIFoundation.lean",
@@ -1054,7 +1054,7 @@ window.LEANINDEX = {
  ],
  "Mh_Class": [
   "PIClass.lean",
-  136
+  214
  ],
  "Mh_ExtT": [
   "PIFoundation.lean",
@@ -1114,7 +1114,7 @@ window.LEANINDEX = {
  ],
  "Mhk_Class": [
   "PIClass.lean",
-  139
+  217
  ],
  "Mhk_Hae": [
   "PIHae.lean",
@@ -1170,7 +1170,7 @@ window.LEANINDEX = {
  ],
  "Mhp_Class": [
   "PIClass.lean",
-  138
+  216
  ],
  "Mhp_Hae": [
   "PIHae.lean",
@@ -1210,7 +1210,7 @@ window.LEANINDEX = {
  ],
  "Mhx_Class": [
   "PIClass.lean",
-  141
+  219
  ],
  "Mhx_Hae": [
   "PINF.lean",
@@ -1238,7 +1238,7 @@ window.LEANINDEX = {
  ],
  "Mk_Class": [
   "PIClass.lean",
-  142
+  220
  ],
  "Mk_Disjoint": [
   "PIFoundation.lean",
@@ -1286,7 +1286,7 @@ window.LEANINDEX = {
  ],
  "Mp_Class": [
   "PIClass.lean",
-  137
+  215
  ],
  "Mp_Inj": [
   "PIFoundation.lean",
@@ -1334,7 +1334,7 @@ window.LEANINDEX = {
  ],
  "Mr_Class": [
   "PIClass.lean",
-  143
+  221
  ],
  "Mr_Cong": [
   "PIFoundation.lean",
@@ -1370,7 +1370,7 @@ window.LEANINDEX = {
  ],
  "Mrec_Class": [
   "PIClass.lean",
-  147
+  225
  ],
  "Mrec_Cong": [
   "PIFoundation.lean",
@@ -1406,7 +1406,7 @@ window.LEANINDEX = {
  ],
  "Mt2_Class": [
   "PIClass.lean",
-  146
+  224
  ],
  "Mt2_LLEqv": [
   "PIFoundation.lean",
@@ -1518,7 +1518,7 @@ window.LEANINDEX = {
  ],
  "Mtw_Class": [
   "PIClass.lean",
-  145
+  223
  ],
  "Mtw_Cong": [
   "PIFoundation.lean",
@@ -2046,7 +2046,7 @@ window.LEANINDEX = {
  ],
  "Wd.Mw_Class": [
   "PIClass.lean",
-  236
+  314
  ],
  "Wd.Mw_Cong": [
   "PIWorlds.lean",
@@ -2176,6 +2176,10 @@ window.LEANINDEX = {
   "PIModal.lean",
   111
  ],
+ "d_NITeq_of_Class": [
+  "PIClass.lean",
+  102
+ ],
  "d_NITeq_of_Collapse": [
   "PIModal.lean",
   118
@@ -2199,6 +2203,10 @@ window.LEANINDEX = {
  "d_TCBF": [
   "PIBarcan.lean",
   45
+ ],
+ "d_TCBF_of_Class": [
+  "PIClass.lean",
+  143
  ],
  "d_TCBF_of_PropExt": [
   "PIBarcan.lean",

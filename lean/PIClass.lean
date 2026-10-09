@@ -96,6 +96,84 @@ theorem d_TNec_of_Class (hC : ∀ χ, ClassSch χ → S χ) : Prov S Ctx.nil TNe
   exact Ent.toProv (Ent.mp2 (Ent.taut (.imp (.atom 0) (.imp (.atom 1) (.iff (.atom 0) (.atom 1))))
     (v2 _ topF) (fun _ a b => ⟨fun _ => b, fun _ => a⟩)) he Ent.top)
 
+set_option maxHeartbeats 4000000 in
+/-- Classicism proves NI≈, by the argument for NI≡ with LL≈ in place of LL≡: LL≈ with
+`Q := Λβ.□(α ≈ β)`. -/
+theorem d_NITeq_of_Class (hC : ∀ χ, ClassSch χ → S χ) : Prov S Ctx.nil NITeq := by
+  have hR : S (tall (boxF (teq tv0 tv0))) := by
+    refine hC _ (Or.inl ⟨1, Δ1, teq tv0 tv0, topF, ?_, rfl⟩)
+    have hr : Ent (fun χ => χ = LLEqv) Δ1 [] (teq tv0 tv0) := (Ent.closed (Γ := Δ1) Prov.refTeq).tinst tv0
+    exact Ent.toProv (Ent.mp2 (Ent.taut (.imp (.atom 0) (.imp (.atom 1) (.iff (.atom 0) (.atom 1))))
+      (v2 _ topF) (fun _ a b => ⟨fun _ => b, fun _ => a⟩)) hr Ent.top)
+  have hQ : Ent S Δ2 [] (LLTeq (Tm.tlam (boxF (Tm.teq tv2 tv0)))) := Ent.ofProv (Prov.llTeq _)
+  have h1 : Ent S Δ2 [] ((Tm.teq tv1 tv0).imp ((boxF (Tm.teq tv1 tv1)).imp (boxF (Tm.teq tv1 tv0)))) :=
+    Ent.beta ((hQ.tinst tv1).tinst tv0) (BetaEq.imp (.refl _) (BetaEq.imp (BetaEq.tbeta _ _) (BetaEq.tbeta _ _)))
+  have hb : Ent S Δ2 [] (boxF (Tm.teq tv1 tv1)) := (Ent.axm (Γ := Δ2) hR).tinst tv1
+  have h2 : Ent S Δ2 [] ((Tm.teq tv1 tv0).imp (boxF (Tm.teq tv1 tv0))) :=
+    Ent.mp2 (Ent.taut (.imp (.imp (.atom 0) (.imp (.atom 1) (.atom 2))) (.imp (.atom 1) (.imp (.atom 0) (.atom 2))))
+      (v3 (Tm.teq tv1 tv0) (boxF (Tm.teq tv1 tv1)) (boxF (Tm.teq tv1 tv0))) (fun _ f b a => f a b)) h1 hb
+  exact Ent.toProv (Ent.tgen (Ent.tgen h2))
+
+set_option maxHeartbeats 4000000 in
+/-- LL≡ at `t` makes disjunction respect identity in its second place. -/
+theorem or_cong (hLL : S LLEqv) {n : Nat} {Γ : Ctx n} (a b c : Fm Γ) :
+    Prov S Γ ((eqv tyT tyT b c).imp (eqv tyT tyT (disj a b) (disj a c))) := by
+  have hl : Ent S Γpqr [eqv tyT tyT (.var (.there .here)) (.var .here)]
+      ((eqv tyT tyT (.var (.there .here)) (.var .here)).imp
+        (all tyT.pred (imp (.app (.var .here) (.var (.there (.there .here))))
+                       (.app (.var .here) (.var (.there .here)))))) :=
+    (((Ent.axm (Γ := Γpqr) hLL).tinst tyT).inst (.var (.there .here))).inst (.var .here)
+  have hA := Ent.mp hl (Ent.hyp _ 0 (by decide))
+  have h1 := Ent.inst hA (.lam tyT (eqv tyT tyT (disj (.var (.there (.there (.there .here)))) (.var (.there (.there .here))))
+    (disj (.var (.there (.there (.there .here)))) (.var .here))))
+  have h2 : Ent S Γpqr [eqv tyT tyT (.var (.there .here)) (.var .here)]
+      ((eqv tyT tyT (disj (.var (.there (.there .here))) (.var (.there .here))) (disj (.var (.there (.there .here))) (.var (.there .here)))).imp
+       (eqv tyT tyT (disj (.var (.there (.there .here))) (.var (.there .here))) (disj (.var (.there (.there .here))) (.var .here)))) :=
+    Ent.beta h1 (BetaEq.imp (.step (.beta _ _)) (.step (.beta _ _)))
+  have hr : Ent S Γpqr [eqv tyT tyT (.var (.there .here)) (.var .here)]
+      (eqv tyT tyT (disj (.var (.there (.there .here))) (.var (.there .here))) (disj (.var (.there (.there .here))) (.var (.there .here)))) :=
+    ((Ent.closed (Γ := Γpqr) Prov.refEqv).tinst tyT).inst _
+  have h : Prov S Γpqr ((eqv tyT tyT (.var (.there .here)) (.var .here)).imp
+      (eqv tyT tyT (disj (.var (.there (.there .here))) (.var (.there .here))) (disj (.var (.there (.there .here))) (.var .here)))) :=
+    Ent.toProv (Ent.intro (Hs := []) (Ent.mp h2 hr))
+  exact Prov.subst _ _ h (subPQR a b c)
+
+set_option maxHeartbeats 8000000 in
+/-- Classicism and LL≡ prove every instance of TCBF: `□𝔸α φ` gives `φ ≡ φ ∨ 𝔸α φ ≡ φ ∨ ⊤ ≡ ⊤`. -/
+theorem d_TCBF_of_Class (hC : ∀ χ, ClassSch χ → S χ) (hLL : S LLEqv) : ∀ χ, TCBFSch χ → Prov S Ctx.nil χ := by
+  rintro _ ⟨φ, rfl⟩
+  let A : Fm Ctx.nil.text := tall (φ.ren (Compl.twkL Ctx.nil))
+  let Hs : List (Fm Ctx.nil.text) := [boxF (tall φ)].map (fun h => (h.twk : Fm Ctx.nil.text))
+  have hq : Ent S Ctx.nil.text Hs (eqv tyT tyT A topF) := Ent.hyp _ 0 (by exact Nat.one_pos)
+  -- Classicism: `φ ∨ 𝔸α φ ≡ φ` and `φ ∨ ⊤ ≡ ⊤`
+  have hc1 : S (tall (eqv tyT tyT (disj φ A) φ)) := by
+    refine hC _ (Or.inl ⟨1, Δ1, disj φ A, φ, ?_, rfl⟩)
+    have hH : Ent (fun χ => χ = LLEqv) Ctx.nil.text [A] A := Ent.hyp _ 0 (by exact Nat.one_pos)
+    have h1 := (congrArg (Ent _ _ _) (tcontract_eq φ)).mp (Ent.tinst hH (tvar fz))
+    have hAφ : Ent (fun χ => χ = LLEqv) Ctx.nil.text [] (A.imp φ) := Ent.intro (Hs := []) h1
+    exact Ent.toProv (Ent.mp (Ent.taut (.imp (.imp (.atom 1) (.atom 0)) (.iff (.disj (.atom 0) (.atom 1)) (.atom 0)))
+      (v2 φ A) (fun _ f => ⟨fun h => h.elim id f, Or.inl⟩)) hAφ)
+  have hc2 : S (tall (eqv tyT tyT (disj φ topF) topF)) := by
+    refine hC _ (Or.inl ⟨1, Δ1, disj φ topF, topF, ?_, rfl⟩)
+    exact Ent.toProv (Ent.mp (Ent.taut (.imp (.atom 1) (.iff (.disj (.atom 0) (.atom 1)) (.atom 1)))
+      (v2 φ topF) (fun _ t => ⟨fun _ => t, Or.inr⟩)) (Ent.top (Ax := fun χ => χ = LLEqv) (Hs := [])))
+  have e10 : Ent S Ctx.nil [] (tall (eqv tyT tyT (disj φ A) φ)) := Prov.ax hc1
+  have e11 : Prov S Ctx.nil.text (eqv tyT tyT (disj φ A) φ) :=
+    (congrArg (Ent S Ctx.nil.text []) (tcontract_eq (eqv tyT tyT (disj φ A) φ))).mp (Ent.tinst (Ent.ren_twk e10) (tvar fz))
+  have e1 : Ent S Ctx.nil.text Hs (eqv tyT tyT (disj φ A) φ) := Ent.ofProv e11
+  have e20 : Ent S Ctx.nil [] (tall (eqv tyT tyT (disj φ topF) topF)) := Prov.ax hc2
+  have e21 : Prov S Ctx.nil.text (eqv tyT tyT (disj φ topF) topF) :=
+    (congrArg (Ent S Ctx.nil.text []) (tcontract_eq (eqv tyT tyT (disj φ topF) topF))).mp (Ent.tinst (Ent.ren_twk e20) (tvar fz))
+  have e2 : Ent S Ctx.nil.text Hs (eqv tyT tyT (disj φ topF) topF) := Ent.ofProv e21
+  have e3 : Ent S Ctx.nil.text Hs (eqv tyT tyT (disj φ A) (disj φ topF)) := Ent.mp (Ent.ofProv (or_cong hLL φ A topF)) hq
+  have e4 : Ent S Ctx.nil.text Hs (eqv tyT tyT φ (disj φ A)) := Ent.mp (Ent.ofProv (sym_t (disj φ A) φ)) e1
+  have e5 : Ent S Ctx.nil.text Hs (eqv tyT tyT φ (disj φ topF)) :=
+    Ent.mp (Ent.ofProv (trans_t φ (disj φ A) (disj φ topF))) (Ent.andI e4 e3)
+  have e6 : Ent S Ctx.nil.text Hs (boxF φ) :=
+    Ent.mp (Ent.ofProv (trans_t φ (disj φ topF) topF)) (Ent.andI e5 e2)
+  have h3 : Ent S Ctx.nil ([] ++ [boxF (tall φ)]) (tall (boxF φ)) := Ent.tgen e6
+  exact Ent.toProv (Ent.intro h3)
+
 end Derivs
 
 /-! ## Every model of PI in the semantics of the notes is a model of Classicism -/

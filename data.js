@@ -159,6 +159,8 @@ const rules = [
   { from: ["Class"], to: "Bool", src: "observed", added: true, lean: "d_Bool_of_Class", note: "Each instance of Booleanism is an instance of Classicism, since PI proves every tautology." },
   { from: ["Class"], to: "IdId", src: "observed", added: true, lean: "d_IdId_of_Class", note: "PI proves (x ≡ y) ↔ ∀F(Fx → Fy), by LL≡ one way and F := λz.(x ≡ z) the other; Classicism turns this into an identity." },
   { from: ["Class", "LLeq"], to: "NIEqv", src: "observed", added: true, lean: "d_NIEqv_of_Class", note: "PI proves (x ≡ x) ↔ ⊤, so Classicism gives □(x ≡ x); then LL≡, with F := λz.□(x ≡ z), gives Quine's argument for the necessity of identity." },
+  { from: ["Class"], to: "NITeq", src: "observed", added: true, lean: "d_NITeq_of_Class", note: "PI proves α ≈ α, so Classicism gives □(α ≈ α); then LL≈, with Q := Λβ.□(α ≈ β), gives the argument for NI≡ with types in place of items." },
+  { from: ["Class", "LLeq"], to: "TCBF", src: "observed", added: true, lean: "d_TCBF_of_Class", note: "PI proves φ ∨ 𝔸αφ ↔ φ and φ ∨ ⊤ ↔ ⊤, so Classicism makes these identities. Given □𝔸αφ, that is, 𝔸αφ ≡ ⊤, LL≡ gives φ ≡ φ ∨ 𝔸αφ ≡ φ ∨ ⊤ ≡ ⊤." },
   { from: ["Class"], to: "TNec", src: "observed", added: true, lean: "d_TNec_of_Class", note: "PI proves 𝔼β(α ≈ β), so Classicism makes it identical to ⊤." },
   { from: ["Collapse", "TAx"], to: "TBF", src: "observed", added: true, lean: "d_TBF", note: "If every type necessarily satisfies φ, T gives that every type satisfies φ, and Collapse makes that necessary." },
   { from: ["Collapse", "TAx"], to: "TCBF", src: "observed", added: true, lean: "d_TCBF", note: "If necessarily every type satisfies φ, T gives that every type does, and Collapse makes each instance necessary." },
