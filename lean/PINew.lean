@@ -471,4 +471,106 @@ theorem Mz_PExt : MzF.Valid PExt := (MzF.valid_iff_tr _).mpr <| MzF.tr_PExt.mpr 
 
 end Tg
 
+
+/-! ### `𝔐_hae,int`: haecceity towers with propositions finer than truth values -/
+
+namespace Tg
+
+section TowerT
+attribute [local instance] Classical.propDecidable
+
+abbrev RU := Σ c : Code univU.Base, univU.El c
+
+/-- Roots, as in `PIHae.lean`; the haecceity of `x` is `λy.(y ≡ x)`, a tagged proposition. -/
+noncomputable def hrT : (c : Code univU.Base) → univU.El c → RU
+  | .arr a .t, G =>
+    if h : ∃ x, G = (fun y => ((hrT a y = hrT a x : Prop), true)) then hrT a (Classical.choose h) else ⟨.arr a .t, G⟩
+  | c, x => ⟨c, x⟩
+
+def haeT (a : Code univU.Base) (x : univU.El a) : univU.El (.arr a .t) := fun y => ((hrT a y = hrT a x : Prop), true)
+
+theorem hrT_arr_t (a : Code univU.Base) (G : univU.El (.arr a .t)) :
+    hrT (.arr a .t) G = if h : ∃ x, G = (fun y => ((hrT a y = hrT a x : Prop), true))
+      then hrT a (Classical.choose h) else ⟨.arr a .t, G⟩ := by
+  rw [hrT]
+
+theorem hrT_hae (a : Code univU.Base) (x : univU.El a) : hrT (.arr a .t) (haeT a x) = hrT a x := by
+  rw [hrT_arr_t]
+  split
+  · next h =>
+    have hc := Classical.choose_spec h
+    exact (congrArg Prod.fst (congrFun hc (Classical.choose h))).mpr rfl
+  · next h => exact absurd ⟨x, rfl⟩ h
+
+theorem hrT_own (c : Code univU.Base) (hc : ∀ a, c ≠ .arr a .t) (x : univU.El c) : hrT c x = ⟨c, x⟩ := by
+  cases c with
+  | arr a c' => cases c' with
+    | t => exact absurd rfl (hc a)
+    | _ => rfl
+  | _ => rfl
+
+theorem hrT_le : ∀ (c : Code univU.Base) (x : univU.El c), csz (hrT c x).1 ≤ csz c
+  | .arr a .t, G => by
+    rw [hrT_arr_t]
+    split
+    · exact Nat.le_trans (hrT_le a _) (Nat.le_trans (Nat.le_add_right _ _) (Nat.le_succ _))
+    · exact Nat.le_refl _
+  | .e, _ => Nat.le_refl _
+  | .t, _ => Nat.le_refl _
+  | .base b, _ => b.elim
+  | .arr _ .e, _ => Nat.le_refl _
+  | .arr _ (.base b), _ => b.elim
+  | .arr _ (.arr _ _), _ => Nat.le_refl _
+
+theorem hrT_inj : ∀ (c : Code univU.Base) (x y : univU.El c), hrT c x = hrT c y → x = y
+  | .arr a .t, G1, G2, h => by
+    rw [hrT_arr_t, hrT_arr_t] at h
+    have big : ∀ z, csz (hrT a z).1 < csz (Code.arr a .t) := fun z =>
+      Nat.lt_of_le_of_lt (hrT_le a z) (Nat.lt_of_lt_of_le (Nat.lt_succ_self _) (Nat.succ_le_succ (Nat.le_add_right _ _)))
+    split at h <;> split at h
+    · next h1 h2 =>
+      rw [Classical.choose_spec h1, Classical.choose_spec h2]
+      funext y
+      rw [h]
+    · next h1 _ =>
+      have := congrArg (fun p => csz p.1) h
+      exact absurd (this ▸ big (Classical.choose h1)) (Nat.lt_irrefl _)
+    · next _ h2 =>
+      have := congrArg (fun p => csz p.1) h
+      exact absurd (this.symm ▸ big (Classical.choose h2)) (Nat.lt_irrefl _)
+    · exact eq_of_heq (Sigma.mk.inj h).2
+  | .e, x, y, h => eq_of_heq (Sigma.mk.inj h).2
+  | .t, x, y, h => eq_of_heq (Sigma.mk.inj h).2
+  | .base b, _, _, _ => b.elim
+  | .arr _ .e, x, y, h => eq_of_heq (Sigma.mk.inj h).2
+  | .arr _ (.base b), _, _, _ => b.elim
+  | .arr _ (.arr _ _), x, y, h => eq_of_heq (Sigma.mk.inj h).2
+
+noncomputable abbrev MhtF : Frame where
+  U := univU
+  eqv := fun a b x y => hrT a x = hrT b y
+  teq := fun a b => a = b
+  qtag := fun _ => false
+
+end TowerT
+
+namespace Frame
+variable (F : Frame)
+theorem tr_Hae : F.Tr Hae ↔ ∀ a (x : F.U.El a), F.eqv a (.arr a .t) x (fun y => (F.eqv a a y x, true)) := Iff.rfl
+theorem tr_LLEqv : F.Tr LLEqv ↔ ∀ a (x y : F.U.El a), F.eqv a a x y → ∀ P : F.U.El a → TV, (P x).1 → (P y).1 := Iff.rfl
+end Frame
+
+theorem Mht_model : MhtF.IsModelPIm :=
+  MhtF.model_of_equiv (fun _ _ => Iff.rfl) (fun _ _ => rfl) (fun _ _ _ _ h => h.symm) (fun _ _ _ _ _ _ h1 h2 => h1.trans h2)
+theorem Mht_Hae : MhtF.Valid Hae := (MhtF.valid_iff_tr _).mpr <| MhtF.tr_Hae.mpr fun a x => (hrT_hae a x).symm
+theorem Mht_LLEqv : MhtF.Valid LLEqv := (MhtF.valid_iff_tr _).mpr <| MhtF.tr_LLEqv.mpr fun a x y h _ hP =>
+  hrT_inj a x y h ▸ hP
+theorem Mht_not_PropExt : ¬ MhtF.Valid PropExt := fun h => by
+  have h1 := (MhtF.holds_all _ _ _ _).mp ((MhtF.holds_all _ _ _ _).mp (h (fun i => i.elim0) ()) (True, false)) (True, true)
+  have := (MhtF.holds_eqv_t _ _ _ _).mp (h1 ⟨fun _ => trivial, fun _ => trivial⟩)
+  have e := hrT_inj .t _ _ this
+  exact Bool.noConfusion (congrArg Prod.snd e)
+
+end Tg
+
 end PIF

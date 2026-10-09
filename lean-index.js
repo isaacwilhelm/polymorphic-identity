@@ -912,6 +912,30 @@ window.LEANINDEX = {
   "PINew.lean",
   254
  ],
+ "Mhx_Hae": [
+  "PINF.lean",
+  100
+ ],
+ "Mhx_Inj": [
+  "PINF.lean",
+  105
+ ],
+ "Mhx_LLEqv": [
+  "PINF.lean",
+  99
+ ],
+ "Mhx_PExt": [
+  "PINF.lean",
+  101
+ ],
+ "Mhx_Twin": [
+  "PINF.lean",
+  103
+ ],
+ "Mhx_model": [
+  "PINF.lean",
+  98
+ ],
  "Mk_Disjoint": [
   "PIFoundation.lean",
   2704
@@ -983,6 +1007,22 @@ window.LEANINDEX = {
  "Mp_not_PExt": [
   "PINew.lean",
   201
+ ],
+ "Mpb_Inj": [
+  "PINF.lean",
+  163
+ ],
+ "Mpb_PExt": [
+  "PINF.lean",
+  164
+ ],
+ "Mpb_model": [
+  "PINF.lean",
+  162
+ ],
+ "Mpb_not_Bridge": [
+  "PINF.lean",
+  212
  ],
  "Mr_Cong": [
   "PIFoundation.lean",
@@ -1203,6 +1243,22 @@ window.LEANINDEX = {
  "SymTeq": [
   "PIFoundation.lean",
   1678
+ ],
+ "Tg.Mht_Hae": [
+  "PINew.lean",
+  565
+ ],
+ "Tg.Mht_LLEqv": [
+  "PINew.lean",
+  566
+ ],
+ "Tg.Mht_model": [
+  "PINew.lean",
+  563
+ ],
+ "Tg.Mht_not_PropExt": [
+  "PINew.lean",
+  568
  ],
  "Tg.Mi_Cong": [
   "PINew.lean",

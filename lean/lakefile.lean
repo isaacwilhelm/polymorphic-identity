@@ -26,3 +26,6 @@ lean_lib PIBridge
 
 @[default_target]
 lean_lib PINew
+
+@[default_target]
+lean_lib PINF
