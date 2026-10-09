@@ -133,6 +133,8 @@ const rules = [
 const inconsistent = [
   { set: ["LLeq", "Hae", "Cong"], src: "Thm 25",
     note: "Given PI, Haecceitism and Polymorphic Congruence are incompatible. (Additional Results, 2026-10-09: given PI and Cong, a type whose items and whose constant property are identical to their haecceities has exactly one item.)" },
+  { set: ["Slogan", "Hae"], src: "observed", added: true,
+    note: "Haecceitism at e makes each entity identical to its haecceity, an item of type e→t; Slogan, with e for β, says no entity is identical to an item of type e→t. Type e is non-empty." },
   { set: ["Twin", "Disjoint"], src: "remark after Thm 9",
     note: "Twin identifies each item with an item of a type not identical to its own, which Disjoint forbids (types are non-empty)." },
 ];
