@@ -32,3 +32,6 @@ lean_lib PINF
 
 @[default_target]
 lean_lib PIGeneral
+
+@[default_target]
+lean_lib PISyntax
