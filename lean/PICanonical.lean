@@ -550,6 +550,301 @@ theorem cev_eq {n : Nat} {Γ : Ctx n} {K : Cat n} (hK : K.Simple) (M : Tm Γ K) 
   unfold cev mkD
   exact Quotient.sound (cdata_agree _ d hK M)
 
+
+/-! ### The conditions (E1) to (E5) -/
+
+theorem cev_var {n : Nat} {Γ : Ctx n} {K : Cat n} (h : K.Simple) (x : Var Γ K) (ρ : Fin n → CT Γ0)
+    (env : (CS Ax φ0).Env Γ ρ) : cev φ0 h (.var x) ρ env = (CS Ax φ0).lookup x ρ env :=
+  (Classical.choice (cdata_nonempty Γ ρ env)).hx x
+
+theorem cev_app {n : Nat} {Γ : Ctx n} {K L : Cat n} (hK : K.Simple) (hL : L.Simple) (f : Tm Γ (.arr K L))
+    (a : Tm Γ K) (ρ : Fin n → CT Γ0) (env : (CS Ax φ0).Env Γ ρ) :
+    cev φ0 hL (.app f a) ρ env = (CS Ax φ0).app (cev φ0 (K := .arr K L) ⟨hK, hL⟩ f ρ env) (cev φ0 hK a ρ env) :=
+  rfl
+
+theorem cev_beta {n : Nat} {Γ : Ctx n} {K : Cat n} (h : K.Simple) {M N : Tm Γ K} (hb : BetaEq M N)
+    (ρ : Fin n → CT Γ0) (env : (CS Ax φ0).Env Γ ρ) : cev φ0 h M ρ env = cev φ0 h N ρ env :=
+  mkD_sound (BetaEq.sub hb _)
+
+theorem cev_ren {n : Nat} {Γ : Ctx n} {K : Cat n} (h : K.Simple) (M : Tm Γ K) {m : Nat} {r : Fin n → Fin m}
+    {Δ : Ctx m} (ρr : TRen r Γ Δ) (ρ' : Fin m → CT Γ0) (env' : (CS Ax φ0).Env Δ ρ') (ρ : Fin n → CT Γ0)
+    (env : (CS Ax φ0).Env Γ ρ) (hr : ∀ i, ρ' (r i) = ρ i)
+    (hx : ∀ {L : Cat n} (x : Var Γ L), HEq ((CS Ax φ0).lookup (ρr x) ρ' env') ((CS Ax φ0).lookup x ρ env)) :
+    HEq (cev φ0 (Cat.Simple_ren r h) (M.ren ρr) ρ' env') (cev φ0 h M ρ env) := by
+  let d' := Classical.choice (cdata_nonempty (Ax := Ax) (φ0 := φ0) Δ ρ' env')
+  have hs : ∀ i, codeCat 0 (d'.s (r i)).1 = (ρ i).1 := fun i => (d'.hs (r i)).trans (congrArg Subtype.val (hr i))
+  let d : CData φ0 Γ ρ env :=
+    ⟨d'.J, fun i => d'.s (r i), fun {L} x => Tm.castK (Cat.sub_ren L r d'.s) (d'.σs (ρr x)), hs, fun {L} x =>
+      eq_of_heq ((mkD_heq (Gen.Struct.tc_ren (G := CS Ax φ0) L r ρ' ρ hr).symm (codeTm_castK _ _ 0 0)).trans
+        ((heq_of_eq (d'.hx (ρr x))).trans (hx x)))⟩
+  rw [cev_eq h M d]
+  exact mkD_heq (Gen.Struct.tc_ren (G := CS Ax φ0) K r ρ' ρ hr)
+    (codeTm_heq (Cat.sub_ren K r d'.s) (Tm.sub_ren_heq M ρr rfl d'.σs d.σs (fun _ => rfl)
+      (fun _ => (castK_heq _ _).symm)) 0 0)
+
+theorem cev_sub {n : Nat} {Γ : Ctx n} {K : Cat n} (h : K.Simple) (M : Tm Γ K) {m : Nat} {s : Fin n → Ty m}
+    {Δ : Ctx m} (σs : TSub s Γ Δ) (ρ' : Fin m → CT Γ0) (env' : (CS Ax φ0).Env Δ ρ') (ρ : Fin n → CT Γ0)
+    (env : (CS Ax φ0).Env Γ ρ) (hs : ∀ i, (CS Ax φ0).tc (s i).1 ρ' = ρ i)
+    (hx : ∀ {L : Cat n} (x : Var Γ L),
+      HEq (cev φ0 (Cat.Simple_sub s (Gen.var_simple x)) (σs x) ρ' env') ((CS Ax φ0).lookup x ρ env)) :
+    HEq (cev φ0 (Cat.Simple_sub s h) (M.sub σs) ρ' env') (cev φ0 h M ρ env) := by
+  let d' := Classical.choice (cdata_nonempty (Ax := Ax) (φ0 := φ0) Δ ρ' env')
+  have hs2 : ∀ i, codeCat 0 ((s i).1.sub d'.s) = (ρ i).1 :=
+    fun i => (tc_code φ0 d'.hs (s i).1 (s i).2).trans (congrArg Subtype.val (hs i))
+  let d : CData φ0 Γ ρ env :=
+    ⟨d'.J, fun i => ⟨(s i).1.sub d'.s, Cat.Simple_sub d'.s (s i).2⟩,
+      fun {L} x => Tm.castK (Cat.sub_sub L s d'.s) ((σs x).sub d'.σs), hs2, fun {L} x =>
+      eq_of_heq ((mkD_heq (Gen.Struct.tc_sub (G := CS Ax φ0) L s ρ' ρ hs).symm (codeTm_castK _ _ 0 0)).trans (hx x))⟩
+  rw [cev_eq h M d]
+  exact mkD_heq (Gen.Struct.tc_sub (G := CS Ax φ0) K s ρ' ρ hs)
+    (codeTm_heq (Cat.sub_sub K s d'.s) (Tm.sub_sub_heq M σs rfl d'.σs d.σs (fun _ => rfl)
+      (fun _ => (castK_heq _ _).symm)) 0 0)
+
+/-! ### Truth -/
+
+theorem holds_iff {n : Nat} {Γ : Ctx n} {ρ : Fin n → CT Γ0} {env : (CS Ax φ0).Env Γ ρ} (d : CData φ0 Γ ρ env)
+    (φ : Fm Γ) : (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t φ ρ env) ↔ TrL Ax φ0 (codeTm 0 0 (φ.sub d.σs)) := by
+  rw [cev_eq _ φ d]; exact Iff.rfl
+
+theorem valid_of_prov {n : Nat} {Γ : Ctx n} {φ : Fm Γ} (hp : Prov Ax Γ φ) (ρ : Fin n → CT Γ0)
+    (env : (CS Ax φ0).Env Γ ρ) : (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t φ ρ env) :=
+  (holds_iff (Classical.choice (cdata_nonempty Γ ρ env)) φ).2 (trL_prov (Prov.subst _ _ hp _))
+
+section Prop'
+variable (h0 : ¬ Prov Ax Γ0 φ0)
+include h0
+
+theorem t_neg {n : Nat} {Γ : Ctx n} (φ : Fm Γ) (ρ : Fin n → CT Γ0) (env : (CS Ax φ0).Env Γ ρ) :
+    (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t φ.neg ρ env) ↔ ¬ (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t φ ρ env) := by
+  let d := Classical.choice (cdata_nonempty (Ax := Ax) (φ0 := φ0) Γ ρ env)
+  rw [holds_iff d, holds_iff d]
+  exact trL_neg h0 (φ.sub d.σs)
+
+omit h0 in
+theorem t_imp {n : Nat} {Γ : Ctx n} (φ ψ : Fm Γ) (ρ : Fin n → CT Γ0) (env : (CS Ax φ0).Env Γ ρ) :
+    (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t (φ.imp ψ) ρ env) ↔
+      ((CS Ax φ0).V (cev φ0 Gen.Cat.simple_t φ ρ env) → (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t ψ ρ env)) := by
+  let d := Classical.choice (cdata_nonempty (Ax := Ax) (φ0 := φ0) Γ ρ env)
+  rw [holds_iff d, holds_iff d, holds_iff d]
+  exact trL_imp (φ.sub d.σs) (ψ.sub d.σs)
+
+omit h0 in
+theorem t_conj {n : Nat} {Γ : Ctx n} (φ ψ : Fm Γ) (ρ : Fin n → CT Γ0) (env : (CS Ax φ0).Env Γ ρ) :
+    (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t (φ.conj ψ) ρ env) ↔
+      ((CS Ax φ0).V (cev φ0 Gen.Cat.simple_t φ ρ env) ∧ (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t ψ ρ env)) := by
+  let d := Classical.choice (cdata_nonempty (Ax := Ax) (φ0 := φ0) Γ ρ env)
+  rw [holds_iff d, holds_iff d, holds_iff d]
+  exact trL_conj (φ.sub d.σs) (ψ.sub d.σs)
+
+omit h0 in
+theorem t_disj {n : Nat} {Γ : Ctx n} (φ ψ : Fm Γ) (ρ : Fin n → CT Γ0) (env : (CS Ax φ0).Env Γ ρ) :
+    (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t (φ.disj ψ) ρ env) ↔
+      ((CS Ax φ0).V (cev φ0 Gen.Cat.simple_t φ ρ env) ∨ (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t ψ ρ env)) := by
+  let d := Classical.choice (cdata_nonempty (Ax := Ax) (φ0 := φ0) Γ ρ env)
+  rw [holds_iff d, holds_iff d, holds_iff d]
+  exact trL_disj (φ.sub d.σs) (ψ.sub d.σs)
+
+theorem t_iff {n : Nat} {Γ : Ctx n} (φ ψ : Fm Γ) (ρ : Fin n → CT Γ0) (env : (CS Ax φ0).Env Γ ρ) :
+    (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t (φ.iff ψ) ρ env) ↔
+      ((CS Ax φ0).V (cev φ0 Gen.Cat.simple_t φ ρ env) ↔ (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t ψ ρ env)) := by
+  let d := Classical.choice (cdata_nonempty (Ax := Ax) (φ0 := φ0) Γ ρ env)
+  rw [holds_iff d, holds_iff d, holds_iff d]
+  exact trL_iff' h0 (φ.sub d.σs) (ψ.sub d.σs)
+
+end Prop'
+
+
+/-! ### Quantifiers -/
+
+/-- Extending matching data by a term for a new variable. -/
+noncomputable def CData.cons {n : Nat} {Γ : Ctx n} {ρ : Fin n → CT Γ0} {env : (CS Ax φ0).Env Γ ρ} (d : CData φ0 Γ ρ env)
+    {σ : Ty n} {v : (CS Ax φ0).D ((CS Ax φ0).tc σ.1 ρ)} (N : Tm (chain n0 Γ0 d.J).Γ (σ.1.sub d.s))
+    (hN : mkD Γ0 ⟨σ.1.sub d.s, Cat.Simple_sub d.s σ.2⟩ N _ (tc_code φ0 d.hs σ.1 σ.2) = v) :
+    CData φ0 (Γ.ext σ) ρ (env, v) where
+  J := d.J
+  s := d.s
+  σs := TSub.cons d.σs N
+  hs := d.hs
+  hx := fun {_} x => by
+    cases x with
+    | here => exact hN
+    | there y => exact d.hx y
+
+/-- Extending matching data by a type for a new type variable. -/
+noncomputable def CData.tcons {n : Nat} {Γ : Ctx n} {ρ : Fin n → CT Γ0} {env : (CS Ax φ0).Env Γ ρ} (d : CData φ0 Γ ρ env)
+    (τA : Ty (chain n0 Γ0 d.J).n) (A : CT Γ0) (hA : codeCat 0 τA.1 = A.1) :
+    CData φ0 Γ.text (scons A ρ) env where
+  J := d.J
+  s := scons τA d.s
+  σs := TSub.tcons d.σs τA
+  hs := fin_cases hA (fun i => d.hs i)
+  hx := fun {_} x => by
+    cases x with
+    | @tthere _ _ K y =>
+      have e1 : HEq (mkD Γ0 ⟨(K.ren fs).sub (scons τA d.s), Cat.Simple_sub _ (Gen.var_simple (Var.tthere (Γ := Γ) y))⟩
+          (TSub.tcons d.σs τA (Var.tthere y)) ((CS Ax φ0).tc (K.ren fs) (scons A ρ))
+          (tc_code φ0 (fin_cases hA (fun i => d.hs i)) _ (Gen.var_simple (Var.tthere (Γ := Γ) y))))
+          (mkD Γ0 ⟨K.sub d.s, Cat.Simple_sub d.s (Gen.var_simple y)⟩ (d.σs y) ((CS Ax φ0).tc K ρ)
+            (tc_code φ0 d.hs K (Gen.var_simple y))) :=
+        mkD_heq (Gen.Struct.tc_ren (G := CS Ax φ0) _ fs (scons A ρ) ρ (fun _ => rfl))
+          (by exact codeTm_castK _ (d.σs y) 0 0)
+      exact eq_of_heq (e1.trans ((heq_of_eq (d.hx y)).trans
+          (Gen.Struct.lookup_tthere (G := CS Ax φ0) y (scons A ρ) env).symm))
+
+theorem ext_rep {n : Nat} {Γ : Ctx n} {ρ : Fin n → CT Γ0} {env : (CS Ax φ0).Env Γ ρ} (d : CData φ0 Γ ρ env)
+    (σ : Ty n) (v : (CS Ax φ0).D ((CS Ax φ0).tc σ.1 ρ)) :
+    ∃ J', ∃ h : d.J ≤ J', ∃ N : Tm (chain n0 Γ0 (d.lift J' h).J).Γ (σ.1.sub (d.lift J' h).s),
+      mkD Γ0 ⟨σ.1.sub (d.lift J' h).s, Cat.Simple_sub _ σ.2⟩ N _ (tc_code φ0 (d.lift J' h).hs σ.1 σ.2) = v := by
+  obtain ⟨Jv, σv, Mv, hv, ev⟩ := mkD_surj v
+  obtain ⟨N, hN⟩ := rep_at (J := d.J + Jv) σ.2 (d.lift (d.J + Jv) (by omega)).hs (by omega) σv Mv hv
+  exact ⟨d.J + Jv, by omega, N, hN.trans ev.symm⟩
+
+theorem ty_rep {n : Nat} {Γ : Ctx n} {ρ : Fin n → CT Γ0} {env : (CS Ax φ0).Env Γ ρ} (d : CData φ0 Γ ρ env)
+    (A : CT Γ0) : ∃ J', ∃ h : d.J ≤ J', ∃ τA : Ty (chain n0 Γ0 (d.lift J' h).J).n, codeCat 0 τA.1 = A.1 := by
+  obtain ⟨JA, hA⟩ := A.2
+  obtain ⟨τA, hτ⟩ := tyAt_mono (J' := d.J + JA) (by omega) hA
+  exact ⟨d.J + JA, by omega, τA, hτ⟩
+
+theorem prov_exI {Ax' : Fm Ctx.nil → Prop} {n : Nat} {Γ : Ctx n} (σ : Ty n) (φ : Fm (Γ.ext σ)) (N : Tm Γ σ.1) :
+    Prov Ax' Γ ((φ.subst0 N).imp (Tm.ex σ φ)) :=
+  Ent.toProv (Ent.intro (Hs := []) (Ent.exI N Ent.last))
+
+theorem prov_texI {Ax' : Fm Ctx.nil → Prop} {n : Nat} {Γ : Ctx n} (φ : Fm Γ.text) (τ : Ty n) :
+    Prov Ax' Γ ((φ.tinst τ).imp (Tm.tex φ)) :=
+  Ent.toProv (Ent.intro (Hs := []) (Ent.texI τ Ent.last))
+
+theorem trL_code {J J' : Nat} {φ : Fm (chain n0 Γ0 J).Γ} {ψ : Fm (chain n0 Γ0 J').Γ} (h : codeF φ = codeF ψ) :
+    TrL Ax φ0 (codeTm 0 0 φ) → TrL Ax φ0 (codeTm 0 0 ψ) := by
+  rw [encL_inj _ _ h]; exact id
+
+theorem trL_imp_E {J : Nat} {φ ψ : Fm (chain n0 Γ0 J).Γ} (hE : E (Ax := Ax) φ0 J (φ.imp ψ))
+    (h : TrL Ax φ0 (codeTm 0 0 φ)) : TrL Ax φ0 (codeTm 0 0 ψ) :=
+  trL_mp2 (Prov.taut (.imp (.imp (.atom 0) (.atom 1)) (.imp (.atom 0) (.atom 1))) (v2 φ ψ) (fun _ f => f))
+    (trL_of_E hE) h
+
+theorem code_cons {m n : Nat} {Δ : Ctx m} {Γ : Ctx n} {s : Fin n → Ty m} {σ : Ty n} (σs : TSub s Γ Δ)
+    (φ : Fm (Γ.ext σ)) (N : Tm Δ (σ.1.sub s)) :
+    codeTm 0 0 (φ.sub (TSub.cons σs N)) = codeTm 0 0 ((φ.sub (TSub.lift σs σ)).subst0 N) :=
+  (codeTm_heq rfl (subst0_cons_heq σs φ N) 0 0).symm
+
+theorem code_tcons {m n : Nat} {Δ : Ctx m} {Γ : Ctx n} {s : Fin n → Ty m} (σs : TSub s Γ Δ)
+    (φ : Fm Γ.text) (τ : Ty m) :
+    codeTm 0 0 (φ.sub (TSub.tcons σs τ)) = codeTm 0 0 ((φ.sub (TSub.tlift σs)).tinst τ) :=
+  (codeTm_heq rfl (tinst_tcons_heq σs φ τ) 0 0).symm
+
+section Quant
+variable (h0 : ¬ Prov Ax Γ0 φ0)
+include h0
+
+theorem t_all {n : Nat} {Γ : Ctx n} (σ : Ty n) (φ : Fm (.ext Γ σ)) (ρ : Fin n → CT Γ0) (env : (CS Ax φ0).Env Γ ρ) :
+    (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t (Tm.all σ φ) ρ env) ↔
+      ∀ v, (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t φ ρ (env, v)) := by
+  let d := Classical.choice (cdata_nonempty (Ax := Ax) (φ0 := φ0) Γ ρ env)
+  rw [holds_iff d]
+  constructor
+  · intro hall v
+    obtain ⟨J', h, N, hN⟩ := ext_rep d σ v
+    rw [holds_iff ((d.lift J' h).cons N hN)]
+    have hall' : TrL Ax φ0 (codeTm 0 0 ((Tm.all σ φ).sub (d.lift J' h).σs)) := by
+      rw [code_sub_lift]; exact hall
+    exact (congrArg (TrL Ax φ0) (code_cons (d.lift J' h).σs φ N)).mpr (trL_mp (Prov.instAll (σ.sub (d.lift J' h).s) (φ.sub (TSub.lift (d.lift J' h).σs σ)) N) hall')
+  · intro hv
+    refine Classical.byContradiction fun hn => ?_
+    have hneg := (trL_max (Ax := Ax) (φ0 := φ0) ((Tm.all σ φ).sub d.σs)).resolve_left hn
+    have hex : TrL Ax φ0 (codeTm 0 0 (Tm.ex (σ.sub d.s) (φ.sub (TSub.lift d.σs σ)).neg)) :=
+      trL_mp (prov_notAll _ _) hneg
+    obtain ⟨J', hJ, τ', ψ', w, hcode, hE⟩ := witness_ex (Ax := Ax) φ0 (σ.sub d.s) (φ.sub (TSub.lift d.σs σ)).neg
+    have h3 : Tm.ex τ' ψ' = Tm.ex (σ.sub (d.lift J' hJ).s) ((φ.neg).sub (TSub.lift (d.lift J' hJ).σs σ)) :=
+      codeF_inj _ _ (hcode.trans (congrArg encL (code_sub_lift d J' hJ (Tm.ex σ φ.neg))).symm)
+    obtain ⟨e1, e2⟩ := ex_inj h3
+    subst e1
+    have e2' := eq_of_heq e2
+    subst e2'
+    have hw := trL_imp_E hE (trL_code hcode.symm hex)
+    have hnw := (trL_neg h0 ((φ.sub (TSub.lift (d.lift J' hJ).σs σ)).subst0 w)).1 hw
+    have hv' := (holds_iff ((d.lift J' hJ).cons w rfl) φ).1 (hv _)
+    exact hnw ((congrArg (TrL Ax φ0) (code_cons (d.lift J' hJ).σs φ w)).mp hv')
+
+omit h0 in
+theorem t_ex {n : Nat} {Γ : Ctx n} (σ : Ty n) (φ : Fm (.ext Γ σ)) (ρ : Fin n → CT Γ0) (env : (CS Ax φ0).Env Γ ρ) :
+    (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t (Tm.ex σ φ) ρ env) ↔
+      ∃ v, (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t φ ρ (env, v)) := by
+  let d := Classical.choice (cdata_nonempty (Ax := Ax) (φ0 := φ0) Γ ρ env)
+  rw [holds_iff d]
+  constructor
+  · intro hex
+    obtain ⟨J', hJ, τ', ψ', w, hcode, hE⟩ := witness_ex (Ax := Ax) φ0 (σ.sub d.s) (φ.sub (TSub.lift d.σs σ))
+    have h3 : Tm.ex τ' ψ' = Tm.ex (σ.sub (d.lift J' hJ).s) (φ.sub (TSub.lift (d.lift J' hJ).σs σ)) :=
+      codeF_inj _ _ (hcode.trans (congrArg encL (code_sub_lift d J' hJ (Tm.ex σ φ))).symm)
+    obtain ⟨e1, e2⟩ := ex_inj h3
+    subst e1
+    have e2' := eq_of_heq e2
+    subst e2'
+    have hw := trL_imp_E hE (trL_code hcode.symm hex)
+    exact ⟨_, (holds_iff ((d.lift J' hJ).cons w rfl) φ).2
+      ((congrArg (TrL Ax φ0) (code_cons (d.lift J' hJ).σs φ w)).mpr hw)⟩
+  · rintro ⟨v, hv⟩
+    obtain ⟨J', h, N, hN⟩ := ext_rep d σ v
+    have hv' := (congrArg (TrL Ax φ0) (code_cons (d.lift J' h).σs φ N)).mp
+      ((holds_iff ((d.lift J' h).cons N hN) φ).1 hv)
+    have := trL_mp (prov_exI (σ.sub (d.lift J' h).s) (φ.sub (TSub.lift (d.lift J' h).σs σ)) N) hv'
+    rw [show codeTm 0 0 (Tm.ex (σ.sub (d.lift J' h).s) (φ.sub (TSub.lift (d.lift J' h).σs σ))) =
+      codeTm 0 0 ((Tm.ex σ φ).sub d.σs) from code_sub_lift d J' h (Tm.ex σ φ)] at this
+    exact this
+
+theorem t_tall {n : Nat} {Γ : Ctx n} (φ : Fm Γ.text) (ρ : Fin n → CT Γ0) (env : (CS Ax φ0).Env Γ ρ) :
+    (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t (Tm.tall φ) ρ env) ↔
+      ∀ A, (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t φ (scons A ρ) env) := by
+  let d := Classical.choice (cdata_nonempty (Ax := Ax) (φ0 := φ0) Γ ρ env)
+  rw [holds_iff d]
+  constructor
+  · intro hall A
+    obtain ⟨J', h, τA, hA⟩ := ty_rep d A
+    rw [holds_iff ((d.lift J' h).tcons τA A hA)]
+    have hall' : TrL Ax φ0 (codeTm 0 0 ((Tm.tall φ).sub (d.lift J' h).σs)) := by
+      rw [code_sub_lift]; exact hall
+    exact (congrArg (TrL Ax φ0) (code_tcons (d.lift J' h).σs φ τA)).mpr (trL_mp (Prov.instTAll (φ.sub (TSub.tlift (d.lift J' h).σs)) τA) hall')
+  · intro hv
+    refine Classical.byContradiction fun hn => ?_
+    have hneg := (trL_max (Ax := Ax) (φ0 := φ0) ((Tm.tall φ).sub d.σs)).resolve_left hn
+    have hex : TrL Ax φ0 (codeTm 0 0 (Tm.tex (φ.sub (TSub.tlift d.σs)).neg)) := trL_mp (prov_notTAll _) hneg
+    obtain ⟨J', hJ, ψ', τw, hcode, hE⟩ := witness_tex (Ax := Ax) φ0 (φ.sub (TSub.tlift d.σs)).neg
+    have h3 : Tm.tex ψ' = Tm.tex ((φ.neg).sub (TSub.tlift (d.lift J' hJ).σs)) :=
+      codeF_inj _ _ (hcode.trans (congrArg encL (code_sub_lift d J' hJ (Tm.tex φ.neg))).symm)
+    have e2 := tex_inj h3
+    subst e2
+    have hw := trL_imp_E hE (trL_code hcode.symm hex)
+    have hnw := (trL_neg h0 ((φ.sub (TSub.tlift (d.lift J' hJ).σs)).tinst τw)).1 hw
+    have hv' := (holds_iff ((d.lift J' hJ).tcons τw ⟨codeCat 0 τw.1, J', τw, rfl⟩ rfl) φ).1 (hv _)
+    exact hnw ((congrArg (TrL Ax φ0) (code_tcons (d.lift J' hJ).σs φ τw)).mp hv')
+
+omit h0 in
+theorem t_tex {n : Nat} {Γ : Ctx n} (φ : Fm Γ.text) (ρ : Fin n → CT Γ0) (env : (CS Ax φ0).Env Γ ρ) :
+    (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t (Tm.tex φ) ρ env) ↔
+      ∃ A, (CS Ax φ0).V (cev φ0 Gen.Cat.simple_t φ (scons A ρ) env) := by
+  let d := Classical.choice (cdata_nonempty (Ax := Ax) (φ0 := φ0) Γ ρ env)
+  rw [holds_iff d]
+  constructor
+  · intro hex
+    obtain ⟨J', hJ, ψ', τw, hcode, hE⟩ := witness_tex (Ax := Ax) φ0 (φ.sub (TSub.tlift d.σs))
+    have h3 : Tm.tex ψ' = Tm.tex (φ.sub (TSub.tlift (d.lift J' hJ).σs)) :=
+      codeF_inj _ _ (hcode.trans (congrArg encL (code_sub_lift d J' hJ (Tm.tex φ))).symm)
+    have e2 := tex_inj h3
+    subst e2
+    have hw := trL_imp_E hE (trL_code hcode.symm hex)
+    exact ⟨⟨codeCat 0 τw.1, J', τw, rfl⟩, (holds_iff ((d.lift J' hJ).tcons τw _ rfl) φ).2
+      ((congrArg (TrL Ax φ0) (code_tcons (d.lift J' hJ).σs φ τw)).mpr hw)⟩
+  · rintro ⟨A, hv⟩
+    obtain ⟨J', h, τA, hA⟩ := ty_rep d A
+    have hv' := (congrArg (TrL Ax φ0) (code_tcons (d.lift J' h).σs φ τA)).mp
+      ((holds_iff ((d.lift J' h).tcons τA A hA) φ).1 hv)
+    have := trL_mp (prov_texI (φ.sub (TSub.tlift (d.lift J' h).σs)) τA) hv'
+    rw [show codeTm 0 0 (Tm.tex (φ.sub (TSub.tlift (d.lift J' h).σs))) =
+      codeTm 0 0 ((Tm.tex φ).sub d.σs) from code_sub_lift d J' h (Tm.tex φ)] at this
+    exact this
+
+end Quant
+
 end Model
 
 end Compl
