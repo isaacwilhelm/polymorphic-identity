@@ -35,4 +35,10 @@ verifies that each badge names a real declaration.
 11. `PISchemas.lean`: the two schemas, Theorem 3 (`d_Bridge`: LL≡ proves LL≡/≈ for every
     polymorphic predicate `P`) and the second half of Theorem 11 (`d_LLPoly_of_Disjoint`).
 
+12. `PIExplore.lean`: further models of PI⁻ (𝔐_all, 𝔐_can, 𝔐_cant, 𝔐_D,twin), further values for
+    𝔐_D, 𝔐_E, 𝔐_tot, 𝔐_fn, LL≡/≈ from invariance (`Invariance.bridge_valid`), and two derivations
+    (Truth ⊢ ⊤≢⊥, Cong ⊢ WCong).
+13. `PIHae.lean`: *haecceity towers*, a general construction of models in which every item is
+    identified with its haecceity, and three models built with it (𝔐_hae,p, 𝔐_hae⁻, 𝔐_hae,κ).
+
 The files form a Lake project: run `lake build` in this folder.

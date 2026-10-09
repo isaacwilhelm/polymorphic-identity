@@ -724,6 +724,30 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2644
  ],
+ "Mhk_Hae": [
+  "PIHae.lean",
+  590
+ ],
+ "Mhk_LLEqv": [
+  "PIHae.lean",
+  588
+ ],
+ "Mhk_Twin": [
+  "PIHae.lean",
+  592
+ ],
+ "Mhk_model": [
+  "PIHae.lean",
+  582
+ ],
+ "Mhk_not_Inj": [
+  "PIHae.lean",
+  595
+ ],
+ "Mhk_not_Recovery": [
+  "PIHae.lean",
+  598
+ ],
  "Mhm_Hae": [
   "PIHae.lean",
   267
