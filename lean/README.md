@@ -41,4 +41,8 @@ verifies that each badge names a real declaration.
 13. `PIHae.lean`: *haecceity towers*, a general construction of models in which every item is
     identified with its haecceity, and three models built with it (𝔐_hae,p, 𝔐_hae⁻, 𝔐_hae,κ).
 
+14. `PITagged.lean`: a broader semantics, in which propositions are pairs of a truth value and a
+    tag; the soundness proof is repeated for it, and the model 𝔐_int (Int≈ true, Ext≈ false) is
+    built in it.
+
 The files form a Lake project: run `lake build` in this folder.

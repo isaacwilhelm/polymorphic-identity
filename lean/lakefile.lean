@@ -17,3 +17,6 @@ lean_lib PIExplore
 
 @[default_target]
 lean_lib PIHae
+
+@[default_target]
+lean_lib PITagged

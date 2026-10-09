@@ -1064,6 +1064,22 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   1678
  ],
+ "Tg.Mi_IntT": [
+  "PITagged.lean",
+  667
+ ],
+ "Tg.Mi_LLEqv": [
+  "PITagged.lean",
+  644
+ ],
+ "Tg.Mi_model": [
+  "PITagged.lean",
+  623
+ ],
+ "Tg.Mi_not_ExtT": [
+  "PITagged.lean",
+  653
+ ],
  "TopBot": [
   "PIFoundation.lean",
   1730

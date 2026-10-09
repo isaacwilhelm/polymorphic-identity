@@ -75,6 +75,7 @@
         <li><b>Checked:</b> the derivations and inconsistencies, written out as formal derivations in PI (file <code>lean/PIDerivations.lean</code>). Each step of a “Follows” or “Inconsistent” explanation that rests on one of them carries a <span class="leanb">Lean ✓</span> badge.</li>
         <li><b>Checked:</b> the two schemas, theorem 3 (LL≡ ⊢ LL≡/≈) and the second half of theorem 11 (Disjoint + LL≡ ⊢ LL≡-Poly), for every polymorphic predicate <i>P</i> (file <code>lean/PISchemas.lean</code>). So every derivation, inconsistency, and model in the notes is now checked.</li>
         <li><b>Checked:</b> every result marked <span class="src added">◆</span>, including the new models built while exploring (files <code>lean/PIExplore.lean</code> and <code>lean/PIHae.lean</code>).</li>
+        <li><b>A broader semantics:</b> in the models of the notes, the items of type <i>t</i> are the two truth values, and in every such model of PI, Int≈ and Ext≈ agree. The file <code>lean/PITagged.lean</code> repeats the semantics and the soundness proof for models in which propositions are finer than truth values (a truth value with a tag). One such model, 𝔐_int, shows that PI + Int≈ does not prove Ext≈.</li>
       </ul>
       <p>Three Lean models (for 𝔐_κ, 𝔐_card, and 𝔐_ρ) are simpler constructions than the paper's, with the same pattern of true and false principles; they establish the same independence results. Each model's Lean note says how it is built.</p>
       <h3>Sharing a configuration</h3>
