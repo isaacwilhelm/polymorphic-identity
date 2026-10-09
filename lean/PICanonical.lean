@@ -845,7 +845,100 @@ theorem t_tex {n : Nat} {Γ : Ctx n} (φ : Fm Γ.text) (ρ : Fin n → CT Γ0) (
 
 end Quant
 
+
+/-! ### The canonical general model -/
+
+variable (h0 : ¬ Prov Ax Γ0 φ0)
+
+/-- **The canonical general model** of the theory, built when `φ0` is not provable. -/
+noncomputable def canon : Gen.GModel where
+  toStruct := CS Ax φ0
+  ev := fun h M ρ env => cev φ0 h M ρ env
+  ev_var := cev_var
+  ev_app := cev_app
+  ev_ren := cev_ren
+  ev_sub := cev_sub
+  ev_beta := cev_beta
+  t_neg := t_neg h0
+  t_imp := t_imp
+  t_conj := t_conj
+  t_disj := t_disj
+  t_iff := t_iff h0
+  t_all := t_all h0
+  t_ex := t_ex
+  t_tall := t_tall h0
+  t_tex := t_tex
+
+theorem canon_valid {n : Nat} {Γ : Ctx n} {φ : Fm Γ} (hp : Prov Ax Γ φ) : (canon h0).Valid φ :=
+  fun ρ env => valid_of_prov hp ρ env
+
+theorem canon_model : (canon h0).IsModelPIm :=
+  ⟨canon_valid h0 Prov.refEqv, canon_valid h0 Prov.symEqv, canon_valid h0 Prov.transEqv,
+    canon_valid h0 Prov.refTeq, fun Q => canon_valid h0 (Prov.llTeq Q)⟩
+
+theorem canon_ax (ψ : Fm Ctx.nil) (hψ : Ax ψ) : (canon h0).Valid ψ := canon_valid h0 (Prov.ax hψ)
+
+/-! ### The falsifying valuation -/
+
+variable (φ0)
+
+/-- The types named by a type substitution into stage `J`. -/
+noncomputable def ρOf {J n : Nat} (s : Fin n → Ty (chain n0 Γ0 J).n) : Fin n → CT Γ0 := fun i => ⟨codeCat 0 (s i).1, J, s i, rfl⟩
+
+/-- The items named by a substitution into stage `J`. -/
+noncomputable def envOf {J : Nat} : ∀ {n : Nat} (Γ : Ctx n) (s : Fin n → Ty (chain n0 Γ0 J).n)
+    (_ : TSub s Γ (chain n0 Γ0 J).Γ), (CS Ax φ0).Env Γ (ρOf s)
+  | _, .nil, _, _ => ()
+  | _, .ext Γ σ, s, σs => (envOf Γ s (fun x => σs (.there x)),
+      mkD Γ0 ⟨σ.1.sub s, Cat.Simple_sub s σ.2⟩ (σs .here) _ (tc_code φ0 (fun _ => rfl) σ.1 σ.2))
+  | _, .text Γ, s, σs => envOf Γ (fun i => s (fs i)) (fun {K} x => Tm.castK (Cat.sub_ren K fs s) (σs (.tthere x)))
+
+variable {φ0}
+
+theorem lookup_envOf {J n : Nat} {Γ : Ctx n} {L : Cat n} (x : Var Γ L) :
+    ∀ (s : Fin n → Ty (chain n0 Γ0 J).n) (σs : TSub s Γ (chain n0 Γ0 J).Γ),
+      mkD Γ0 ⟨L.sub s, Cat.Simple_sub s (Gen.var_simple x)⟩ (σs x) ((CS Ax φ0).tc L (ρOf s))
+        (tc_code φ0 (fun _ => rfl) L (Gen.var_simple x)) = (CS Ax φ0).lookup x (ρOf s) (envOf (Ax := Ax) φ0 Γ s σs) := by
+  induction x with
+  | here => intro s σs; rfl
+  | there y ih => intro s σs; exact ih s (fun x => σs (.there x))
+  | @tthere _ _ K y ih =>
+    intro s σs
+    have e1 : HEq (mkD Γ0 ⟨(K.ren fs).sub s, Cat.Simple_sub s (Gen.var_simple (Var.tthere y))⟩ (σs (.tthere y))
+        ((CS Ax φ0).tc (K.ren fs) (ρOf s)) (tc_code φ0 (fun _ => rfl) _ (Gen.var_simple (Var.tthere y))))
+        (mkD Γ0 ⟨K.sub (fun i => s (fs i)), Cat.Simple_sub _ (Gen.var_simple y)⟩
+          (Tm.castK (Cat.sub_ren K fs s) (σs (.tthere y))) ((CS Ax φ0).tc K (ρOf (fun i => s (fs i))))
+          (tc_code φ0 (fun _ => rfl) K (Gen.var_simple y))) :=
+      mkD_heq (Gen.Struct.tc_ren (G := CS Ax φ0) _ fs (ρOf s) _ (fun _ => rfl)) (codeTm_castK _ _ 0 0).symm
+    exact eq_of_heq (e1.trans ((heq_of_eq (ih (fun i => s (fs i))
+      (fun {K'} x => Tm.castK (Cat.sub_ren K' fs s) (σs (.tthere x))))).trans
+      (Gen.Struct.lookup_tthere (G := CS Ax φ0) y (ρOf s) _).symm))
+
 end Model
+
+/-! ## Completeness -/
+
+/-- **Completeness for general models**: a formula valid in every general model of PI⁻ in which the
+extra axioms are valid is provable from them. -/
+theorem completeness {Ax : Fm Ctx.nil → Prop} {n0 : Nat} {Γ0 : Ctx n0} {φ0 : Fm Γ0}
+    (h : ∀ G : Gen.GModel, G.IsModelPIm → (∀ ψ, Ax ψ → G.Valid ψ) → G.Valid φ0) : Prov Ax Γ0 φ0 := by
+  refine Classical.byContradiction fun h0 => ?_
+  have hv := h (canon h0) (canon_model h0) (canon_ax h0)
+  let s : Fin n0 → Ty (chain n0 Γ0 0).n := tvar
+  let σs : TSub s Γ0 (chain n0 Γ0 0).Γ := fun {L} x => Tm.castK (Cat.sub_var L).symm (Tm.var x)
+  let d : CData φ0 Γ0 (ρOf s) (envOf (Ax := Ax) φ0 Γ0 s σs) := ⟨0, s, σs, fun _ => rfl, fun x => lookup_envOf x s σs⟩
+  have h1 := (holds_iff d φ0).1 (hv (ρOf s) (envOf φ0 Γ0 s σs))
+  have e : codeTm 0 0 (φ0.sub σs) = codeTm 0 0 φ0 :=
+    (codeTm_heq (Cat.sub_var _).symm (Tm.sub_id_heq φ0 rfl σs (fun _ => rfl) (fun _ => (castK_heq _ _).symm)) 0 0).symm
+  rw [e] at h1
+  exact trL_cons (k := 0) h0 (φ := φ0) h1 (trL_of_E (Ent.hyp [Tm.neg φ0] 0 Nat.one_pos))
+
+/-- **Soundness and completeness**: `φ` is provable from `Ax` in PI⁻ just in case it is valid in every
+general model of PI⁻ in which the sentences `Ax` are valid. -/
+theorem sound_complete {Ax : Fm Ctx.nil → Prop} {n0 : Nat} {Γ0 : Ctx n0} (φ0 : Fm Γ0) :
+    Prov Ax Γ0 φ0 ↔ ∀ G : Gen.GModel, G.IsModelPIm → (∀ ψ, Ax ψ → G.Valid ψ) → G.Valid φ0 :=
+  ⟨fun hp G hM hAx => G.soundness hM hAx hp, completeness⟩
+
 
 end Compl
 end PIF
