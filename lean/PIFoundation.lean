@@ -21,6 +21,7 @@ Contents
 6. β-conversion.
 7. The proof system PI (and PI⁻), and its soundness.
 8. Consistency: PI has a model.
+9. Invariance (parametricity): the fundamental lemma, and when LL≈ and LL≡-Poly hold.
 
 No Mathlib. Checked with Lean 4.34.1: `lean PIFoundation.lean` prints nothing when every proof
 checks.
@@ -36,6 +37,8 @@ checks.
   literally equal, which is the paper's convention that such terms are identified.
 * **Terms are intrinsically typed**: a term is indexed by its context and its category, so only
   well-formed terms exist.
+* **Term variables have types**, as in the paper (the term variables of lemma `normaltypes`(b));
+  terms of a `Π`-category arise only as constants, type abstractions, and their applications.
 * **Variables live in contexts.** The paper gives each variable a fixed type. Here a derivation
   is of a formula in a context, and three structural rules (renaming, and discarding an unused
   term or type variable) do the work that the fixed typing does implicitly. Discarding a variable
@@ -267,17 +270,18 @@ theorem Cat.ren_fs_inst {n : Nat} (K : Cat n) (σ : Ty n) : (K.ren fs).sub (inst
 
 /-! ## 2. Contexts, variables, constants, and terms -/
 
-/-- Contexts. `ext Γ K` adds a term variable of category `K`; `text Γ` adds a type variable,
-which becomes the type variable `fz`, the older ones being shifted by `fs`. -/
+/-- Contexts. `ext Γ σ` adds a term variable of type `σ`; `text Γ` adds a type variable,
+which becomes the type variable `fz`, the older ones being shifted by `fs`. As in the paper,
+every term variable has a type (a simple normal type) as its category. -/
 inductive Ctx : Nat → Type where
   | nil : Ctx 0
-  | ext {n : Nat} : Ctx n → Cat n → Ctx n
+  | ext {n : Nat} : Ctx n → Ty n → Ctx n
   | text {n : Nat} : Ctx n → Ctx (n+1)
 
 /-- Variables, as positions in a context, with their categories. -/
 inductive Var : {n : Nat} → Ctx n → Cat n → Type where
-  | here {n : Nat} {Γ : Ctx n} {K : Cat n} : Var (.ext Γ K) K
-  | there {n : Nat} {Γ : Ctx n} {K L : Cat n} : Var Γ K → Var (.ext Γ L) K
+  | here {n : Nat} {Γ : Ctx n} {σ : Ty n} : Var (.ext Γ σ) σ.1
+  | there {n : Nat} {Γ : Ctx n} {K : Cat n} {σ : Ty n} : Var Γ K → Var (.ext Γ σ) K
   | tthere {n : Nat} {Γ : Ctx n} {K : Cat n} : Var Γ K → Var (.text Γ) (K.ren fs)
 
 /-- The constants of PI and their categories (table in §1 of *Formal Results*). -/
@@ -332,7 +336,7 @@ inductive Tm : {n : Nat} → Ctx n → Cat n → Type where
   | var {n : Nat} {Γ : Ctx n} {K : Cat n} : Var Γ K → Tm Γ K
   | const {n : Nat} {Γ : Ctx n} {K : Cat n} : Const n K → Tm Γ K
   | app {n : Nat} {Γ : Ctx n} {K L : Cat n} : Tm Γ (.arr K L) → Tm Γ K → Tm Γ L
-  | lam {n : Nat} {Γ : Ctx n} (K : Cat n) {L : Cat n} : Tm (.ext Γ K) L → Tm Γ (.arr K L)
+  | lam {n : Nat} {Γ : Ctx n} (σ : Ty n) {L : Cat n} : Tm (.ext Γ σ) L → Tm Γ (.arr σ.1 L)
   | tlam {n : Nat} {Γ : Ctx n} {K : Cat (n+1)} : Tm (.text Γ) K → Tm Γ (.pi K)
   | tapp {n : Nat} {Γ : Ctx n} {K : Cat (n+1)} : Tm Γ (.pi K) → (σ : Ty n) → Tm Γ (K.sub (inst σ))
 
@@ -355,8 +359,8 @@ theorem Cat.ren_fs_liftR {n m : Nat} (K : Cat n) (r : Fin n → Fin m) :
     (K.ren r).ren fs = (K.ren fs).ren (liftR r) := by
   rw [Cat.ren_ren, Cat.ren_ren]; rfl
 
-def TRen.lift {n m : Nat} {r : Fin n → Fin m} {Γ : Ctx n} {Δ : Ctx m} (ρ : TRen r Γ Δ) (K : Cat n) :
-    TRen r (.ext Γ K) (.ext Δ (K.ren r)) := fun {_} x =>
+def TRen.lift {n m : Nat} {r : Fin n → Fin m} {Γ : Ctx n} {Δ : Ctx m} (ρ : TRen r Γ Δ) (σ : Ty n) :
+    TRen r (.ext Γ σ) (.ext Δ (σ.ren r)) := fun {_} x =>
   match x with
   | .here => .here
   | .there x => .there (ρ x)
@@ -377,16 +381,16 @@ def Tm.ren {n m : Nat} {r : Fin n → Fin m} {Γ : Ctx n} {Δ : Ctx m} (ρ : TRe
   | _, .var x => .var (ρ x)
   | _, .const c => .const (c.ren r)
   | _, .app f a => .app (f.ren ρ) (a.ren ρ)
-  | _, .lam K b => .lam (K.ren r) (b.ren (ρ.lift K))
+  | _, .lam σ b => .lam (σ.ren r) (b.ren (ρ.lift σ))
   | _, .tlam b => .tlam (b.ren ρ.tlift)
   | _, .tapp (K := K) f σ => Tm.castK (Cat.tapp_ren K σ r) (Tm.tapp (f.ren ρ) (σ.ren r))
 
 /-- The renaming which adds a term variable at the front. -/
-def wkRen {n : Nat} {Γ : Ctx n} (L : Cat n) : TRen (fun i => i) Γ (.ext Γ L) := fun {K} x =>
+def wkRen {n : Nat} {Γ : Ctx n} (L : Ty n) : TRen (fun i => i) Γ (.ext Γ L) := fun {K} x =>
   Var.castK (Cat.ren_id K).symm (Var.there x)
 
 /-- Weakening: a term in `Γ` is a term in `Γ` extended by one more term variable. -/
-def Tm.wk {n : Nat} {Γ : Ctx n} {K : Cat n} (L : Cat n) (M : Tm Γ K) : Tm (.ext Γ L) K :=
+def Tm.wk {n : Nat} {Γ : Ctx n} {K : Cat n} (L : Ty n) (M : Tm Γ K) : Tm (.ext Γ L) K :=
   Tm.castK (Cat.ren_id K) (M.ren (wkRen L))
 
 /-- The renaming which adds a type variable at the front. -/
@@ -400,8 +404,8 @@ type variables. -/
 def TSub {n m : Nat} (s : Fin n → Ty m) (Γ : Ctx n) (Δ : Ctx m) : Type :=
   ∀ {K : Cat n}, Var Γ K → Tm Δ (K.sub s)
 
-def TSub.lift {n m : Nat} {s : Fin n → Ty m} {Γ : Ctx n} {Δ : Ctx m} (σs : TSub s Γ Δ) (K : Cat n) :
-    TSub s (.ext Γ K) (.ext Δ (K.sub s)) := fun {_} x =>
+def TSub.lift {n m : Nat} {s : Fin n → Ty m} {Γ : Ctx n} {Δ : Ctx m} (σs : TSub s Γ Δ) (σ : Ty n) :
+    TSub s (.ext Γ σ) (.ext Δ (σ.sub s)) := fun {_} x =>
   match x with
   | .here => .var .here
   | .there x => (σs x).wk _
@@ -428,18 +432,18 @@ def Tm.sub {n m : Nat} {s : Fin n → Ty m} {Γ : Ctx n} {Δ : Ctx m} (σs : TSu
   | _, .var x => σs x
   | _, .const c => .const (c.sub s)
   | _, .app f a => .app (f.sub σs) (a.sub σs)
-  | _, .lam K b => .lam (K.sub s) (b.sub (σs.lift K))
+  | _, .lam σ b => .lam (σ.sub s) (b.sub (σs.lift σ))
   | _, .tlam b => .tlam (b.sub σs.tlift)
   | _, .tapp (K := K) f σ => Tm.castK (Cat.tapp_sub K σ s) (Tm.tapp (f.sub σs) (σ.sub s))
 
 /-- The substitution sending `here` to `N` and every other variable to itself. -/
-def sub0 {n : Nat} {Γ : Ctx n} {K : Cat n} (N : Tm Γ K) : TSub tvar (.ext Γ K) Γ := fun {_} x =>
+def sub0 {n : Nat} {Γ : Ctx n} {σ : Ty n} (N : Tm Γ σ.1) : TSub tvar (.ext Γ σ) Γ := fun {_} x =>
   match x with
-  | .here => Tm.castK (Cat.sub_var K).symm N
+  | .here => Tm.castK (Cat.sub_var σ.1).symm N
   | .there y => Tm.castK (Cat.sub_var _).symm (.var y)
 
 /-- Substituting `N` for the term variable `here`. -/
-def Tm.subst0 {n : Nat} {Γ : Ctx n} {K L : Cat n} (M : Tm (.ext Γ K) L) (N : Tm Γ K) : Tm Γ L :=
+def Tm.subst0 {n : Nat} {Γ : Ctx n} {σ : Ty n} {L : Cat n} (M : Tm (.ext Γ σ) L) (N : Tm Γ σ.1) : Tm Γ L :=
   Tm.castK (Cat.sub_var L) (M.sub (sub0 N))
 
 /-- The substitution sending each variable of `text Γ` back to itself in `Γ`, with `σ` for `fz`. -/
@@ -581,7 +585,7 @@ theorem CatVal_nonempty {n : Nat} (K : Cat n) : ∀ ρ : U.TEnv n, Nonempty (U.C
 /-- Values for the term variables of a context. -/
 def Env {n : Nat} : Ctx n → U.TEnv n → Type
   | .nil, _ => Unit
-  | .ext Γ K, ρ => Env Γ ρ × U.CatVal K ρ
+  | .ext Γ σ, ρ => Env Γ ρ × U.CatVal σ.1 ρ
   | .text Γ, ρ => Env Γ (fun i => ρ (fs i))
 
 def lookup {n : Nat} {Γ : Ctx n} {K : Cat n} (x : Var Γ K) : (ρ : U.TEnv n) → U.Env Γ ρ → U.CatVal K ρ :=
@@ -693,10 +697,10 @@ theorem eval_ren {n : Nat} {Γ : Ctx n} {K : Cat n} (M : Tm Γ K) :
     intro m r Δ ρr ρ' env' ρ env hρ hx
     exact heq_app (Univ.CatVal_ren _ r ρ' ρ hρ) (Univ.CatVal_ren _ r ρ' ρ hρ)
       (ihf ρr ρ' env' ρ env hρ hx) (iha ρr ρ' env' ρ env hρ hx)
-  | lam K b ih =>
+  | lam σ b ih =>
     intro m r Δ ρr ρ' env' ρ env hρ hx
     refine heq_funext (Univ.CatVal_ren _ r ρ' ρ hρ) (Univ.CatVal_ren _ r ρ' ρ hρ) fun v' v hv => ?_
-    refine ih (ρr.lift K) ρ' (env', v') ρ (env, v) hρ ?_
+    refine ih (ρr.lift σ) ρ' (env', v') ρ (env, v) hρ ?_
     intro L x
     cases x with
     | here => exact hv
@@ -719,8 +723,8 @@ theorem eval_ren {n : Nat} {Γ : Ctx n} {K : Cat n} (M : Tm Γ K) :
     show F.U.code (σ.1.ren r) ρ' = F.U.code σ.1 ρ
     rw [Univ.code_ren]; exact congrArg _ (funext hρ)
 
-theorem eval_wk {n : Nat} {Γ : Ctx n} {K : Cat n} (L : Cat n) (M : Tm Γ K) (ρ : F.U.TEnv n)
-    (env : F.U.Env Γ ρ) (v : F.U.CatVal L ρ) : F.eval (M.wk L) (ρ) (env, v) = F.eval M ρ env :=
+theorem eval_wk {n : Nat} {Γ : Ctx n} {K : Cat n} (L : Ty n) (M : Tm Γ K) (ρ : F.U.TEnv n)
+    (env : F.U.Env Γ ρ) (v : F.U.CatVal L.1 ρ) : F.eval (M.wk L) (ρ) (env, v) = F.eval M ρ env :=
   eq_of_heq ((F.eval_castK _ _ _ _).trans (F.eval_ren M (wkRen L) ρ (env, v) ρ env (fun _ => rfl)
     (fun _ => F.lookup_castK _ _ _ _)))
 
@@ -742,10 +746,10 @@ theorem eval_sub {n : Nat} {Γ : Ctx n} {K : Cat n} (M : Tm Γ K) :
     intro m s Δ σs ρ' env' ρ env hρ hx
     exact heq_app (Univ.CatVal_sub _ s ρ' ρ hρ) (Univ.CatVal_sub _ s ρ' ρ hρ)
       (ihf σs ρ' env' ρ env hρ hx) (iha σs ρ' env' ρ env hρ hx)
-  | lam K b ih =>
+  | lam σ b ih =>
     intro m s Δ σs ρ' env' ρ env hρ hx
     refine heq_funext (Univ.CatVal_sub _ s ρ' ρ hρ) (Univ.CatVal_sub _ s ρ' ρ hρ) fun v' v hv => ?_
-    refine ih (σs.lift K) ρ' (env', v') ρ (env, v) hρ ?_
+    refine ih (σs.lift σ) ρ' (env', v') ρ (env, v) hρ ?_
     intro L x
     cases x with
     | here => exact hv
@@ -775,7 +779,7 @@ theorem eval_sub {n : Nat} {Γ : Ctx n} {K : Cat n} (M : Tm Γ K) :
     show F.U.code (σ.1.sub s) ρ' = F.U.code σ.1 ρ
     rw [Univ.code_sub]; exact congrArg _ (funext hρ)
 
-theorem eval_subst0 {n : Nat} {Γ : Ctx n} {K L : Cat n} (M : Tm (.ext Γ K) L) (N : Tm Γ K)
+theorem eval_subst0 {n : Nat} {Γ : Ctx n} {σ : Ty n} {L : Cat n} (M : Tm (.ext Γ σ) L) (N : Tm Γ σ.1)
     (ρ : F.U.TEnv n) (env : F.U.Env Γ ρ) : F.eval (M.subst0 N) ρ env = F.eval M ρ (env, F.eval N ρ env) := by
   refine eq_of_heq ((F.eval_castK _ _ _ _).trans (F.eval_sub M (sub0 N) ρ env ρ _ (fun _ => rfl) ?_))
   intro L x
@@ -797,16 +801,16 @@ end Frame
 
 /-- One step of β-reduction, anywhere in a term: `(λx:K.b) a ↦ b[a/x]` and `(λα:∗.b) σ ↦ b[σ/α]`. -/
 inductive Step : {n : Nat} → {Γ : Ctx n} → {K : Cat n} → Tm Γ K → Tm Γ K → Prop where
-  | beta {n : Nat} {Γ : Ctx n} {K L : Cat n} (b : Tm (.ext Γ K) L) (a : Tm Γ K) :
-      Step (.app (.lam K b) a) (b.subst0 a)
+  | beta {n : Nat} {Γ : Ctx n} {σ : Ty n} {L : Cat n} (b : Tm (.ext Γ σ) L) (a : Tm Γ σ.1) :
+      Step (.app (.lam σ b) a) (b.subst0 a)
   | tbeta {n : Nat} {Γ : Ctx n} {K : Cat (n+1)} (b : Tm (.text Γ) K) (σ : Ty n) :
       Step (.tapp (.tlam b) σ) (b.tinst σ)
   | appL {n : Nat} {Γ : Ctx n} {K L : Cat n} {f f' : Tm Γ (.arr K L)} (a : Tm Γ K) :
       Step f f' → Step (.app f a) (.app f' a)
   | appR {n : Nat} {Γ : Ctx n} {K L : Cat n} (f : Tm Γ (.arr K L)) {a a' : Tm Γ K} :
       Step a a' → Step (.app f a) (.app f a')
-  | lam {n : Nat} {Γ : Ctx n} (K : Cat n) {L : Cat n} {b b' : Tm (.ext Γ K) L} :
-      Step b b' → Step (.lam K b) (.lam K b')
+  | lam {n : Nat} {Γ : Ctx n} (σ : Ty n) {L : Cat n} {b b' : Tm (.ext Γ σ) L} :
+      Step b b' → Step (.lam σ b) (.lam σ b')
   | tlam {n : Nat} {Γ : Ctx n} {K : Cat (n+1)} {b b' : Tm (.text Γ) K} :
       Step b b' → Step (.tlam b) (.tlam b')
   | tapp {n : Nat} {Γ : Ctx n} {K : Cat (n+1)} {f f' : Tm Γ (.pi K)} (σ : Ty n) :
@@ -829,7 +833,7 @@ theorem eval_step {n : Nat} {Γ : Ctx n} {K : Cat n} {M N : Tm Γ K} (h : Step M
   | tbeta b σ => intro ρ env; exact eq_of_heq ((cast_heq _ _).trans (F.eval_tinst b σ ρ env).symm)
   | appL a _ ih => intro ρ env; simp only [eval]; rw [ih ρ env]
   | appR f _ ih => intro ρ env; simp only [eval]; rw [ih ρ env]
-  | lam K _ ih => intro ρ env; exact funext fun v => ih ρ (env, v)
+  | lam σ _ ih => intro ρ env; exact funext fun v => ih ρ (env, v)
   | tlam _ ih => intro ρ env; exact funext fun a => ih (scons a ρ) env
   | tapp σ _ ih => intro ρ env; simp only [eval]; rw [ih ρ env]
 
@@ -854,9 +858,9 @@ def conj (φ ψ : Fm Γ) : Fm Γ := .app (.app (.const .and) φ) ψ
 def disj (φ ψ : Fm Γ) : Fm Γ := .app (.app (.const .or) φ) ψ
 def iff (φ ψ : Fm Γ) : Fm Γ := .app (.app (.const .iff) φ) ψ
 /-- `∀_σ x φ` -/
-def all (σ : Ty n) (φ : Fm (.ext Γ σ.1)) : Fm Γ := .app (.tapp (.const .all) σ) (.lam σ.1 φ)
+def all (σ : Ty n) (φ : Fm (.ext Γ σ)) : Fm Γ := .app (.tapp (.const .all) σ) (.lam σ φ)
 /-- `∃_σ x φ` -/
-def ex (σ : Ty n) (φ : Fm (.ext Γ σ.1)) : Fm Γ := .app (.tapp (.const .ex) σ) (.lam σ.1 φ)
+def ex (σ : Ty n) (φ : Fm (.ext Γ σ)) : Fm Γ := .app (.tapp (.const .ex) σ) (.lam σ φ)
 /-- `𝔸α φ` -/
 def tall (φ : Fm (.text Γ)) : Fm Γ := .app (.const .tall) (.tlam φ)
 /-- `𝔼α φ` -/
@@ -953,6 +957,13 @@ def LLTeq {n : Nat} {Γ : Ctx n} (Q : Tm Γ (.pi .t)) : Fm Γ :=
 /-- The type `t`. -/
 def tyT {n : Nat} : Ty n := ⟨.t, trivial⟩
 
+/-- (LL≡-Poly), the instance for a polymorphic predicate `P` of category `Πγ:∗.γ→t`:
+`𝔸α 𝔸β ∀_α x ∀_β y (x ≡_{α,β} y → (P_α x → P_β y))`. -/
+def LLPoly {n : Nat} {Γ : Ctx n} (P : Tm Γ (.pi (.arr (.var fz) .t))) : Fm Γ :=
+  let P' := (P.twk.twk.wk tv1).wk tv0
+  tall (tall (all tv1 (all tv0 (imp (eqv tv1 tv0 (.var (.there .here)) (.var .here))
+    (imp (.app (.tapp P' tv1) (.var (.there .here))) (.app (.tapp P' tv0) (.var .here)))))))
+
 /-- `⊥`, that is `∀_t p (p)`. -/
 def Bot : Fm Ctx.nil := all tyT (.var .here)
 
@@ -965,13 +976,13 @@ inductive Prov (Ax : Fm Ctx.nil → Prop) : {n : Nat} → (Γ : Ctx n) → Fm Γ
   /-- the propositional axioms: every instance of a tautology -/
   | taut {n : Nat} {Γ : Ctx n} {k : Nat} (P : PF k) (as : Fin k → Fm Γ) : P.Taut → Prov Ax Γ (P.inst as)
   /-- (Inst∀) -/
-  | instAll {n : Nat} {Γ : Ctx n} (σ : Ty n) (φ : Fm (.ext Γ σ.1)) (κ : Tm Γ σ.1) :
+  | instAll {n : Nat} {Γ : Ctx n} (σ : Ty n) (φ : Fm (.ext Γ σ)) (κ : Tm Γ σ.1) :
       Prov Ax Γ ((Tm.all σ φ).imp (φ.subst0 κ))
   /-- (Dist∀) -/
-  | distAll {n : Nat} {Γ : Ctx n} (σ : Ty n) (φ : Fm Γ) (ψ : Fm (.ext Γ σ.1)) :
-      Prov Ax Γ ((Tm.all σ ((φ.wk σ.1).imp ψ)).imp (φ.imp (Tm.all σ ψ)))
+  | distAll {n : Nat} {Γ : Ctx n} (σ : Ty n) (φ : Fm Γ) (ψ : Fm (.ext Γ σ)) :
+      Prov Ax Γ ((Tm.all σ ((φ.wk σ).imp ψ)).imp (φ.imp (Tm.all σ ψ)))
   /-- (Dual∃) -/
-  | dualEx {n : Nat} {Γ : Ctx n} (σ : Ty n) (φ : Fm (.ext Γ σ.1)) :
+  | dualEx {n : Nat} {Γ : Ctx n} (σ : Ty n) (φ : Fm (.ext Γ σ)) :
       Prov Ax Γ ((Tm.ex σ φ).iff (Tm.all σ φ.neg).neg)
   /-- (Inst𝔸) -/
   | instTAll {n : Nat} {Γ : Ctx n} (φ : Fm (.text Γ)) (σ : Ty n) :
@@ -995,14 +1006,14 @@ inductive Prov (Ax : Fm Ctx.nil → Prop) : {n : Nat} → (Γ : Ctx n) → Fm Γ
   /-- (MP) -/
   | mp {n : Nat} {Γ : Ctx n} {φ ψ : Fm Γ} : Prov Ax Γ φ → Prov Ax Γ (φ.imp ψ) → Prov Ax Γ ψ
   /-- (Gen∀) -/
-  | genAll {n : Nat} {Γ : Ctx n} (σ : Ty n) {φ : Fm (.ext Γ σ.1)} : Prov Ax (.ext Γ σ.1) φ → Prov Ax Γ (Tm.all σ φ)
+  | genAll {n : Nat} {Γ : Ctx n} (σ : Ty n) {φ : Fm (.ext Γ σ)} : Prov Ax (.ext Γ σ) φ → Prov Ax Γ (Tm.all σ φ)
   /-- (Gen𝔸) -/
   | genTAll {n : Nat} {Γ : Ctx n} {φ : Fm (.text Γ)} : Prov Ax (.text Γ) φ → Prov Ax Γ (Tm.tall φ)
   /-- renaming variables (weakening, exchange, contraction) -/
   | ren {n m : Nat} {Γ : Ctx n} {Δ : Ctx m} {r : Fin n → Fin m} (ρr : TRen r Γ Δ) {φ : Fm Γ} :
       Prov Ax Γ φ → Prov Ax Δ (φ.ren ρr)
   /-- discarding a term variable that does not occur -/
-  | strengthen {n : Nat} {Γ : Ctx n} (K : Cat n) {φ : Fm Γ} : Prov Ax (.ext Γ K) (φ.wk K) → Prov Ax Γ φ
+  | strengthen {n : Nat} {Γ : Ctx n} (σ : Ty n) {φ : Fm Γ} : Prov Ax (.ext Γ σ) (φ.wk σ) → Prov Ax Γ φ
   /-- discarding a type variable that does not occur -/
   | tstrengthen {n : Nat} {Γ : Ctx n} {φ : Fm Γ} : Prov Ax (.text Γ) φ.twk → Prov Ax Γ φ
 
@@ -1035,11 +1046,11 @@ theorem heq_eval_tapp {K : Cat (n+1)} (f : Tm Γ (.pi K)) (σ : Ty n) (ρ : F.U.
     HEq (F.eval (Tm.tapp f σ) ρ env) (F.eval f ρ env (F.U.code σ.1 ρ)) :=
   (heq_of_eq (F.eval_tapp f σ ρ env)).trans (cast_heq _ _)
 
-theorem holds_all (σ : Ty n) (φ : Fm (.ext Γ σ.1)) (ρ : F.U.TEnv n) (env : F.U.Env Γ ρ) :
+theorem holds_all (σ : Ty n) (φ : Fm (.ext Γ σ)) (ρ : F.U.TEnv n) (env : F.U.Env Γ ρ) :
     F.Holds (Tm.all σ φ) ρ env ↔ ∀ v : F.U.CatVal σ.1 ρ, F.Holds φ ρ (env, v) :=
   cast_forall (Univ.El_code ρ σ.2) _ _
 
-theorem holds_ex (σ : Ty n) (φ : Fm (.ext Γ σ.1)) (ρ : F.U.TEnv n) (env : F.U.Env Γ ρ) :
+theorem holds_ex (σ : Ty n) (φ : Fm (.ext Γ σ)) (ρ : F.U.TEnv n) (env : F.U.Env Γ ρ) :
     F.Holds (Tm.ex σ φ) ρ env ↔ ∃ v : F.U.CatVal σ.1 ρ, F.Holds φ ρ (env, v) :=
   cast_exists (Univ.El_code ρ σ.2) _ _
 
@@ -1110,9 +1121,9 @@ end EvalLemmas
 def pullEnv : {n : Nat} → (Γ : Ctx n) → {m : Nat} → {r : Fin n → Fin m} → {Δ : Ctx m} →
     TRen r Γ Δ → (ρ' : F.U.TEnv m) → F.U.Env Δ ρ' → F.U.Env Γ (fun i => ρ' (r i))
   | _, .nil, _, _, _, _, _, _ => ()
-  | _, .ext Γ K, _, r, _, ρr, ρ', env' =>
+  | _, .ext Γ σ, _, r, _, ρr, ρ', env' =>
       (pullEnv Γ (fun x => ρr (.there x)) ρ' env',
-       cast (Univ.CatVal_ren K r ρ' _ (fun _ => rfl)) (F.U.lookup (ρr .here) ρ' env'))
+       cast (Univ.CatVal_ren σ.1 r ρ' _ (fun _ => rfl)) (F.U.lookup (ρr .here) ρ' env'))
   | _, .text Γ, _, r, _, ρr, ρ', env' =>
       pullEnv Γ (r := fun i => r (fs i)) (fun x => Var.castK (Cat.ren_ren _ _ _) (ρr (.tthere x))) ρ' env'
 
@@ -1151,7 +1162,7 @@ theorem soundness {Ax : Fm Ctx.nil → Prop} (hM : F.IsModelPIm) (hAx : ∀ φ, 
     intro ρ env h hφ
     refine (F.holds_all σ ψ ρ env).mpr fun v => ?_
     have h' := (F.holds_all σ _ ρ env).mp h v
-    have hw : F.Holds (φ.wk σ.1) ρ (env, v) := by unfold Holds; rw [eval_wk]; exact hφ
+    have hw : F.Holds (φ.wk σ) ρ (env, v) := by unfold Holds; rw [eval_wk]; exact hφ
     exact h' hw
   | dualEx σ φ =>
     intro ρ env
@@ -1186,9 +1197,9 @@ theorem soundness {Ax : Fm Ctx.nil → Prop} (hM : F.IsModelPIm) (hAx : ∀ φ, 
     intro ρ' env'
     exact cast (eq_of_heq (F.eval_ren _ ρr ρ' env' _ (F.pullEnv _ ρr ρ' env') (fun _ => rfl)
       (fun x => F.lookup_pull x ρr ρ' env'))).symm (ih _ _)
-  | strengthen K _ ih =>
+  | strengthen σ _ ih =>
     intro ρ env
-    have v := Classical.choice (Univ.CatVal_nonempty K ρ)
+    have v := Classical.choice (Univ.CatVal_nonempty σ.1 ρ)
     have := ih ρ (env, v)
     unfold Holds at this
     rwa [eval_wk] at this
@@ -1226,8 +1237,8 @@ end Frame
 
 /-! ## 8. Consistency: the diagonal model
 
-The type universe has one entity; `≡` is identity (of an item with itself, across codes naming
-the same set), and `≈` is identity of codes. This is the model `𝔐(HF⁺, ∼₀)` of *Formal Results*,
+The type universe has one entity; `≡` relates an item only to itself, at one and the same type,
+and `≈` is identity of types. This is the model `𝔐(HF⁺, ∼₀)` of *Formal Results*,
 in miniature. -/
 
 def unitUniv : Univ where
@@ -1239,25 +1250,27 @@ def unitUniv : Univ where
 
 def diag : Frame where
   U := unitUniv
-  eqv := fun _ _ x y => HEq x y
+  eqv := fun a b x y => a = b ∧ HEq x y
   teq := fun a b => a = b
 
 theorem diag_model : diag.IsModelPIm where
   refEqv := by
     intro ρ env a
-    exact (diag.holds_all _ _ _ _).mpr fun v => (diag.holds_eqv _ _ _ _ _ _).mpr HEq.rfl
+    exact (diag.holds_all _ _ _ _).mpr fun v => (diag.holds_eqv _ _ _ _ _ _).mpr ⟨rfl, HEq.rfl⟩
   symEqv := by
     intro ρ env a b
     refine (diag.holds_all _ _ _ _).mpr fun x => (diag.holds_all _ _ _ _).mpr fun y => ?_
     intro h
-    exact (diag.holds_eqv _ _ _ _ _ _).mpr ((diag.holds_eqv _ _ _ _ _ _).mp h).symm
+    obtain ⟨e, hxy⟩ := (diag.holds_eqv _ _ _ _ _ _).mp h
+    exact (diag.holds_eqv _ _ _ _ _ _).mpr ⟨e.symm, hxy.symm⟩
   transEqv := by
     intro ρ env a b c
     refine (diag.holds_all _ _ _ _).mpr fun x => (diag.holds_all _ _ _ _).mpr fun y =>
       (diag.holds_all _ _ _ _).mpr fun z => ?_
     intro h
-    exact (diag.holds_eqv _ _ _ _ _ _).mpr
-      (((diag.holds_eqv _ _ _ _ _ _).mp h.1).trans ((diag.holds_eqv _ _ _ _ _ _).mp h.2))
+    obtain ⟨e1, h1⟩ := (diag.holds_eqv _ _ _ _ _ _).mp h.1
+    obtain ⟨e2, h2⟩ := (diag.holds_eqv _ _ _ _ _ _).mp h.2
+    exact (diag.holds_eqv _ _ _ _ _ _).mpr ⟨e1.trans e2, h1.trans h2⟩
   refTeq := by
     intro ρ env a
     exact (diag.holds_teq _ _ _ _).mpr rfl
@@ -1268,13 +1281,382 @@ theorem diag_LLEqv : diag.Valid LLEqv := by
   refine (diag.holds_all _ _ _ _).mpr fun x => (diag.holds_all _ _ _ _).mpr fun y => ?_
   intro h
   have h' := (diag.holds_eqv _ _ _ _ _ _).mp h
-  have hxy : x = y := eq_of_heq ((cast_heq _ _).symm.trans (h'.trans (cast_heq _ _)))
+  have hxy : x = y := eq_of_heq ((cast_heq _ _).symm.trans (h'.2.trans (cast_heq _ _)))
   subst hxy
   exact (diag.holds_all _ _ _ _).mpr fun _ hF => hF
 
 /-- **PI is consistent**: it does not derive `⊥`. -/
 theorem PI_consistent : ¬ PI (fun _ => False) Ctx.nil Bot :=
   diag.consistent_of_model diag_model (fun _ hψ => hψ.elim (fun e => e ▸ diag_LLEqv) False.elim)
+
+/-! ## 9. Invariance (parametricity)
+
+*Formal Results*, Definition 12 and Lemma 7 (invariance): if a model carries a family of bijections
+between members of its type universe which respects `→`, `≡`, and `≈`, then no sentence can tell
+related items apart. Here the lemma is proved in the relational form of Reynolds' parametricity
+theorem: a model carries a family of *admissible relations* between members of its type universe,
+and every term is related to itself. The graph of each bijection in a family of bijections is an
+admissible relation, so the paper's lemma is a special case. Two consequences, the analogue of
+Lemma 8 of *Formal Results*, give conditions under which LL≈ and LL≡-Poly hold; they are what is
+needed for models such as `𝔐_κ`, `𝔐_card`, `𝔐_tot`, and `𝔐_fn`. -/
+
+/-- A family of admissible relations for a frame. -/
+structure Invariance (F : Frame) where
+  Adm : (a a' : Code F.U.Base) → (F.U.El a → F.U.El a' → Prop) → Prop
+  /-- (i) identity is admissible -/
+  refl : ∀ a, Adm a a (fun x y => x = y)
+  /-- (ii) admissible relations are closed under `→` -/
+  arrow : ∀ {a a' c c' : Code F.U.Base} {R : F.U.El a → F.U.El a' → Prop} {S : F.U.El c → F.U.El c' → Prop},
+    Adm a a' R → Adm c c' S → Adm (.arr a c) (.arr a' c') (fun f f' => ∀ u u', R u u' → S (f u) (f' u'))
+  /-- admissible relations are total and onto (as the graph of a bijection is) -/
+  total : ∀ {a a' : Code F.U.Base} {R : F.U.El a → F.U.El a' → Prop}, Adm a a' R → ∀ u, ∃ u', R u u'
+  onto : ∀ {a a' : Code F.U.Base} {R : F.U.El a → F.U.El a' → Prop}, Adm a a' R → ∀ u', ∃ u, R u u'
+  /-- (iii) `≈` and `≡` respect admissible relations -/
+  teq : ∀ {a a' b b' : Code F.U.Base} {R : F.U.El a → F.U.El a' → Prop} {S : F.U.El b → F.U.El b' → Prop},
+    Adm a a' R → Adm b b' S → (F.teq a b ↔ F.teq a' b')
+  eqv : ∀ {a a' b b' : Code F.U.Base} {R : F.U.El a → F.U.El a' → Prop} {S : F.U.El b → F.U.El b' → Prop},
+    Adm a a' R → Adm b b' S → ∀ u u' v v', R u u' → S v v' → (F.eqv a b u v ↔ F.eqv a' b' u' v')
+
+namespace Invariance
+variable {F : Frame} (I : Invariance F)
+set_option linter.unusedVariables false
+
+/-- Relations for the type variables, extended by `R` for the new variable `fz`. -/
+def RScons {n : Nat} {ρ ρ' : F.U.TEnv n} {a a' : Code F.U.Base} (R : F.U.El a → F.U.El a' → Prop)
+    (Rs : ∀ i, F.U.El (ρ i) → F.U.El (ρ' i) → Prop) :
+    ∀ i : Fin (n+1), F.U.El (scons a ρ i) → F.U.El (scons a' ρ' i) → Prop
+  | ⟨0, _⟩ => R
+  | ⟨k+1, h⟩ => Rs ⟨k, Nat.lt_of_succ_lt_succ h⟩
+
+/-- The logical relation at each category: equality at `e`, `↔` at `t`, the given relations at
+type variables, preservation at `→`, and preservation under every admissible relation at `Π`. -/
+def Rel : {n : Nat} → (K : Cat n) → (ρ ρ' : F.U.TEnv n) → (∀ i, F.U.El (ρ i) → F.U.El (ρ' i) → Prop) →
+    F.U.CatVal K ρ → F.U.CatVal K ρ' → Prop
+  | _, .e, _, _, _ => fun x y => x = y
+  | _, .t, _, _, _ => fun p q => (p ↔ q)
+  | _, .var i, _, _, Rs => Rs i
+  | _, .arr K L, ρ, ρ', Rs => fun f f' => ∀ u u', Rel K ρ ρ' Rs u u' → Rel L ρ ρ' Rs (f u) (f' u')
+  | _, .pi K, ρ, ρ', Rs => fun G G' => ∀ a a' (R : F.U.El a → F.U.El a' → Prop), I.Adm a a' R →
+      Rel K (scons a ρ) (scons a' ρ') (RScons R Rs) (G a) (G' a')
+
+/-- The same relation at a type, on the sets its code names. -/
+def RelE {n : Nat} : (K : Cat n) → (ρ ρ' : F.U.TEnv n) → (∀ i, F.U.El (ρ i) → F.U.El (ρ' i) → Prop) →
+    F.U.El (F.U.code K ρ) → F.U.El (F.U.code K ρ') → Prop
+  | .e, _, _, _ => fun x y => x = y
+  | .t, _, _, _ => fun p q => (p ↔ q)
+  | .var i, _, _, Rs => Rs i
+  | .arr K L, ρ, ρ', Rs => fun f f' => ∀ x x', RelE K ρ ρ' Rs x x' → RelE L ρ ρ' Rs (f x) (f' x')
+  | .pi _, _, _, _ => fun x y => x = y
+
+theorem adm_iff : I.Adm .t .t (fun p q => (p ↔ q)) := by
+  have h : (fun p q : Prop => (p ↔ q)) = (fun p q : Prop => p = q) :=
+    funext fun p => funext fun q => propext ⟨propext, fun h => h ▸ Iff.rfl⟩
+  have := I.refl .t
+  exact h ▸ this
+
+theorem adm_RelE {n : Nat} (K : Cat n) : ∀ (ρ ρ' : F.U.TEnv n) (Rs : ∀ i, F.U.El (ρ i) → F.U.El (ρ' i) → Prop),
+    (∀ i, I.Adm (ρ i) (ρ' i) (Rs i)) → K.Simple →
+    I.Adm (F.U.code K ρ) (F.U.code K ρ') (RelE K ρ ρ' Rs) := by
+  induction K with
+  | e => intros; exact I.refl _
+  | t => intros; exact I.adm_iff
+  | var i => intro ρ ρ' Rs hRs _; exact hRs i
+  | arr a b iha ihb => intro ρ ρ' Rs hRs hK; exact I.arrow (iha ρ ρ' Rs hRs hK.1) (ihb ρ ρ' Rs hRs hK.2)
+  | pi _ _ => intro _ _ _ _ hK; exact hK.elim
+
+/-! ### Transporting quantifiers along equations between types -/
+
+theorem forall_heq {A A' : Type} (h : A = A') {P : A → Prop} {Q : A' → Prop}
+    (hPQ : ∀ a a', HEq a a' → (P a ↔ Q a')) : (∀ a, P a) ↔ (∀ a', Q a') := by
+  subst h
+  exact ⟨fun h a => (hPQ a a HEq.rfl).mp (h a), fun h a => (hPQ a a HEq.rfl).mpr (h a)⟩
+
+theorem cast_app {A A' B B' : Type} (hA : A = A') (hB : B = B') (h : (A → B) = (A' → B')) (f : A → B)
+    (x : A') : HEq ((cast h f) x) (f (cast hA.symm x)) := by
+  subst hA; subst hB; rfl
+
+theorem Rel_RelE {n : Nat} (K : Cat n) : ∀ (hK : K.Simple) (ρ ρ' : F.U.TEnv n)
+    (Rs : ∀ i, F.U.El (ρ i) → F.U.El (ρ' i) → Prop) (u : F.U.CatVal K ρ) (u' : F.U.CatVal K ρ')
+    (x : F.U.El (F.U.code K ρ)) (x' : F.U.El (F.U.code K ρ')), HEq u x → HEq u' x' →
+    (I.Rel K ρ ρ' Rs u u' ↔ RelE K ρ ρ' Rs x x') := by
+  induction K with
+  | e => intro _ ρ ρ' Rs u u' x x' hx hx'; cases hx; cases hx'; exact Iff.rfl
+  | t => intro _ ρ ρ' Rs u u' x x' hx hx'; cases hx; cases hx'; exact Iff.rfl
+  | var i => intro _ ρ ρ' Rs u u' x x' hx hx'; cases hx; cases hx'; exact Iff.rfl
+  | arr a b iha ihb =>
+    intro hK ρ ρ' Rs u u' x x' hx hx'
+    refine forall_heq (Univ.El_code ρ hK.1).symm fun v y hvy => ?_
+    refine forall_heq (Univ.El_code ρ' hK.1).symm fun v' y' hvy' => ?_
+    refine imp_congr (iha hK.1 ρ ρ' Rs v v' y y' hvy hvy') (ihb hK.2 ρ ρ' Rs _ _ _ _ ?_ ?_)
+    · exact heq_app (Univ.El_code ρ hK.1).symm (Univ.El_code ρ hK.2).symm hx hvy
+    · exact heq_app (Univ.El_code ρ' hK.1).symm (Univ.El_code ρ' hK.2).symm hx' hvy'
+  | pi _ _ => intro hK; exact hK.elim
+
+/-! ### Renaming and substitution for the logical relation -/
+
+theorem Rel_ren {n : Nat} (K : Cat n) : ∀ {m : Nat} (r : Fin n → Fin m) (ρ ρ' : F.U.TEnv m)
+    (Rs : ∀ i, F.U.El (ρ i) → F.U.El (ρ' i) → Prop) (ρ₂ ρ₂' : F.U.TEnv n)
+    (Rs₂ : ∀ i, F.U.El (ρ₂ i) → F.U.El (ρ₂' i) → Prop)
+    (hρ : ∀ i, ρ (r i) = ρ₂ i) (hρ' : ∀ i, ρ' (r i) = ρ₂' i)
+    (hR : ∀ i x x' y y', HEq x y → HEq x' y' → (Rs (r i) x x' ↔ Rs₂ i y y'))
+    (v : F.U.CatVal (K.ren r) ρ) (v' : F.U.CatVal (K.ren r) ρ') (w : F.U.CatVal K ρ₂) (w' : F.U.CatVal K ρ₂'),
+    HEq v w → HEq v' w' → (I.Rel (K.ren r) ρ ρ' Rs v v' ↔ I.Rel K ρ₂ ρ₂' Rs₂ w w') := by
+  induction K with
+  | e => intro m r ρ ρ' Rs ρ₂ ρ₂' Rs₂ _ _ _ v v' w w' hv hv'; cases hv; cases hv'; exact Iff.rfl
+  | t => intro m r ρ ρ' Rs ρ₂ ρ₂' Rs₂ _ _ _ v v' w w' hv hv'; cases hv; cases hv'; exact Iff.rfl
+  | var i => intro m r ρ ρ' Rs ρ₂ ρ₂' Rs₂ _ _ hR v v' w w' hv hv'; exact hR i v v' w w' hv hv'
+  | arr a b iha ihb =>
+    intro m r ρ ρ' Rs ρ₂ ρ₂' Rs₂ hρ hρ' hR v v' w w' hv hv'
+    refine forall_heq (Univ.CatVal_ren a r ρ ρ₂ hρ) fun u y huy => ?_
+    refine forall_heq (Univ.CatVal_ren a r ρ' ρ₂' hρ') fun u' y' huy' => ?_
+    refine imp_congr (iha r ρ ρ' Rs ρ₂ ρ₂' Rs₂ hρ hρ' hR u u' y y' huy huy')
+      (ihb r ρ ρ' Rs ρ₂ ρ₂' Rs₂ hρ hρ' hR _ _ _ _ ?_ ?_)
+    · exact heq_app (Univ.CatVal_ren a r ρ ρ₂ hρ) (Univ.CatVal_ren b r ρ ρ₂ hρ) hv huy
+    · exact heq_app (Univ.CatVal_ren a r ρ' ρ₂' hρ') (Univ.CatVal_ren b r ρ' ρ₂' hρ') hv' huy'
+  | pi K ih =>
+    intro m r ρ ρ' Rs ρ₂ ρ₂' Rs₂ hρ hρ' hR v v' w w' hv hv'
+    refine forall_congr' fun a => forall_congr' fun a' => forall_congr' fun R => imp_congr Iff.rfl ?_
+    refine ih (liftR r) (scons a ρ) (scons a' ρ') (RScons R Rs) (scons a ρ₂) (scons a' ρ₂') (RScons R Rs₂)
+      (fin_cases rfl (fun i => hρ i)) (fin_cases rfl (fun i => hρ' i)) ?_ _ _ _ _ ?_ ?_
+    · refine fin_cases ?_ (fun i => fun x x' y y' hx hx' => hR i x x' y y' hx hx')
+      intro x x' y y' hx hx'; cases hx; cases hx'; exact Iff.rfl
+    · exact heq_dapp (fun a => Univ.CatVal_ren K (liftR r) (scons a ρ) (scons a ρ₂)
+        (fin_cases rfl (fun i => hρ i))) hv rfl
+    · exact heq_dapp (fun a => Univ.CatVal_ren K (liftR r) (scons a ρ') (scons a ρ₂')
+        (fin_cases rfl (fun i => hρ' i))) hv' rfl
+
+theorem Rel_sub {n : Nat} (K : Cat n) : ∀ {m : Nat} (s : Fin n → Ty m) (ρ ρ' : F.U.TEnv m)
+    (Rs : ∀ i, F.U.El (ρ i) → F.U.El (ρ' i) → Prop) (ρ₂ ρ₂' : F.U.TEnv n)
+    (Rs₂ : ∀ i, F.U.El (ρ₂ i) → F.U.El (ρ₂' i) → Prop)
+    (hρ : ∀ i, F.U.code (s i).1 ρ = ρ₂ i) (hρ' : ∀ i, F.U.code (s i).1 ρ' = ρ₂' i)
+    (hR : ∀ i (x : F.U.CatVal (s i).1 ρ) (x' : F.U.CatVal (s i).1 ρ') y y', HEq x y → HEq x' y' →
+      (I.Rel (s i).1 ρ ρ' Rs x x' ↔ Rs₂ i y y'))
+    (v : F.U.CatVal (K.sub s) ρ) (v' : F.U.CatVal (K.sub s) ρ') (w : F.U.CatVal K ρ₂) (w' : F.U.CatVal K ρ₂'),
+    HEq v w → HEq v' w' → (I.Rel (K.sub s) ρ ρ' Rs v v' ↔ I.Rel K ρ₂ ρ₂' Rs₂ w w') := by
+  induction K with
+  | e => intro m s ρ ρ' Rs ρ₂ ρ₂' Rs₂ _ _ _ v v' w w' hv hv'; cases hv; cases hv'; exact Iff.rfl
+  | t => intro m s ρ ρ' Rs ρ₂ ρ₂' Rs₂ _ _ _ v v' w w' hv hv'; cases hv; cases hv'; exact Iff.rfl
+  | var i => intro m s ρ ρ' Rs ρ₂ ρ₂' Rs₂ _ _ hR v v' w w' hv hv'; exact hR i v v' w w' hv hv'
+  | arr a b iha ihb =>
+    intro m s ρ ρ' Rs ρ₂ ρ₂' Rs₂ hρ hρ' hR v v' w w' hv hv'
+    refine forall_heq (Univ.CatVal_sub a s ρ ρ₂ hρ) fun u y huy => ?_
+    refine forall_heq (Univ.CatVal_sub a s ρ' ρ₂' hρ') fun u' y' huy' => ?_
+    refine imp_congr (iha s ρ ρ' Rs ρ₂ ρ₂' Rs₂ hρ hρ' hR u u' y y' huy huy')
+      (ihb s ρ ρ' Rs ρ₂ ρ₂' Rs₂ hρ hρ' hR _ _ _ _ ?_ ?_)
+    · exact heq_app (Univ.CatVal_sub a s ρ ρ₂ hρ) (Univ.CatVal_sub b s ρ ρ₂ hρ) hv huy
+    · exact heq_app (Univ.CatVal_sub a s ρ' ρ₂' hρ') (Univ.CatVal_sub b s ρ' ρ₂' hρ') hv' huy'
+  | pi K ih =>
+    intro m s ρ ρ' Rs ρ₂ ρ₂' Rs₂ hρ hρ' hR v v' w w' hv hv'
+    have hl : ∀ (a : Code F.U.Base) (ρ ρ₂ : _) , (∀ i, F.U.code (s i).1 ρ = ρ₂ i) →
+        ∀ i, F.U.code (liftT s i).1 (scons a ρ) = scons a ρ₂ i := fun a ρ ρ₂ h =>
+      fin_cases rfl (fun i => by
+        show F.U.code ((s i).1.ren fs) (scons a ρ) = ρ₂ i
+        rw [Univ.code_ren]; exact h i)
+    refine forall_congr' fun a => forall_congr' fun a' => forall_congr' fun R => imp_congr Iff.rfl ?_
+    refine ih (liftT s) (scons a ρ) (scons a' ρ') (RScons R Rs) (scons a ρ₂) (scons a' ρ₂') (RScons R Rs₂)
+      (hl a ρ ρ₂ hρ) (hl a' ρ' ρ₂' hρ') ?_ _ _ _ _ ?_ ?_
+    · refine fin_cases ?_ (fun i => ?_)
+      · intro x x' y y' hx hx'; cases hx; cases hx'; exact Iff.rfl
+      · intro x x' y y' hx hx'
+        refine (I.Rel_ren (s i).1 fs (scons a ρ) (scons a' ρ') (RScons R Rs) ρ ρ' Rs (fun _ => rfl)
+          (fun _ => rfl) (fun j z z' q q' hz hz' => by cases hz; cases hz'; exact Iff.rfl)
+          x x' (cast (Univ.CatVal_ren (s i).1 fs (scons a ρ) ρ (fun _ => rfl)) x)
+          (cast (Univ.CatVal_ren (s i).1 fs (scons a' ρ') ρ' (fun _ => rfl)) x')
+          (cast_heq _ _).symm (cast_heq _ _).symm).trans ?_
+        exact hR i _ _ y y' ((cast_heq _ _).trans hx) ((cast_heq _ _).trans hx')
+    · exact heq_dapp (fun a => Univ.CatVal_sub K (liftT s) (scons a ρ) (scons a ρ₂) (hl a ρ ρ₂ hρ)) hv rfl
+    · exact heq_dapp (fun a => Univ.CatVal_sub K (liftT s) (scons a ρ') (scons a ρ₂') (hl a ρ' ρ₂' hρ')) hv' rfl
+
+/-! ### The fundamental lemma -/
+
+/-- Related values for the term variables of a context. -/
+def EnvRel : {n : Nat} → (Γ : Ctx n) → (ρ ρ' : F.U.TEnv n) → (∀ i, F.U.El (ρ i) → F.U.El (ρ' i) → Prop) →
+    F.U.Env Γ ρ → F.U.Env Γ ρ' → Prop
+  | _, .nil, _, _, _ => fun _ _ => True
+  | _, .ext Γ σ, ρ, ρ', Rs => fun env env' => EnvRel Γ ρ ρ' Rs env.1 env'.1 ∧ I.Rel σ.1 ρ ρ' Rs env.2 env'.2
+  | _, .text Γ, ρ, ρ', Rs => fun env env' =>
+      EnvRel Γ (fun i => ρ (fs i)) (fun i => ρ' (fs i)) (fun i => Rs (fs i)) env env'
+
+theorem lookup_rel {n : Nat} {Γ : Ctx n} {K : Cat n} (x : Var Γ K) : ∀ (ρ ρ' : F.U.TEnv n)
+    (Rs : ∀ i, F.U.El (ρ i) → F.U.El (ρ' i) → Prop) (env : F.U.Env Γ ρ) (env' : F.U.Env Γ ρ'),
+    I.EnvRel Γ ρ ρ' Rs env env' → I.Rel K ρ ρ' Rs (F.U.lookup x ρ env) (F.U.lookup x ρ' env') := by
+  induction x with
+  | here => intro ρ ρ' Rs env env' h; exact h.2
+  | there y ih => intro ρ ρ' Rs env env' h; exact ih ρ ρ' Rs env.1 env'.1 h.1
+  | tthere y ih =>
+    intro ρ ρ' Rs env env' h
+    refine (I.Rel_ren _ fs ρ ρ' Rs (fun i => ρ (fs i)) (fun i => ρ' (fs i)) (fun i => Rs (fs i))
+      (fun _ => rfl) (fun _ => rfl) (fun i x x' y y' hx hx' => by cases hx; cases hx'; exact Iff.rfl)
+      _ _ _ _ (F.lookup_tthere y ρ env) (F.lookup_tthere y ρ' env')).mpr ?_
+    exact ih _ _ _ env env' h
+
+theorem const_rel {n : Nat} {K : Cat n} (c : Const n K) (ρ ρ' : F.U.TEnv n)
+    (Rs : ∀ i, F.U.El (ρ i) → F.U.El (ρ' i) → Prop) :
+    I.Rel K ρ ρ' Rs (F.constVal c ρ) (F.constVal c ρ') := by
+  cases c with
+  | neg => intro p p' hp; exact not_congr hp
+  | imp => intro p p' hp q q' hq; exact imp_congr hp hq
+  | and => intro p p' hp q q' hq; exact and_congr hp hq
+  | or => intro p p' hp q q' hq; exact or_congr hp hq
+  | iff => intro p p' hp q q' hq; exact iff_congr hp hq
+  | all =>
+    intro a a' R hR P P' hP
+    constructor
+    · intro h x'; obtain ⟨x, hx⟩ := I.onto hR x'; exact (hP x x' hx).mp (h x)
+    · intro h x; obtain ⟨x', hx⟩ := I.total hR x; exact (hP x x' hx).mpr (h x')
+  | ex =>
+    intro a a' R hR P P' hP
+    constructor
+    · rintro ⟨x, hx⟩; obtain ⟨x', hxx⟩ := I.total hR x; exact ⟨x', (hP x x' hxx).mp hx⟩
+    · rintro ⟨x', hx⟩; obtain ⟨x, hxx⟩ := I.onto hR x'; exact ⟨x, (hP x x' hxx).mpr hx⟩
+  | tall =>
+    intro Q Q' hQ
+    exact ⟨fun h a => (hQ a a _ (I.refl a)).mp (h a), fun h a => (hQ a a _ (I.refl a)).mpr (h a)⟩
+  | tex =>
+    intro Q Q' hQ
+    exact ⟨fun ⟨a, h⟩ => ⟨a, (hQ a a _ (I.refl a)).mp h⟩, fun ⟨a, h⟩ => ⟨a, (hQ a a _ (I.refl a)).mpr h⟩⟩
+  | eqv =>
+    intro a a' R hR b b' S hS u u' hu v v' hv
+    exact I.eqv hR hS u u' v v' hu hv
+  | teq =>
+    intro a a' R hR b b' S hS
+    exact I.teq hR hS
+
+/-- **The fundamental lemma** (invariance): every term is related to itself, under related values
+for its variables. -/
+theorem fundamental {n : Nat} {Γ : Ctx n} {K : Cat n} (M : Tm Γ K) : ∀ (ρ ρ' : F.U.TEnv n)
+    (Rs : ∀ i, F.U.El (ρ i) → F.U.El (ρ' i) → Prop), (∀ i, I.Adm (ρ i) (ρ' i) (Rs i)) →
+    ∀ (env : F.U.Env Γ ρ) (env' : F.U.Env Γ ρ'), I.EnvRel Γ ρ ρ' Rs env env' →
+    I.Rel K ρ ρ' Rs (F.eval M ρ env) (F.eval M ρ' env') := by
+  induction M with
+  | var x => intro ρ ρ' Rs _ env env' h; exact I.lookup_rel x ρ ρ' Rs env env' h
+  | const c => intro ρ ρ' Rs _ _ _ _; exact I.const_rel c ρ ρ' Rs
+  | app f a ihf iha =>
+    intro ρ ρ' Rs hRs env env' h
+    exact ihf ρ ρ' Rs hRs env env' h _ _ (iha ρ ρ' Rs hRs env env' h)
+  | lam σ b ih =>
+    intro ρ ρ' Rs hRs env env' h u u' hu
+    exact ih ρ ρ' Rs hRs (env, u) (env', u') ⟨h, hu⟩
+  | tlam b ih =>
+    intro ρ ρ' Rs hRs env env' h a a' R hR
+    exact ih (scons a ρ) (scons a' ρ') (RScons R Rs) (fin_cases hR (fun i => hRs i)) env env' h
+  | tapp f σ ih =>
+    intro ρ ρ' Rs hRs env env' h
+    have hf := ih ρ ρ' Rs hRs env env' h (F.U.code σ.1 ρ) (F.U.code σ.1 ρ') (RelE σ.1 ρ ρ' Rs)
+      (I.adm_RelE σ.1 ρ ρ' Rs hRs σ.2)
+    refine (I.Rel_sub _ (inst σ) ρ ρ' Rs (scons (F.U.code σ.1 ρ) ρ) (scons (F.U.code σ.1 ρ') ρ')
+      (RScons (RelE σ.1 ρ ρ' Rs) Rs) (fin_cases rfl (fun _ => rfl)) (fin_cases rfl (fun _ => rfl)) ?_
+      _ _ _ _ (F.heq_eval_tapp f σ ρ env) (F.heq_eval_tapp f σ ρ' env')).mpr hf
+    refine fin_cases ?_ (fun i => ?_)
+    · intro x x' y y' hx hx'; exact I.Rel_RelE σ.1 σ.2 ρ ρ' Rs x x' y y' hx hx'
+    · intro x x' y y' hx hx'; cases hx; cases hx'; exact Iff.rfl
+
+/-! ### Consequences -/
+
+/-- With identity relations, the logical relation at a type is identity. -/
+theorem Rel_eq {n : Nat} (K : Cat n) : ∀ (_ : K.Simple) (ρ : F.U.TEnv n) (u u' : F.U.CatVal K ρ),
+    I.Rel K ρ ρ (fun _ x y => x = y) u u' ↔ u = u' := by
+  induction K with
+  | e => intros; exact Iff.rfl
+  | t => intros; exact ⟨propext, fun h => h ▸ Iff.rfl⟩
+  | var i => intros; exact Iff.rfl
+  | arr a b iha ihb =>
+    intro hK ρ u u'
+    constructor
+    · intro h; funext x; exact (ihb hK.2 ρ _ _).mp (h x x ((iha hK.1 ρ x x).mpr rfl))
+    · intro h x x' hx; rw [(iha hK.1 ρ x x').mp hx, h]; exact (ihb hK.2 ρ _ _).mpr rfl
+  | pi _ _ => intro hK; exact hK.elim
+
+theorem envRel_refl {n : Nat} (Γ : Ctx n) : ∀ (ρ : F.U.TEnv n) (env : F.U.Env Γ ρ),
+    I.EnvRel Γ ρ ρ (fun _ x y => x = y) env env := by
+  induction Γ with
+  | nil => intros; trivial
+  | ext Γ σ ih => intro ρ env; exact ⟨ih ρ env.1, (I.Rel_eq σ.1 σ.2 ρ _ _).mpr rfl⟩
+  | text Γ ih => intro ρ env; exact ih (fun i => ρ (fs i)) env
+
+/-- A term of category `Πγ:∗.t` takes the same value at types related by an admissible relation. -/
+theorem pi_t_invariant {n : Nat} {Γ : Ctx n} (Q : Tm Γ (.pi .t)) (ρ : F.U.TEnv n) (env : F.U.Env Γ ρ)
+    {a b : Code F.U.Base} {R : F.U.El a → F.U.El b → Prop} (hR : I.Adm a b R) :
+    F.eval Q ρ env a ↔ F.eval Q ρ env b :=
+  I.fundamental Q ρ ρ _ (fun i => I.refl (ρ i)) env env (I.envRel_refl Γ ρ env) a b R hR
+
+/-- **LL≈ holds** in a frame with a family of admissible relations, if types identified by `≈` are
+related by some admissible relation (*Formal Results*, Lemma 8(b)). -/
+theorem llTeq_valid (hteq : ∀ a b, F.teq a b → ∃ R, I.Adm a b R) {n : Nat} {Γ : Ctx n}
+    (Q : Tm Γ (.pi .t)) : F.Valid (LLTeq Q) := by
+  intro ρ env a b hab hq
+  obtain ⟨R, hR⟩ := hteq a b ((F.holds_teq _ _ _ _).mp hab)
+  have hG : HEq (F.eval Q.twk.twk (scons b (scons a ρ)) env) (F.eval Q ρ env) :=
+    (F.eval_twk Q.twk b (scons a ρ) env).trans (F.eval_twk Q a ρ env)
+  have h1 : HEq (F.eval (Tm.tapp Q.twk.twk tv1) (scons b (scons a ρ)) env) (F.eval Q ρ env a) :=
+    (F.heq_eval_tapp (K := Cat.t) Q.twk.twk tv1 (scons b (scons a ρ)) env).trans
+      (heq_dapp (P := fun _ => Prop) (Q := fun _ => Prop) (fun _ => rfl) hG rfl)
+  have h0 : HEq (F.eval (Tm.tapp Q.twk.twk tv0) (scons b (scons a ρ)) env) (F.eval Q ρ env b) :=
+    (F.heq_eval_tapp (K := Cat.t) Q.twk.twk tv0 (scons b (scons a ρ)) env).trans
+      (heq_dapp (P := fun _ => Prop) (Q := fun _ => Prop) (fun _ => rfl) hG rfl)
+  exact cast (eq_of_heq h0).symm ((I.pi_t_invariant Q ρ env hR).mp (cast (eq_of_heq h1) hq))
+
+/-- **LL≡-Poly holds** in a frame with a family of admissible relations, if any two identified
+items are related by some admissible relation (*Formal Results*, Lemma 8(a)). -/
+theorem llPoly_valid (hE : ∀ a b u v, F.eqv a b u v → ∃ R, I.Adm a b R ∧ R u v) {n : Nat} {Γ : Ctx n}
+    (P : Tm Γ (.pi (.arr (.var fz) .t))) : F.Valid (LLPoly P) := by
+  intro ρ env a b
+  refine (F.holds_all _ _ _ _).mpr fun x => (F.holds_all _ _ _ _).mpr fun y => ?_
+  intro hxy hPx
+  obtain ⟨R, hR, hRxy⟩ := hE a b _ _ ((F.holds_eqv _ _ _ _ _ _).mp hxy)
+  have hrel := I.fundamental P ρ ρ _ (fun i => I.refl (ρ i)) env env (I.envRel_refl Γ ρ env) a b R hR _ _ hRxy
+  have hG : HEq (F.eval ((P.twk.twk.wk tv1).wk tv0) (scons b (scons a ρ)) ((env, x), y)) (F.eval P ρ env) :=
+    (heq_of_eq ((F.eval_wk _ _ _ _ _).trans (F.eval_wk _ _ _ _ _))).trans
+      ((F.eval_twk P.twk b (scons a ρ) env).trans (F.eval_twk P a ρ env))
+  have h1 : F.eval (Tm.tapp ((P.twk.twk.wk tv1).wk tv0) tv1) (scons b (scons a ρ)) ((env, x), y) = F.eval P ρ env a :=
+    eq_of_heq ((F.heq_eval_tapp (K := Cat.arr (Cat.var fz) Cat.t) ((P.twk.twk.wk tv1).wk tv0) tv1 (scons b (scons a ρ)) ((env, x), y)).trans
+      (heq_dapp (P := fun c => F.U.El c → Prop) (Q := fun c => F.U.El c → Prop) (fun _ => rfl) hG rfl))
+  have h0 : F.eval (Tm.tapp ((P.twk.twk.wk tv1).wk tv0) tv0) (scons b (scons a ρ)) ((env, x), y) = F.eval P ρ env b :=
+    eq_of_heq ((F.heq_eval_tapp (K := Cat.arr (Cat.var fz) Cat.t) ((P.twk.twk.wk tv1).wk tv0) tv0 (scons b (scons a ρ)) ((env, x), y)).trans
+      (heq_dapp (P := fun c => F.U.El c → Prop) (Q := fun c => F.U.El c → Prop) (fun _ => rfl) hG rfl))
+  show F.eval (Tm.tapp ((P.twk.twk.wk tv1).wk tv0) tv0) (scons b (scons a ρ)) ((env, x), y) y
+  have hPx' : F.eval (Tm.tapp ((P.twk.twk.wk tv1).wk tv0) tv1) (scons b (scons a ρ)) ((env, x), y) x := hPx
+  rw [h1] at hPx'
+  rw [h0]
+  exact hrel.mp hPx'
+
+end Invariance
+
+/-- A frame with a family of admissible relations relating any two types identified by `≈` is a
+model of PI⁻ as soon as the four closed identity axioms are true in it. -/
+theorem Frame.isModelPIm_of_invariance (F : Frame) (I : Invariance F)
+    (hteq : ∀ a b, F.teq a b → ∃ R, I.Adm a b R)
+    (h1 : F.Valid RefEqv) (h2 : F.Valid SymEqv) (h3 : F.Valid TransEqv) (h4 : F.Valid RefTeq) :
+    F.IsModelPIm :=
+  ⟨h1, h2, h3, h4, fun Q => I.llTeq_valid hteq Q⟩
+
+/-- Admissible relations for the diagonal model: identity, at each type. -/
+def diagInv : Invariance diag where
+  Adm := fun a a' R => a = a' ∧ ∀ x y, R x y ↔ HEq x y
+  refl := fun _ => ⟨rfl, fun x y => ⟨fun h => h ▸ HEq.rfl, eq_of_heq⟩⟩
+  arrow := by
+    rintro a a' c c' R S ⟨rfl, hR⟩ ⟨rfl, hS⟩
+    refine ⟨rfl, fun f f' => ⟨fun h => heq_of_eq (funext fun u => eq_of_heq ((hS _ _).mp (h u u ((hR u u).mpr HEq.rfl)))), ?_⟩⟩
+    intro h u u' hu
+    have e1 := eq_of_heq h
+    have e2 := eq_of_heq ((hR u u').mp hu)
+    subst e1; subst e2; exact (hS _ _).mpr HEq.rfl
+  total := by rintro a a' R ⟨rfl, hR⟩ u; exact ⟨u, (hR u u).mpr HEq.rfl⟩
+  onto := by rintro a a' R ⟨rfl, hR⟩ u; exact ⟨u, (hR u u).mpr HEq.rfl⟩
+  teq := by rintro a a' b b' R S ⟨rfl, _⟩ ⟨rfl, _⟩; exact Iff.rfl
+  eqv := by
+    rintro a a' b b' R S ⟨rfl, hR⟩ ⟨rfl, hS⟩ u u' v v' hu hv
+    have e1 := eq_of_heq ((hR u u').mp hu)
+    have e2 := eq_of_heq ((hS v v').mp hv)
+    subst e1; subst e2; exact Iff.rfl
+
+/-- Every instance of LL≡-Poly is true in the diagonal model (cf. *Formal Results*, Thm 19), by
+the invariance lemma. -/
+theorem diag_LLPoly {n : Nat} {Γ : Ctx n} (P : Tm Γ (.pi (.arr (.var fz) .t))) : diag.Valid (LLPoly P) :=
+  diagInv.llPoly_valid (fun a b u v h => by
+    obtain ⟨e, huv⟩ := h
+    subst e
+    exact ⟨fun x y => HEq x y, ⟨rfl, fun _ _ => Iff.rfl⟩, huv⟩) P
 
 /-! ## A first derivation
 

@@ -8,7 +8,10 @@
 4. β-conversion;
 5. the proof system PI⁻ (and PI = PI⁻ + LL≡), with the **soundness theorem**
    (`Frame.soundness`, `Frame.soundness_PI`): whatever PI derives is true in every model;
-6. **consistency** of PI (`PI_consistent`), via the diagonal model.
+6. **consistency** of PI (`PI_consistent`), via the diagonal model;
+7. the **invariance lemma** in relational (parametricity) form (`Invariance.fundamental`), with its
+   consequences: when LL≈ holds (`Invariance.llTeq_valid`, Lemma 8(b) of *Formal Results*) and when
+   LL≡-Poly holds (`Invariance.llPoly_valid`, Lemma 8(a)); checked on the diagonal model (`diag_LLPoly`).
 
 To check it, install Lean (https://lean-lang.org) and run
 
@@ -18,5 +21,5 @@ No output means every proof checks. It uses no `sorry` and only Lean's standard 
 (`propext`, `Classical.choice`, `Quot.sound`). GitHub re-checks it on every push
 (`.github/workflows/lean.yml`).
 
-Next milestones: the invariance lemma (so that models in which ≈ is not identity, like 𝔐_κ and
-𝔐_card, can be shown to validate LL≈), the models of *Formal Results*, and the derivations.
+Next milestones: the models of *Formal Results* (𝔐_κ, 𝔐_card, 𝔐_ρ, the identifications ∼₀, ∼₁,
+∼ₕ, …), and the derivations as PI proofs.
