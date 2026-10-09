@@ -492,6 +492,34 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2847
  ],
+ "Mt2_LLEqv": [
+  "PIFoundation.lean",
+  3016
+ ],
+ "Mt2_Twin": [
+  "PIFoundation.lean",
+  3017
+ ],
+ "Mt2_model": [
+  "PIFoundation.lean",
+  3015
+ ],
+ "Mt2_not_Disjoint": [
+  "PIFoundation.lean",
+  3033
+ ],
+ "Mt2_not_Inj": [
+  "PIFoundation.lean",
+  3025
+ ],
+ "Mt2_not_PCong": [
+  "PIFoundation.lean",
+  3021
+ ],
+ "Mt2_not_Recovery": [
+  "PIFoundation.lean",
+  3029
+ ],
  "Mtot_Cong": [
   "PIFoundation.lean",
   2463

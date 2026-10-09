@@ -2891,6 +2891,149 @@ theorem Mtot_not_IntT : ¬ Mtot.Valid IntT := fun h =>
   absurd (Mtot.tr_IntT.mp ((Mtot.valid_iff_tr _).mp h) .e .t
     ⟨⟨rfl, Or.inr ⟨trivial, trivial⟩⟩, ⟨rfl, Or.inr ⟨trivial, trivial⟩⟩⟩) (fun e => by cases e)
 
+/-! #### Twins with the `𝔐_κ` collapse: Twin holds while PCong, Inj≈, and Recovery fail. -/
+
+/-- Base types: duplicates of `e` and `t`, a second two-element type `D`, and a duplicate of `D`. -/
+inductive B4 : Type where
+  | de | dt | D | dD
+  deriving DecidableEq
+
+def B4El : B4 → Type
+  | .de => Unit
+  | .dt => Prop
+  | .D => Prop
+  | .dD => Prop
+
+theorem B4El_ne : ∀ b, Nonempty (B4El b)
+  | .de => ⟨()⟩
+  | .dt => ⟨True⟩
+  | .D => ⟨True⟩
+  | .dD => ⟨True⟩
+
+def univT2 : Univ := { E := Unit, Base := B4, B := B4El, neE := ⟨()⟩, neB := B4El_ne }
+
+/-- The `𝔐_κ` step: `e → D` is sent to `e → t`. -/
+def spT (x y : Code B4) : Code B4 := if x = .e ∧ y = .base .D then .arr .e .t else .arr x y
+
+def normT2 : Code B4 → Code B4
+  | .e => .e
+  | .t => .t
+  | .base b => .base b
+  | .arr a c => spT (normT2 a) (normT2 c)
+
+def dedup : B4 → Code B4
+  | .de => .e
+  | .dt => .t
+  | .D => .base .D
+  | .dD => .base .D
+
+def normK2 : Code B4 → Code B4
+  | .e => .e
+  | .t => .t
+  | .base b => dedup b
+  | .arr a c => spT (normK2 a) (normK2 c)
+
+theorem El_spT (x y : Code B4) : univT2.El (spT x y) = (univT2.El x → univT2.El y) := by
+  unfold spT; split
+  · next h => obtain ⟨rfl, rfl⟩ := h; rfl
+  · rfl
+
+theorem El_normT2 : ∀ a, univT2.El (normT2 a) = univT2.El a
+  | .e => rfl
+  | .t => rfl
+  | .base _ => rfl
+  | .arr a c => (El_spT _ _).trans (by rw [El_normT2 a, El_normT2 c]; rfl)
+
+theorem El_dedup : ∀ b, univT2.El (dedup b) = univT2.El (.base b)
+  | .de => rfl
+  | .dt => rfl
+  | .D => rfl
+  | .dD => rfl
+
+theorem El_normK2 : ∀ a, univT2.El (normK2 a) = univT2.El a
+  | .e => rfl
+  | .t => rfl
+  | .base b => El_dedup b
+  | .arr a c => (El_spT _ _).trans (by rw [El_normK2 a, El_normK2 c]; rfl)
+
+theorem normK2_normT2 : ∀ a, normK2 (normT2 a) = normK2 a
+  | .e => rfl
+  | .t => rfl
+  | .base _ => rfl
+  | .arr a c => by
+    show normK2 (spT (normT2 a) (normT2 c)) = spT (normK2 a) (normK2 c)
+    rw [← normK2_normT2 a, ← normK2_normT2 c]
+    unfold spT
+    split
+    · next h => obtain ⟨h1, h2⟩ := h; rw [h1, h2]; rfl
+    · rfl
+
+theorem spT_inj_left {x x' y : Code B4} (h : spT x y = spT x' y) : x = x' := by
+  unfold spT at h
+  split at h <;> split at h
+  · next h1 h2 => exact h1.1.trans h2.1.symm
+  · next h1 h2 => injection h with h3 h4; rw [h1.2] at h4; cases h4
+  · next h1 h2 => injection h with h3 h4; rw [h2.2] at h4; cases h4
+  · injection h
+
+def twin2 : Code B4 → Code B4
+  | .e => .base .de
+  | .t => .base .dt
+  | .base .de => .e
+  | .base .dt => .t
+  | .base .D => .base .dD
+  | .base .dD => .base .D
+  | .arr a c => .arr (twin2 a) c
+
+theorem normK2_twin : ∀ a, normK2 (twin2 a) = normK2 a
+  | .e => rfl
+  | .t => rfl
+  | .base .de => rfl
+  | .base .dt => rfl
+  | .base .D => rfl
+  | .base .dD => rfl
+  | .arr a c => by show spT (normK2 (twin2 a)) (normK2 c) = _; rw [normK2_twin a]; rfl
+
+theorem normT2_twin_ne : ∀ a, normT2 (twin2 a) ≠ normT2 a
+  | .e => fun h => by cases h
+  | .t => fun h => by cases h
+  | .base .de => fun h => by cases h
+  | .base .dt => fun h => by cases h
+  | .base .D => fun h => by cases h
+  | .base .dD => fun h => by cases h
+  | .arr a c => fun h => normT2_twin_ne a (spT_inj_left h)
+
+def Mt2D : KeyData where
+  U := univT2
+  T := normT2
+  K := normK2
+  hK := fun a b h => (El_normK2 a).symm.trans ((congrArg univT2.El h).trans (El_normK2 b))
+  hTK := fun a b h => (normK2_normT2 a).symm.trans ((congrArg normK2 h).trans (normK2_normT2 b))
+  hT := fun _ _ _ _ h1 h2 => by show spT _ _ = spT _ _; rw [h1, h2]
+
+abbrev Mt2 : Frame := Mt2D.frame
+theorem Mt2_model : Mt2.IsModelPIm := Mt2D.model
+theorem Mt2_LLEqv : Mt2.Valid LLEqv := Mt2D.LLEqv_valid
+theorem Mt2_Twin : Mt2.Valid Twin :=
+  (Mt2.valid_iff_tr _).mpr <| Mt2.tr_Twin.mpr fun a x =>
+    ⟨twin2 a, fun h => normT2_twin_ne a h.symm,
+     cast (Mt2D.hK _ _ (normK2_twin a).symm) x, (normK2_twin a).symm, (cast_heq _ _).symm⟩
+theorem Mt2_not_PCong : ¬ Mt2.Valid PCong := fun h =>
+  absurd (Mt2.tr_PCong.mp ((Mt2.valid_iff_tr _).mp h) .e .t (.base .D) (fun _ => True) (fun _ => True) ()
+    ⟨show normK2 (.arr .e .t) = normK2 (.arr .e (.base .D)) by decide, HEq.rfl⟩).1
+    (show ¬ normK2 .t = normK2 (.base .D) by decide)
+theorem Mt2_not_Inj : ¬ Mt2.Valid Inj := fun h =>
+  absurd (Mt2.tr_Inj.mp ((Mt2.valid_iff_tr _).mp h) .e .e .t (.base .D)
+    (show normT2 (.arr .e .t) = normT2 (.arr .e (.base .D)) by decide)).2
+    (show ¬ normT2 .t = normT2 (.base .D) by decide)
+theorem Mt2_not_Recovery : ¬ Mt2.Valid Recovery := fun h =>
+  absurd (Mt2.tr_Recovery.mp ((Mt2.valid_iff_tr _).mp h) .e .e .t (.base .D)
+    ⟨show normT2 (.arr .e .t) = normT2 (.arr .e (.base .D)) by decide, rfl⟩)
+    (show ¬ normT2 .t = normT2 (.base .D) by decide)
+theorem Mt2_not_Disjoint : ¬ Mt2.Valid Disjoint := fun h =>
+  Mt2.tr_Disjoint.mp ((Mt2.valid_iff_tr _).mp h) .e (.base .de) (show ¬ normT2 .e = normT2 (.base .de) by decide)
+    () () ⟨rfl, HEq.rfl⟩
+
 end Models
 
 /-! ## A first derivation
