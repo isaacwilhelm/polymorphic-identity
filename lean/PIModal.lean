@@ -272,6 +272,19 @@ theorem d_PropExt_of_Collapse (hC : S Collapse) (hD : S DNeg) (hLL : S LLEqv) : 
       (v2 pV (eqv tyT tyT pV qV)) (fun _ f g => Classical.byCases f g)) hA hB
   exact Ent.toProv (Ent.gen tyT (Hs := []) (Ent.gen tyT (Hs := []) (Ent.intro h)))
 
+
+set_option maxHeartbeats 4000000 in
+/-- T proves `⊤ ≢ ⊥`: if `⊤ ≡ ⊥`, then `⊥ ≡ ⊤`, that is `□⊥`, so T gives `⊥`. -/
+theorem d_TopBot_of_TAx (hT : S TAx) : Prov S Ctx.nil TopBot := by
+  have hE : Ent S Ctx.nil [eqv tyT tyT topF botF] (eqv tyT tyT topF botF) := Ent.hyp _ 0 (by decide)
+  have hsym : Ent S Ctx.nil [eqv tyT tyT topF botF] ((eqv tyT tyT topF botF).imp (eqv tyT tyT botF topF)) :=
+    ((((Ent.closed (Γ := Ctx.nil) (Hs := [eqv tyT tyT topF botF]) (Ax := S) Prov.symEqv).tinst tyT).tinst tyT).inst
+      topF).inst botF
+  have hb : Ent S Ctx.nil [eqv tyT tyT topF botF] (boxF (botF : Fm Ctx.nil)) := Ent.mp hsym hE
+  have h1 : Ent S Ctx.nil ([] ++ [eqv tyT tyT topF botF]) botF :=
+    Ent.mp ((Ent.axm (Γ := Ctx.nil) (Hs := [eqv tyT tyT topF botF]) hT).inst botF) hb
+  have h2 : Ent S Ctx.nil ([] ++ [eqv tyT tyT topF botF]) (botF : Fm Ctx.nil).neg := Ent.top
+  exact Ent.toProv (Ent.notI h1 h2)
 end Derivations
 
 end PIF

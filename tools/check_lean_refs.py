@@ -9,7 +9,7 @@ import json, re, sys, pathlib
 
 root = pathlib.Path(__file__).resolve().parent.parent
 data = (root / "data.js").read_text()
-files = ["PIFoundation.lean", "PIDerivations.lean", "PISchemas.lean", "PIExplore.lean", "PIHae.lean", "PITagged.lean", "PIBridge.lean", "PINew.lean", "PINF.lean"]
+files = ["PIFoundation.lean", "PIDerivations.lean", "PISchemas.lean", "PIExplore.lean", "PIHae.lean", "PITagged.lean", "PIBridge.lean", "PINew.lean", "PINF.lean", "PIModal.lean", "PIWorlds.lean"]
 
 names = set(re.findall(r'lean: "([A-Za-z0-9_.]+)"', data))
 for block in re.findall(r'lean: \{([^}]*)\}', data):
@@ -41,6 +41,6 @@ else:
     target.write_text(out)
 if "--leanfile" in sys.argv:
     path = sys.argv[sys.argv.index("--leanfile") + 1]
-    body = "import PIFoundation\nimport PIDerivations\nimport PISchemas\nimport PIExplore\nimport PIHae\nimport PITagged\nimport PIBridge\nimport PINew\nimport PINF\n" + "\n".join(f"#check @PIF.{n}" for n in sorted(names)) + "\n"
+    body = "import PIFoundation\nimport PIDerivations\nimport PISchemas\nimport PIExplore\nimport PIHae\nimport PITagged\nimport PIBridge\nimport PINew\nimport PINF\nimport PIModal\nimport PIWorlds\n" + "\n".join(f"#check @PIF.{n}" for n in sorted(names)) + "\n"
     pathlib.Path(path).write_text(body)
 print(f"{len(names)} Lean names checked.")

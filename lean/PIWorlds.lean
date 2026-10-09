@@ -708,6 +708,30 @@ theorem bool_valid (hr : ∀ x, F.eqv .t .t x x F.U.w0) : ∀ φ, BoolSch φ →
 
 end Frame
 
+namespace Frame
+variable (F : Frame)
+
+/-- Truth of a sentence in a frame. -/
+def Tr (φ : Fm Ctx.nil) : Prop := F.Holds φ (fun i => i.elim0) ()
+
+theorem valid_iff_tr (φ : Fm Ctx.nil) : F.Valid φ ↔ F.Tr φ := by
+  constructor
+  · intro h; exact h _ _
+  · intro h ρ env
+    have : ρ = (fun i => i.elim0) := funext fun i => i.elim0
+    subst this; exact h
+
+theorem tr_Slogan : F.Tr Slogan ↔ ∀ x : F.U.E, ∀ b (y : F.U.El b → F.U.W → Prop), ¬ F.eqv .e (.arr b .t) x y F.U.w0 :=
+  Iff.rfl
+theorem tr_Cong : F.Tr Cong ↔ ∀ a b c d (f : F.U.El a → F.U.El c) (g : F.U.El b → F.U.El d) x y,
+    F.eqv (.arr a c) (.arr b d) f g F.U.w0 ∧ F.eqv a b x y F.U.w0 → F.eqv c d (f x) (g y) F.U.w0 := Iff.rfl
+theorem tr_PExt : F.Tr PExt ↔ ∀ a c d (f : F.U.El a → F.U.El c) (g : F.U.El a → F.U.El d),
+    (∀ x, F.eqv c d (f x) (g x) F.U.w0) → F.eqv (.arr a c) (.arr a d) f g F.U.w0 := Iff.rfl
+theorem tr_Inj : F.Tr Inj ↔ ∀ a b c d, F.teq (.arr a c) (.arr b d) F.U.w0 → F.teq a b F.U.w0 ∧ F.teq c d F.U.w0 :=
+  Iff.rfl
+
+end Frame
+
 /-! ## Models with rigid or contingent identity -/
 
 abbrev univW (W : Type) (w0 : W) : Univ :=
@@ -832,6 +856,29 @@ theorem not_PropExt (w1 : D.W) (h1 : w1 ≠ D.w0) : ¬ D.frame.Valid PropExt := 
   have e := eq_of_heq ((D.holds_eqv_t _ _ _ _).mp hb).2.1
   exact h1 (cast (congrFun e w1).symm trivial)
 
+theorem Slogan_valid : D.frame.Valid Slogan :=
+  (D.frame.valid_iff_tr _).mpr <| D.frame.tr_Slogan.mpr fun _ _ _ h => nomatch h.1
+
+theorem Cong_valid : D.frame.Valid Cong :=
+  (D.frame.valid_iff_tr _).mpr <| D.frame.tr_Cong.mpr fun a b c d f g x y ⟨⟨h1, h2, _⟩, ⟨_, h4, _⟩⟩ => by
+    injection h1 with hab hcd
+    subst hab; subst hcd
+    cases h2; cases h4
+    exact ⟨rfl, HEq.rfl, D.hE⟩
+
+theorem PExt_valid : D.frame.Valid PExt :=
+  (D.frame.valid_iff_tr _).mpr <| D.frame.tr_PExt.mpr fun a c d f g h => by
+    have x0 := Classical.choice (Univ.El_nonempty (U := D.frame.U) a)
+    have hcd : c = d := (h x0).1
+    subst hcd
+    exact ⟨rfl, heq_of_eq (funext fun x => eq_of_heq (h x).2.1), D.hE⟩
+
+theorem Inj_valid : D.frame.Valid Inj :=
+  (D.frame.valid_iff_tr _).mpr <| D.frame.tr_Inj.mpr fun a b c d h => by
+    have h' := (D.hT _ _).mp h
+    injection h' with hab hcd
+    exact ⟨(D.hT _ _).mpr hab, (D.hT _ _).mpr hcd⟩
+
 abbrev Ex : Fm (((Ctx.nil.text).ext tv0).ext tv0) := Tm.eqv tv0 tv0 (.var (.there .here)) (.var .here)
 abbrev Ax' : Fm (((Ctx.nil.text).ext tv0).ext tv0) := Tm.all tv0.pred (Tm.imp (.app (.var .here) (.var (.there (.there .here))))
   (.app (.var .here) (.var (.there .here))))
@@ -877,6 +924,10 @@ def DW : RD where
   hT := fun _ _ => Iff.rfl
 
 theorem Mw_model : DW.frame.IsModelPIm := DW.model
+theorem Mw_Slogan : DW.frame.Valid Slogan := DW.Slogan_valid
+theorem Mw_Cong : DW.frame.Valid Cong := DW.Cong_valid
+theorem Mw_PExt : DW.frame.Valid PExt := DW.PExt_valid
+theorem Mw_Inj : DW.frame.Valid Inj := DW.Inj_valid
 theorem Mw_LLEqv : DW.frame.Valid LLEqv := DW.LLEqv_valid
 theorem Mw_Truth : DW.frame.Valid Truth := DW.Truth_valid
 theorem Mw_Bool : ∀ φ, BoolSch φ → DW.frame.Valid φ := DW.Bool_valid
@@ -898,6 +949,11 @@ def DND : RD where
   hT := fun _ _ => ⟨fun h => h rfl, fun h _ => h⟩
 
 theorem Mnd_model : DND.frame.IsModelPIm := DND.model
+theorem Mnd_Slogan : DND.frame.Valid Slogan := DND.Slogan_valid
+theorem Mnd_Cong : DND.frame.Valid Cong := DND.Cong_valid
+theorem Mnd_PExt : DND.frame.Valid PExt := DND.PExt_valid
+theorem Mnd_Inj : DND.frame.Valid Inj := DND.Inj_valid
+theorem Mnd_Disjoint : DND.frame.Valid Disjoint := DND.Disjoint_valid
 theorem Mnd_LLEqv : DND.frame.Valid LLEqv := DND.LLEqv_valid
 theorem Mnd_Truth : DND.frame.Valid Truth := DND.Truth_valid
 theorem Mnd_Bool : ∀ φ, BoolSch φ → DND.frame.Valid φ := DND.Bool_valid
@@ -917,6 +973,11 @@ def DNI : RD where
   hT := fun _ _ => ⟨fun h => h.1, fun h => ⟨h, rfl⟩⟩
 
 theorem Mni_model : DNI.frame.IsModelPIm := DNI.model
+theorem Mni_Slogan : DNI.frame.Valid Slogan := DNI.Slogan_valid
+theorem Mni_Cong : DNI.frame.Valid Cong := DNI.Cong_valid
+theorem Mni_PExt : DNI.frame.Valid PExt := DNI.PExt_valid
+theorem Mni_Inj : DNI.frame.Valid Inj := DNI.Inj_valid
+theorem Mni_Disjoint : DNI.frame.Valid Disjoint := DNI.Disjoint_valid
 theorem Mni_LLEqv : DNI.frame.Valid LLEqv := DNI.LLEqv_valid
 theorem Mni_Truth : DNI.frame.Valid Truth := DNI.Truth_valid
 theorem Mni_Bool : ∀ φ, BoolSch φ → DNI.frame.Valid φ := DNI.Bool_valid
@@ -935,6 +996,11 @@ def DIE : RD where
   hT := fun _ _ => Iff.rfl
 
 theorem Mie_model : DIE.frame.IsModelPIm := DIE.model
+theorem Mie_Slogan : DIE.frame.Valid Slogan := DIE.Slogan_valid
+theorem Mie_Cong : DIE.frame.Valid Cong := DIE.Cong_valid
+theorem Mie_PExt : DIE.frame.Valid PExt := DIE.PExt_valid
+theorem Mie_Inj : DIE.frame.Valid Inj := DIE.Inj_valid
+theorem Mie_Disjoint : DIE.frame.Valid Disjoint := DIE.Disjoint_valid
 theorem Mie_LLEqv : DIE.frame.Valid LLEqv := DIE.LLEqv_valid
 theorem Mie_Truth : DIE.frame.Valid Truth := DIE.Truth_valid
 theorem Mie_Bool : ∀ φ, BoolSch φ → DIE.frame.Valid φ := DIE.Bool_valid
@@ -996,6 +1062,53 @@ theorem Mcol_not_PropExt : ¬ McolF.Valid PropExt := fun h => by
   · exact cast (congrFun (eq_of_heq e) false).symm rfl
   · exact s
 
+
+/-! ### `𝔐_tt`: `⊤ ≢ ⊥` without T
+
+Two worlds; `⊤` is identified with the proposition true only at the non-actual world, and nothing
+else is identified with anything but itself. -/
+
+def St : (c : Code Empty) → (univW Bool true).El c → Prop
+  | .t, x => x = (fun _ => True) ∨ x = (fun w => w = false)
+  | _, _ => False
+
+def MttF : Frame where
+  U := univW Bool true
+  eqv := fun a b x y _ => a = b ∧ (HEq x y ∨ (St a x ∧ St b y))
+  teq := fun a b _ => a = b
+
+theorem Mtt_model : MttF.IsModelPIm :=
+  MttF.model_of_equiv (fun _ _ => Iff.rfl) (fun _ _ => ⟨rfl, Or.inl HEq.rfl⟩)
+    (fun _ _ _ _ h => ⟨h.1.symm, h.2.elim (fun e => Or.inl e.symm) (fun ⟨p, q⟩ => Or.inr ⟨q, p⟩)⟩)
+    (fun a b c x y z h1 h2 => by
+      obtain ⟨hab, e1⟩ := h1
+      obtain ⟨hbc, e2⟩ := h2
+      subst hab; subst hbc
+      refine ⟨rfl, ?_⟩
+      rcases e1 with e1 | ⟨s1, s2⟩ <;> rcases e2 with e2 | ⟨s3, s4⟩
+      · exact Or.inl (e1.trans e2)
+      · exact Or.inr ⟨eq_of_heq e1 ▸ s3, s4⟩
+      · exact Or.inr ⟨s1, eq_of_heq e2 ▸ s2⟩
+      · exact Or.inr ⟨s1, s4⟩)
+
+theorem Mtt_TopBot : MttF.Valid TopBot := by
+  intro ρ env
+  refine (MttF.holds_neg _ _ _).mpr fun h => ?_
+  have h' := ((MttF.holdsAt_eqv_t _ _ _ _ _).mp h).2
+  rw [MttF.eval_topF, MttF.eval_botF] at h'
+  rcases h' with e | ⟨_, s⟩
+  · exact cast (congrFun (eq_of_heq e) true) trivial
+  · rcases s with e | e
+    · exact cast (congrFun e true).symm trivial
+    · exact cast (congrFun e false).symm rfl
+
+theorem Mtt_not_TAx : ¬ MttF.Valid TAx := fun h => by
+  have h0 := (MttF.holds_all _ _ _ _).mp (h (fun i => i.elim0) ()) (fun w => w = false)
+  have hb := (MttF.holds_imp _ _ _ _).mp h0
+    ((MttF.holdsAt_eqv_t _ _ _ _ _).mpr ⟨rfl, Or.inr ⟨Or.inr rfl,
+      Or.inl (MttF.eval_topF (Γ := Ctx.nil.ext tyT) (fun i => i.elim0) ((), fun w => w = false))⟩⟩)
+  exact Bool.noConfusion (hb : true = false)
+
 end Wd
 
 
@@ -1039,6 +1152,80 @@ theorem Mtb_TAx : MtbF.Valid TAx := by
     exact (MtbF.holds_neg _ _ _).mpr fun hb' => (MtbF.holds_all _ _ _ _).mp hb' (False, true)
   · exact Bool.noConfusion (s : true = false)
 
+theorem Mi_NIEqv : MiF.Valid NIEqv := by
+  intro ρ env a
+  refine (MiF.holds_all _ _ _ _).mpr fun x => (MiF.holds_all _ _ _ _).mpr fun y h => ?_
+  refine (MiF.holds_eqv_t _ _ _ _).mpr ⟨rfl, heq_of_eq (Prod.ext (propext ⟨fun _ hall => hall (False, true), fun _ => h⟩) rfl)⟩
+
+theorem Mi_NITeq : MiF.Valid NITeq := by
+  intro ρ env a b h
+  exact (MiF.holds_eqv_t _ _ _ _).mpr ⟨rfl, heq_of_eq (Prod.ext (propext ⟨fun _ hall => hall (False, true), fun _ => h⟩) rfl)⟩
+
+theorem Mi_NDTeq : MiF.Valid NDTeq := by
+  intro ρ env a b h
+  exact (MiF.holds_eqv_t _ _ _ _).mpr ⟨rfl, heq_of_eq (Prod.ext (propext ⟨fun _ hall => hall (False, true), fun _ => h⟩) rfl)⟩
+
+/-- In `𝔐_z`, as in `𝔐_int`, `¬¬p` and a quantified `p` differ in their tags. -/
+theorem Mz_not_DNeg : ¬ MzF.Valid DNeg := fun h => by
+  rw [DNeg_eq] at h
+  have h0 := (MzF.holds_all _ _ _ _).mp (h (fun i => i.elim0) ()) (True, false)
+  have e := eq_of_heq ((MzF.holds_eqv_t _ _ _ _).mp h0).2
+  exact Bool.noConfusion (congrArg Prod.snd e : true = false)
+
+theorem Mz_not_Bool : ¬ ∀ φ, BoolSch φ → MzF.Valid φ := fun h => Mz_not_DNeg (h _ DNeg_bool)
+
+/-! ### `𝔐_tc`: Collapse without Booleanism
+
+Propositions are truth values with tags (as in `𝔐_tb`); all true propositions are identified with
+each other, and nothing else is identified with anything but itself. -/
+
+def Scol : (c : Code univU.Base) → univU.El c → Prop
+  | .t, x => x.1
+  | _, _ => False
+
+abbrev MtcF : Frame where
+  U := univU
+  eqv := clsEqv Scol
+  teq := fun a b => a = b
+  qtag := fun _ => false
+
+theorem Mtc_model : MtcF.IsModelPIm :=
+  MtcF.model_of_equiv (fun _ _ => Iff.rfl) (clsEqv_refl Scol) (clsEqv_symm Scol) (clsEqv_trans Scol)
+
+theorem Mtc_Collapse : MtcF.Valid Collapse := by
+  intro ρ env
+  refine (MtcF.holds_all _ _ _ _).mpr fun p => (MtcF.holds_imp _ _ _ _).mpr fun hp => ?_
+  refine (MtcF.holds_eqv_t _ _ _ _).mpr ⟨rfl, Or.inr ⟨hp, ?_⟩⟩
+  exact (MtcF.holds_neg (Γ := Ctx.nil.ext tyT) _ ρ (env, p)).mpr fun hb' =>
+    (MtcF.holds_all _ _ _ _).mp hb' (False, true)
+
+theorem Mtc_not_DNeg : ¬ MtcF.Valid DNeg := fun h => by
+  rw [DNeg_eq] at h
+  have h0 := (MtcF.holds_all _ _ _ _).mp (h (fun i => i.elim0) ()) (False, false)
+  rcases ((MtcF.holds_eqv_t _ _ _ _).mp h0).2 with e | ⟨_, s⟩
+  · exact Bool.noConfusion (congrArg Prod.snd (eq_of_heq e) : true = false)
+  · exact s
+
+theorem Mtc_not_Bool : ¬ ∀ φ, BoolSch φ → MtcF.Valid φ := fun h => Mtc_not_DNeg (h _ DNeg_bool)
+
 end Tg
+
+
+/-! ## The new principles in `𝔐_tot` -/
+
+namespace Frame
+variable (F : Frame)
+
+theorem tr_IdId : F.Tr IdId ↔ ∀ a (x y : F.U.El a), F.eqv .t .t (F.eqv a a x y) (∀ G : F.U.El a → Prop, G x → G y) :=
+  Iff.rfl
+theorem tr_TAx : F.Tr TAx ↔ ∀ p : Prop, F.eqv .t .t p (¬ ∀ q : Prop, q) → p := Iff.rfl
+
+end Frame
+
+theorem Mtot_IdId : Mtot.Valid IdId :=
+  (Mtot.valid_iff_tr _).mpr <| Mtot.tr_IdId.mpr fun _ _ _ => ⟨rfl, Or.inr ⟨trivial, trivial⟩⟩
+
+theorem Mtot_not_TAx : ¬ Mtot.Valid TAx := fun h =>
+  Mtot.tr_TAx.mp ((Mtot.valid_iff_tr _).mp h) False ⟨rfl, Or.inr ⟨trivial, trivial⟩⟩
 
 end PIF
