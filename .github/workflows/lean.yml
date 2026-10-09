@@ -12,5 +12,6 @@ jobs:
       - name: Check PIFoundation.lean
         working-directory: lean
         run: |
+          lean --version
           out=$(lean PIFoundation.lean 2>&1); echo "$out"
           test -z "$out"
