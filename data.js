@@ -147,6 +147,48 @@ const baseAxioms = [
   { tag: "LL≈", tex: String.raw`\TA\alpha\,\TA\beta\,\big(\alpha\approx\beta\rightarrow(Q\alpha\rightarrow Q\beta)\big)` },
 ];
 
+// Every axiom and rule of each base logic, for the base-logic window. `level` is the first logic
+// that has the item: PI- has the "PI-" items; PI adds "PI"; PIC adds "PIC".
+const logicSpec = {
+  language: "Types: e, t, type variables α, β, …, and σ → τ. Items of each type σ, with variables x, y, … and quantifiers ∀_σ, ∃_σ; type variables with quantifiers 𝔸, 𝔼; λ-abstraction over items and Λ-abstraction over types; identity of items x ≡_{σ,τ} y (written ≡_σ when σ = τ) and identity of types σ ≈ τ. φ, ψ are formulas (terms of type t), κ is a term, Q is a term of category Πγ:∗.t.",
+  sections: [
+    { level: "PI-", title: "Propositional and quantifier axioms", items: [
+      { tag: "Taut", tex: String.raw`\varphi`, side: "every instance of a tautology of classical propositional logic" },
+      { tag: "Inst∀", tex: String.raw`\forall_{\sigma}x\,\varphi\rightarrow\varphi[\kappa/x]`, side: "κ a term of type σ" },
+      { tag: "Dist∀", tex: String.raw`\forall_{\sigma}x\,(\varphi\rightarrow\psi)\rightarrow(\varphi\rightarrow\forall_{\sigma}x\,\psi)`, side: "x not free in φ" },
+      { tag: "Dual∃", tex: String.raw`\exists_{\sigma}x\,\varphi\leftrightarrow\neg\forall_{\sigma}x\,\neg\varphi` },
+      { tag: "Inst𝔸", tex: String.raw`\TA\alpha\,\varphi\rightarrow\varphi[\sigma/\alpha]`, side: "σ any type" },
+      { tag: "Dist𝔸", tex: String.raw`\TA\alpha\,(\varphi\rightarrow\psi)\rightarrow(\varphi\rightarrow\TA\alpha\,\psi)`, side: "α not free in φ" },
+      { tag: "Dual𝔼", tex: String.raw`\TE\alpha\,\varphi\leftrightarrow\neg\TA\alpha\,\neg\varphi` },
+      { tag: "β", tex: String.raw`\varphi\leftrightarrow\psi`, side: "φ and ψ β-equivalent: (λx.κ)κ′ ↝ κ[κ′/x] and (Λα.κ)σ ↝ κ[σ/α]" },
+    ] },
+    { level: "PI-", title: "Rules", items: [
+      { tag: "MP", tex: String.raw`\dfrac{\varphi\qquad\varphi\rightarrow\psi}{\psi}` },
+      { tag: "Gen∀", tex: String.raw`\dfrac{\varphi}{\forall_{\sigma}x\,\varphi}` },
+      { tag: "Gen𝔸", tex: String.raw`\dfrac{\varphi}{\TA\alpha\,\varphi}` },
+    ] },
+    { level: "PI-", title: "Identity axioms", items: [
+      { tag: "Ref≡", tex: String.raw`\TA\alpha\,\forall_{\alpha}x\,(x\equiv_{\alpha}x)` },
+      { tag: "Sym≡", tex: String.raw`\TA\alpha\,\TA\beta\,\forall_{\alpha}x\,\forall_{\beta}y\,(x\equiv_{\alpha,\beta}y\rightarrow y\equiv_{\beta,\alpha}x)` },
+      { tag: "Trans≡", tex: String.raw`\TA\alpha\,\TA\beta\,\TA\gamma\,\forall_{\alpha}x\,\forall_{\beta}y\,\forall_{\gamma}z\,\big((x\equiv_{\alpha,\beta}y\wedge y\equiv_{\beta,\gamma}z)\rightarrow x\equiv_{\alpha,\gamma}z\big)` },
+      { tag: "Ref≈", tex: String.raw`\TA\alpha\,(\alpha\approx\alpha)` },
+      { tag: "LL≈", tex: String.raw`\TA\alpha\,\TA\beta\,\big(\alpha\approx\beta\rightarrow(Q\alpha\rightarrow Q\beta)\big)`, side: "every Q of category Πγ:∗.t" },
+    ] },
+    { level: "PI", title: "Leibniz's law within each type", items: [
+      { tag: "LL≡", tex: String.raw`\TA\alpha\,\forall_{\alpha}x\,\forall_{\alpha}y\,\big(x\equiv_{\alpha}y\rightarrow\forall_{\alpha\to t}F\,(Fx\rightarrow Fy)\big)` },
+    ] },
+    { level: "PIC", title: "Classicism", items: [
+      { tag: "Class_t", tex: String.raw`\dfrac{\vdash_{\mathrm{PI}}\varphi\leftrightarrow\psi}{\TA\vec\alpha\,\forall\vec x\,(\varphi\equiv_{t}\psi)}`, side: "for all φ, ψ whose free type variables are among α⃗ and free item variables among x⃗" },
+      { tag: "Class_λ", tex: String.raw`\dfrac{\vdash_{\mathrm{PI}}\varphi\leftrightarrow\psi}{\TA\vec\alpha\,\forall\vec x\,(\lambda_{\sigma}y.\varphi\equiv_{\sigma\to t}\lambda_{\sigma}y.\psi)}`, side: "likewise, with y : σ also free in φ and ψ" },
+    ] },
+  ],
+  logics: {
+    "PI-": { name: "PI⁻", levels: ["PI-"], blurb: "PI⁻ is the logic of polymorphic identity without Leibniz's law for identity of items." },
+    "PI": { name: "PI", levels: ["PI-", "PI"], blurb: "PI is PI⁻ plus Leibniz's law for identity within each type (LL≡)." },
+    "PIC": { name: "PIᶜ", levels: ["PI-", "PI", "PIC"], blurb: "PIᶜ is PI plus Classicism: whenever PI proves two formulas equivalent, the propositions they express are identical, and so are the properties got by abstracting a variable from them. The premise is provability in PI itself, so Classicism is not applied to its own output." },
+  },
+};
+
 // Principles PI^- proves outright.
 const pimTheorems = [
   { to: "SymA", lean: "Derive.d_SymTeq",  src: "Lemma 9", note: "The proof uses only Ref≈ and LL≈." },
@@ -966,4 +1008,4 @@ const otherResults = [
     text: "Models of PI with infinite types (over a set type universe) exist just in case there is a strongly inaccessible cardinal; given one, every result here holds with an axiom of infinity added." },
 ];
 
-window.PIDATA = { SOURCE, principles, baseAxioms, pimTheorems, rules, inconsistent, models, otherResults };
+window.PIDATA = { SOURCE, principles, logicSpec, baseAxioms, pimTheorems, rules, inconsistent, models, otherResults };

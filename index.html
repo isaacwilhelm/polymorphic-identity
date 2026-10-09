@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=20261010">
 </head>
 <body>
 <header>
@@ -36,6 +36,7 @@
           <button data-logic="PI" aria-pressed="true">PI</button>
           <button data-logic="PI-" aria-pressed="false">PI⁻</button>
           <button data-logic="PIC" aria-pressed="false" title="PI + Classicism">PIᶜ</button>
+          <button id="showlogic" class="showlogic" type="button">Show its axioms and rules</button>
         </div>
         <div id="checklist"></div>
         <button id="reset" class="reset">Clear selection</button>
@@ -90,10 +91,23 @@
   </div>
 </main>
 
+<dialog id="logicdlg" class="logicdlg" aria-labelledby="logicdlg-title">
+  <div class="lhead">
+    <h2 id="logicdlg-title">The base logics</h2>
+    <div class="ltabs" role="tablist">
+      <button role="tab" data-l="PI-">PI⁻</button>
+      <button role="tab" data-l="PI">PI</button>
+      <button role="tab" data-l="PIC">PIᶜ</button>
+    </div>
+    <button class="lclose" type="button" aria-label="Close">✕</button>
+  </div>
+  <div id="logicbody" class="logicbody"></div>
+</dialog>
+
 <footer class="wrap">Results from Isaac Wilhelm, <em>Formal Results</em>, Draft 5 (October 2026).</footer>
 
-<script src="data.js"></script>
-<script src="lean-index.js"></script>
-<script defer src="app.js"></script>
+<script src="data.js?v=20261010"></script>
+<script src="lean-index.js?v=20261010"></script>
+<script defer src="app.js?v=20261010"></script>
 </body>
 </html>

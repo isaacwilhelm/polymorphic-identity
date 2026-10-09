@@ -228,7 +228,7 @@
   function renderChecklist() {
     const box = $("#checklist");
     const groups = [];
-    D.principles.forEach(p => {
+    D.principles.filter(p => p.group !== "The logic").forEach(p => {
       let g = groups.find(g => g.name === p.group);
       if (!g) groups.push(g = { name: p.group, items: [] });
       g.items.push(p);
@@ -268,7 +268,7 @@
       el.querySelector(".t-no").setAttribute("aria-pressed", v === false);
       el.querySelector(".t-yes").title = isLocked(id) ? (id === "Class" ? "Classicism is part of PIᶜ. Switch to PI or PI⁻ to drop it." : "LL≡ is an axiom of " + logicName() + ". Switch to PI⁻ to drop it.") : "Assume " + tag(id);
     });
-    document.querySelectorAll(".logic button").forEach(b => b.setAttribute("aria-pressed", b.dataset.logic === state.logic));
+    document.querySelectorAll(".logic button[data-logic]").forEach(b => b.setAttribute("aria-pressed", b.dataset.logic === state.logic));
   }
 
   // ------------------------------------------------------------------ rendering: graph
@@ -642,7 +642,6 @@
   // ------------------------------------------------------------------ catalogue tab
   function renderCatalogue() {
     const pr = D.principles.map(p => `<tr><td class="ctag">${p.tag}</td><td>${tex(p.tex)}<div class="cg">${p.gloss}</div></td></tr>`).join("");
-    const base = D.baseAxioms.map(a => `<tr><td class="ctag">${a.tag}</td><td>${tex(a.tex)}</td></tr>`).join("");
     const thms = D.pimTheorems.map(t => `<li>PI⁻ ⊢ <b>${tag(t.to)}</b> ${srcBadge(t.src)} ${leanBadge(t.lean)} <span class="cn">${t.note || ""}</span></li>`).join("");
     const rl = D.rules.map(r => `<li${r.added ? ' class="isnew"' : ""}>PI⁻ + ${r.from.map(tag).join(" + ")} ⊢ <b>${tag(r.to)}</b> ${srcBadge(r.src, r.added)} ${leanBadge(r.lean) || '<span class="cn">(not yet checked in Lean)</span>'} <span class="cn">${r.note || ""}</span></li>`).join("");
     const inc = D.inconsistent.map(s => `<li${s.added ? ' class="isnew"' : ""}>PI⁻ + ${s.set.map(tag).join(" + ")} ⊢ ⊥ ${srcBadge(s.src, s.added)} ${leanBadge(s.lean)} <span class="cn">${s.note || ""}</span></li>`).join("");
@@ -665,9 +664,7 @@
     const other = D.otherResults.map(o => `<li><b>${o.title}.</b> ${o.text} ${srcBadge(o.src)}</li>`).join("");
     $("#catalogue").innerHTML = `
       <label class="onlynew"><input type="checkbox" id="onlynew"> Show only results marked ◆ (not stated in the notes; observed while building this site, and to be checked)</label>
-      <section class="nonew"><h2>The base logic</h2>
-        <p>PI⁻ consists of the propositional, quantifier, and β-conversion axioms, the rules MP, Gen∀ and Gen𝔸, and these identity axioms. PI adds LL≡. PIᶜ adds Classicism to PI: whenever PI proves φ ↔ ψ, the propositions φ and ψ are identical, and so are the properties λx.φ and λx.ψ.</p>
-        <table class="ctable">${base}</table></section>
+      <section class="nonew"><h2>The base logics</h2>${["PI-", "PI", "PIC"].map(k => `<h3>${D.logicSpec.logics[k].name}</h3>${logicHTML(k, k !== "PI-")}`).join("")}</section>
       <section class="nonew"><h2>Principles</h2><table class="ctable">${pr}</table></section>
       <section class="nonew"><h2>Theorems of PI⁻</h2><ul class="clist">${thms}</ul></section>
       <section><h2>Derivations</h2><ul class="clist">${rl}</ul></section>
@@ -678,6 +675,29 @@
     try { cb.checked = localStorage.getItem("pi-onlynew") === "1"; } catch (e) {}
     const apply = () => { $("#catalogue").classList.toggle("only-new", cb.checked); try { localStorage.setItem("pi-onlynew", cb.checked ? "1" : "0"); } catch (e) {} };
     cb.addEventListener("change", apply); apply();
+  }
+
+  // ------------------------------------------------------------------ base-logic window
+  function logicHTML(key, onlyNew) {
+    const L = D.logicSpec.logics[key];
+    const lvName = lv => D.logicSpec.logics[lv].name;
+    const secs = D.logicSpec.sections.filter(sec => onlyNew ? sec.level === key : L.levels.includes(sec.level)).map(sec => {
+      const added = sec.level !== "PI-";
+      const rows = sec.items.map(it => `<tr><td class="ctag">${it.tag}</td><td>${tex(it.tex, true)}${it.side ? `<div class="cg">${it.side}</div>` : ""}</td></tr>`).join("");
+      return `<section class="lsec${added ? " ladded" : ""}"><h4>${sec.title}${added ? ` <span class="lbadge">added in ${lvName(sec.level)}</span>` : ""}</h4><table class="ctable">${rows}</table></section>`;
+    }).join("");
+    if (onlyNew) return `<p class="lblurb">${L.blurb}</p>${secs}`;
+    return `<p class="lblurb">${L.blurb}</p><details class="llang"><summary>The language</summary><p>${D.logicSpec.language}</p></details>${secs}`;
+  }
+  function openLogicWindow(key) {
+    const dlg = $("#logicdlg");
+    const show = k => {
+      dlg.querySelectorAll(".ltabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.l === k));
+      $("#logicbody").innerHTML = logicHTML(k);
+    };
+    dlg.querySelectorAll(".ltabs button").forEach(b => b.onclick = () => show(b.dataset.l));
+    show(key);
+    if (!dlg.open) dlg.showModal();
   }
 
   // ------------------------------------------------------------------ main
@@ -694,10 +714,14 @@
     readHash();
     renderChecklist();
     initGraph();
-    document.querySelectorAll(".logic button").forEach(b => b.addEventListener("click", () => {
+    document.querySelectorAll(".logic button[data-logic]").forEach(b => b.addEventListener("click", () => {
       state.logic = b.dataset.logic;
       update();
+      openLogicWindow(state.logic);
     }));
+    $("#showlogic").addEventListener("click", () => openLogicWindow(state.logic));
+    $("#logicdlg .lclose").addEventListener("click", () => $("#logicdlg").close());
+    $("#logicdlg").addEventListener("click", e => { if (e.target.id === "logicdlg") e.target.close(); });
     $("#reset").addEventListener("click", () => { state.sel = {}; state.focus = null; update(); });
     document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
       document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", x === b));
