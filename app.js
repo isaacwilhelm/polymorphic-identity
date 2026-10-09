@@ -96,8 +96,8 @@
     return lits.every(l => m.val[l.id] === l.pos);
   }
 
-  function analyse() {
-    const A = assumptions();
+  function analyse() { return analyseWith(assumptions()); }
+  function analyseWith(A) {
     const base = propagate(A);
     const out = { A, base, status: {} };
     if (base.conflict) { out.inconsistent = true; return out; }
@@ -352,7 +352,7 @@
       }
       if (k < 1) requestAnimationFrame(step);
     };
-    if (document.hidden) step(t0 + dur); else requestAnimationFrame(step);
+    if (document.hidden) step(t0 + dur); else { requestAnimationFrame(step); setTimeout(() => step(t0 + dur + 1), dur + 150); }
   }
 
   function renderGraph(an) {
@@ -461,6 +461,167 @@
     if (window.innerWidth < 900) $("#details").scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  // ------------------------------------------------------------------ strength tab (Hasse diagram)
+  // Sources (theorem numbers) used in a derivation or refutation.
+  function sourcesOf(s) {
+    const res = s.proof ? s.proof.res : s.refutation;
+    const clausesUsed = [], seen = new Set();
+    const visit = id => {
+      if (seen.has(id)) return; seen.add(id);
+      const w = res.why[id];
+      if (w && w.clause) { clausesUsed.push(w.clause); w.used.forEach(u => visit(u.id)); }
+    };
+    if (s.proof) visit(s.id);
+    else {
+      const c = res.conflict;
+      if (c.clause) { clausesUsed.push(c.clause); c.used.forEach(u => visit(u.id)); }
+      else { visit(c.id); if (c.reason && c.reason.clause) { clausesUsed.push(c.reason.clause); c.reason.used.forEach(u => visit(u.id)); } }
+    }
+    const out = new Map();
+    clausesUsed.forEach(c => c.info.src !== "immediate" && out.set(c.info.src, c.info.added));
+    if (!out.size) return "";
+    return [...out.entries()].map(([k, a]) => srcBadge(k, a)).join(" ");
+  }
+  function baseLabel() {
+    const sel = Object.entries(state.sel).filter(([id]) => !isLocked(id)).map(([id, v]) => litText(id, v));
+    return (state.logic === "PI" ? "PI" : "PI⁻") + (sel.length ? " + " + sel.join(" + ") : "");
+  }
+
+  function strengthData() {
+    const A0 = assumptions();
+    const base = analyseWith(A0);
+    if (base.inconsistent) return { inconsistent: true };
+    const cand = D.principles.filter(p => base.status[p.id] && !["follows", "refuted"].includes(base.status[p.id].kind)).map(p => p.id);
+    const given = {};      // given[a][b] = status of b given base + a
+    cand.forEach(a => { given[a] = analyseWith(A0.concat([{ id: a, pos: true, why: { assumed: true } }])).status; });
+    const imp = (a, b) => a === b || (given[a][b] && given[a][b].kind === "follows");
+    // equivalence classes
+    const cls = [], clsOf = {};
+    cand.forEach(a => {
+      const c = cls.find(c => imp(a, c[0]) && imp(c[0], a));
+      if (c) c.push(a); else cls.push([a]);
+    });
+    cls.forEach((c, i) => c.forEach(a => clsOf[a] = i));
+    const above = (i, j) => i !== j && imp(cls[i][0], cls[j][0]);   // class i implies class j
+    // covering relation among classes
+    const covers = cls.map((_, i) => cls.map((_, j) => j).filter(j => above(i, j) &&
+      !cls.some((_, k) => k !== i && k !== j && above(i, k) && above(k, j))));
+    // layers: the base is layer 0
+    const layer = [];
+    const L = i => layer[i] !== undefined ? layer[i] : (layer[i] = 1 + Math.max(0, ...covers[i].map(L)));
+    cls.forEach((_, i) => L(i));
+    return { base, given, cls, clsOf, covers, layer, imp, refutedByBase: D.principles.filter(p => base.status[p.id] && base.status[p.id].kind === "refuted").map(p => p.id) };
+  }
+
+  let strengthFocus = null;
+  function renderStrength() {
+    const box = $("#strength");
+    const S = strengthData();
+    const head = `<div class="shead"><p>Each box is a principle, or a group of principles that are equivalent. A line from a higher box down to a lower one means the higher one implies the lower one, given <b>${baseLabel()}</b> (the bottom box, which also contains every principle that follows from it outright). Change the base logic or the assumptions in the Explorer tab and this diagram updates.</p>
+      <p class="skey"><span><svg width="34" height="10"><line x1="1" y1="5" x2="33" y2="5" class="se strict"/></svg> strictly stronger: the converse is known to fail</span>
+      <span><svg width="34" height="10"><line x1="1" y1="5" x2="33" y2="5" class="se unk"/></svg> stronger; whether the converse holds is open</span></p></div>`;
+    if (S.inconsistent) { box.innerHTML = head + `<div class="bad">The current assumptions are inconsistent.</div>`; return; }
+    const { cls, covers, layer, given, base } = S;
+    // geometry
+    const label = c => c.map(tag).join(" ⟺ ");
+    const wOf = t => Math.max(60, t.length * 8 + 26);
+    const nL = Math.max(0, ...layer) + 1;
+    const rows = Array.from({ length: nL }, () => []);
+    cls.forEach((c, i) => rows[layer[i]].push(i));
+    const gapX = 26, rowH = 96, padY = 30;
+    // order rows bottom-up by barycentre of what they cover
+    const xpos = {}, BASE = -1;
+    const baseText = baseLabel();
+    const rowWidth = r => r.reduce((s, i) => s + wOf(label(cls[i])) + gapX, -gapX);
+    const W = Math.max(640, wOf(baseText) + 40, ...rows.map(r => rowWidth(r) + 60));
+    xpos[BASE] = W / 2;
+    for (let l = 1; l < nL; l++) {
+      rows[l].sort((a, b) => {
+        const bc = i => { const k = covers[i].map(j => xpos[j]).filter(v => v !== undefined); return k.length ? k.reduce((x, y) => x + y) / k.length : W / 2; };
+        return bc(a) - bc(b);
+      });
+      let x = (W - rowWidth(rows[l])) / 2;
+      rows[l].forEach(i => { const w = wOf(label(cls[i])); xpos[i] = x + w / 2; x += w + gapX; });
+    }
+    const H = padY * 2 + (nL) * rowH - (rowH - 30);
+    const ypos = l => H - padY - 15 - l * rowH;
+    let svgEdges = "", svgNodes = "";
+    const edge = (x1, y1, x2, y2, strict, key) => {
+      svgEdges += `<line class="se ${strict ? "strict" : "unk"}" data-k="${key}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+      if (!strict) svgEdges += `<text class="sq" x="${(x1 + x2) / 2 + 6}" y="${(y1 + y2) / 2 + 4}">?</text>`;
+    };
+    // base-level status of a principle: is it known not to follow from the base?
+    const strictOverBase = i => !!base.status[cls[i][0]].counter;
+    // converse known to fail: some member of the upper class fails given the lower class
+    const strictPair = (i, j) => { const s = given[cls[j][0]][cls[i][0]]; return !!(s && s.counter); };
+    cls.forEach((c, i) => {
+      const y = ypos(layer[i]);
+      if (covers[i].length === 0) edge(xpos[i], y + 13, xpos[BASE], ypos(0) - 13, strictOverBase(i), i + ">base");
+      covers[i].forEach(j => edge(xpos[i], y + 13, xpos[j], ypos(layer[j]) - 13, strictPair(i, j), i + ">" + j));
+    });
+    const node = (x, y, text, key, cl) => {
+      const w = wOf(text);
+      svgNodes += `<g class="sn ${cl}" data-k="${key}" tabindex="0" role="button" transform="translate(${x},${y})"><rect x="${-w / 2}" y="-13" width="${w}" height="26" rx="13"/><text text-anchor="middle" y="4.5">${text}</text></g>`;
+    };
+    node(xpos[BASE], ypos(0), baseText, "base", "basenode" + (strengthFocus === "base" ? " focus" : ""));
+    cls.forEach((c, i) => node(xpos[i], ypos(layer[i]), label(c), i, strengthFocus === c[0] ? "focus" : ""));
+    box.innerHTML = head + `<div class="sbox"><svg viewBox="0 0 ${W} ${H}" style="min-width:${Math.min(W, 900)}px">${svgEdges}${svgNodes}</svg></div><div id="sdetails" class="details"></div>`;
+    box.querySelectorAll(".sn").forEach(g => {
+      const go = () => { const k = g.dataset.k; strengthFocus = k === "base" ? null : cls[+k][0]; renderStrength(); };
+      g.addEventListener("click", go);
+      g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+    });
+    renderStrengthDetails(S);
+  }
+
+  function renderStrengthDetails(S) {
+    const box = $("#sdetails");
+    const a = strengthFocus;
+    if (!a || S.clsOf[a] === undefined) {
+      const ref = S.refutedByBase.length ? `<p>Inconsistent with the base, so not shown: ${S.refutedByBase.map(tag).join(", ")}.</p>` : "";
+      box.innerHTML = `<div class="hint">Click a box to see exactly where it sits: what it implies and what implies it (and whether strictly), and what it is incomparable with.</div>${ref}`;
+      return;
+    }
+    const { given, base, cls, clsOf, imp } = S;
+    const me = cls[clsOf[a]];
+    const others = cls.filter(c => c !== me);
+    const cm = s => {
+      if (!s || !s.counter) return null;
+      const w = s.counter.why[s.id];   // why the principle has its value in that model
+      const why = w && w.model ? srcBadge(w.src.length > 40 ? w.src.split(/[;(:]/)[0].trim() : w.src, w.added) : srcBadge(s.counter.src);
+      return `countermodel ${s.counter.name} ${why}`;
+    };
+    const line = (txt) => `<li>${txt}</li>`;
+    const below = [], aboveL = [], incomp = [], unknown = [];
+    // the base
+    const bs = base.status[a];
+    below.push(line(`<b>Strictly stronger than the base</b> ${baseLabel()}: ${baseLabel()} ⊬ ${tag(a)}, ${cm(bs) || ""}`.replace(/, $/, "")));
+    if (!bs.counter) below.pop(), below.push(line(`Stronger than the base ${baseLabel()}; <i>whether ${baseLabel()} proves ${tag(a)} is open.</i>`));
+    others.forEach(c => {
+      const b = c[0];
+      const ab = given[a][b], ba = given[b][a];
+      const bl = c.map(tag).join(" ⟺ ");
+      if (imp(a, b)) {
+        below.push(line(`<b>${ba.counter ? "Strictly stronger" : "Stronger"} than ${bl}</b>: ${tag(a)} ⊢ ${tag(b)} ${sourcesOf(ab)}${ba.counter ? `; ${tag(b)} ⊬ ${tag(a)}, ${cm(ba)}` : `; <i>whether ${tag(b)} ⊢ ${tag(a)} is open</i>`}`));
+      } else if (imp(b, a)) {
+        aboveL.push(line(`<b>${ab.counter ? "Strictly weaker" : "Weaker"} than ${bl}</b>: ${tag(b)} ⊢ ${tag(a)} ${sourcesOf(ba)}${ab.counter ? `; ${tag(a)} ⊬ ${tag(b)}, ${cm(ab)}` : `; <i>whether ${tag(a)} ⊢ ${tag(b)} is open</i>`}`));
+      } else if (ab.kind === "refuted" || ba.kind === "refuted") {
+        incomp.push(line(`<b>Inconsistent with ${bl}</b> (given the base) ${sourcesOf(ab.kind === "refuted" ? ab : ba)}`));
+      } else if (ab.counter && ba.counter) {
+        incomp.push(line(`<b>Incomparable with ${bl}</b>: ${tag(a)} ⊬ ${tag(b)} (${cm(ab)}); ${tag(b)} ⊬ ${tag(a)} (${cm(ba)})`));
+      } else {
+        const parts = [];
+        parts.push(ab.counter ? `${tag(a)} ⊬ ${tag(b)} (${cm(ab)})` : `whether ${tag(a)} ⊢ ${tag(b)} is open`);
+        parts.push(ba.counter ? `${tag(b)} ⊬ ${tag(a)} (${cm(ba)})` : `whether ${tag(b)} ⊢ ${tag(a)} is open`);
+        unknown.push(line(`<b>${bl}</b>: ${parts.join("; ")}`));
+      }
+    });
+    const sec = (t, l) => l.length ? `<h4>${t}</h4><ul class="clist">${l.join("")}</ul>` : "";
+    box.innerHTML = `<div class="dhead"><h3>${me.map(tag).join(" ⟺ ")}</h3><span class="dgroup">given ${baseLabel()}</span></div>
+      ${me.length > 1 ? `<p>These are equivalent given the base.</p>` : ""}
+      ${sec("Implied by", aboveL)}${sec("Implies", below)}${sec("Incomparable or inconsistent", incomp)}${sec("Partly unsettled", unknown)}`;
+  }
+
   // ------------------------------------------------------------------ catalogue tab
   function renderCatalogue() {
     const pr = D.principles.map(p => `<tr><td class="ctag">${p.tag}</td><td>${tex(p.tex)}<div class="cg">${p.gloss}</div></td></tr>`).join("");
@@ -496,6 +657,7 @@
     syncChecklist();
     renderGraph(an);
     renderDetails(an);
+    if (!$("#strength").hidden) renderStrength();
   }
 
   function init() {
@@ -510,9 +672,10 @@
     document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
       document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", x === b));
       document.querySelectorAll(".tabpanel").forEach(x => x.hidden = x.id !== b.dataset.tab);
+      if (b.dataset.tab === "strength") renderStrength();
     }));
     renderCatalogue();
-    window.__pi = { analyse, state, update, models };
+    window.__pi = { analyse, analyseWith, state, update, models, strengthData };
     window.addEventListener("hashchange", () => { readHash(); update(); });
     update();
   }

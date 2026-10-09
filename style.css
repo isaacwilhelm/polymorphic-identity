@@ -159,6 +159,23 @@ main { padding-top: 18px; padding-bottom: 30px; }
 .dactions button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
 .dactions button:disabled { opacity: .5; cursor: not-allowed; }
 
+/* ---------- strength (Hasse diagram) ---------- */
+.shead { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 4px 18px; margin-bottom: 14px; }
+.skey { display: flex; flex-wrap: wrap; gap: 6px 22px; color: var(--muted); font-size: 13.5px; }
+.skey span { display: inline-flex; align-items: center; gap: 8px; }
+.sbox { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow-x: auto; }
+.sbox svg { display: block; width: 100%; height: auto; }
+.se { stroke-width: 2; }
+.se.strict { stroke: var(--ink); opacity: .75; }
+.se.unk { stroke: var(--c-notder); stroke-dasharray: 6 5; }
+.sq { font: 700 14px var(--sans); fill: var(--c-notder); }
+.sn { cursor: pointer; }
+.sn rect { fill: var(--panel); stroke: var(--accent); stroke-width: 1.5; }
+.sn text { font: 500 13px var(--sans); fill: var(--ink); pointer-events: none; }
+.sn.basenode rect { fill: var(--accent-soft); }
+.sn.focus rect, .sn:hover rect { stroke-width: 3; }
+.strength .bad { background: var(--c-refuted-bg); border: 1px solid var(--c-refuted); border-radius: 8px; padding: 10px 14px; }
+
 /* ---------- catalogue / about ---------- */
 .catalogue section, .about section { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 6px 20px 14px; margin-bottom: 16px; }
 .catalogue h2, .about h2 { font: 600 20px var(--serif); margin: 14px 0 8px; }
