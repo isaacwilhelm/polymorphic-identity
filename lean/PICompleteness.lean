@@ -354,5 +354,172 @@ theorem theory_liftL {k : Nat} {φ : Fm (chain n0 Γ0 k).Γ} (h : Ent Ax _ (theo
 
 end Mono
 
+
+/-! ## Truth in the limit -/
+
+section Limit
+variable {Ax : Fm Ctx.nil → Prop} {n0 : Nat} {Γ0 : Ctx n0} (φ0 : Fm Γ0)
+
+/-- Derivability from the theory at stage `k`. -/
+def E (k : Nat) (φ : Fm (chain n0 Γ0 k).Γ) : Prop := Ent Ax _ (theory Ax φ0 k) φ
+
+/-- Lifting a formula from stage `k` to stage `J`. -/
+noncomputable def up {k : Nat} (J : Nat) (h : k ≤ J) (φ : Fm (chain n0 Γ0 k).Γ) : Fm (chain n0 Γ0 J).Γ :=
+  liftF (liftL n0 Γ0 k J h) φ
+
+variable (Ax)
+
+/-- Some formula with code `m` is derivable at stage `J`. -/
+def EvC (m : List Nat) (J : Nat) : Prop := ∃ ψ : Fm (chain n0 Γ0 J).Γ, codeTm 0 0 ψ = m ∧ E (Ax := Ax) φ0 J ψ
+
+/-- Truth in the limit, for codes. -/
+def TrL (m : List Nat) : Prop := ∃ J, EvC Ax φ0 m J
+
+variable {Ax φ0}
+
+theorem code_up {k J : Nat} (h : k ≤ J) (φ : Fm (chain n0 Γ0 k).Γ) :
+    codeTm 0 0 (up J h φ) = codeTm 0 0 φ := (liftL n0 Γ0 k J h).codeT φ
+
+theorem up_trans {k J J' : Nat} (h : k ≤ J) (h' : J ≤ J') (φ : Fm (chain n0 Γ0 k).Γ) :
+    up J' h' (up J h φ) = up J' (Nat.le_trans h h') φ :=
+  codeTm_inj' _ _ (by rw [code_up, code_up, code_up])
+
+theorem E_up {k J : Nat} (h : k ≤ J) {φ : Fm (chain n0 Γ0 k).Γ} (hφ : E (Ax := Ax) φ0 k φ) :
+    E (Ax := Ax) φ0 J (up J h φ) := theory_liftL hφ J h
+
+theorem evC_mono {m : List Nat} {J J' : Nat} (hJ : J ≤ J') : EvC Ax φ0 m J → EvC Ax φ0 m J'
+  | ⟨ψ, hc, hψ⟩ => ⟨up J' hJ ψ, (code_up hJ ψ).trans hc, E_up hJ hψ⟩
+
+theorem evC_at {J : Nat} (φ : Fm (chain n0 Γ0 J).Γ) : EvC Ax φ0 (codeTm 0 0 φ) J ↔ E (Ax := Ax) φ0 J φ :=
+  ⟨fun ⟨ψ, hc, hψ⟩ => (codeTm_inj' ψ φ hc) ▸ hψ, fun h => ⟨φ, rfl, h⟩⟩
+
+theorem trL_iff {k : Nat} (φ : Fm (chain n0 Γ0 k).Γ) :
+    TrL Ax φ0 (codeTm 0 0 φ) ↔ ∃ J, ∃ h : k ≤ J, E (Ax := Ax) φ0 J (up J h φ) := by
+  constructor
+  · rintro ⟨J, hJ⟩
+    refine ⟨max k J, Nat.le_max_left _ _, (evC_at _).1 ?_⟩
+    rw [code_up]; exact evC_mono (Nat.le_max_right _ _) hJ
+  · rintro ⟨J, h, hE⟩
+    exact ⟨J, by rw [← code_up h φ]; exact (evC_at _).2 hE⟩
+
+theorem trL_of_E {k : Nat} {φ : Fm (chain n0 Γ0 k).Γ} (h : E (Ax := Ax) φ0 k φ) : TrL Ax φ0 (codeTm 0 0 φ) :=
+  ⟨k, φ, rfl, h⟩
+
+theorem trL_event {k : Nat} {φ : Fm (chain n0 Γ0 k).Γ} (hφ : TrL Ax φ0 (codeTm 0 0 φ)) :
+    ∃ J0, ∀ J (h : k ≤ J), J0 ≤ J → E (Ax := Ax) φ0 J (up J h φ) := by
+  obtain ⟨J1, h1, e⟩ := (trL_iff φ).1 hφ
+  refine ⟨J1, fun J h hJ => ?_⟩
+  have := E_up hJ e
+  rwa [up_trans] at this
+
+theorem trL_mp {k : Nat} {φ ψ : Fm (chain n0 Γ0 k).Γ} (hp : Prov Ax _ (φ.imp ψ))
+    (hφ : TrL Ax φ0 (codeTm 0 0 φ)) : TrL Ax φ0 (codeTm 0 0 ψ) := by
+  obtain ⟨J, h, e⟩ := (trL_iff φ).1 hφ
+  exact (trL_iff ψ).2 ⟨J, h, Ent.mp (Ent.ofProv (Prov.ren _ hp)) e⟩
+
+theorem trL_mp2 {k : Nat} {φ ψ χ : Fm (chain n0 Γ0 k).Γ} (hp : Prov Ax _ (φ.imp (ψ.imp χ)))
+    (hφ : TrL Ax φ0 (codeTm 0 0 φ)) (hψ : TrL Ax φ0 (codeTm 0 0 ψ)) : TrL Ax φ0 (codeTm 0 0 χ) := by
+  obtain ⟨J1, e1⟩ := trL_event hφ
+  obtain ⟨J2, e2⟩ := trL_event hψ
+  have h : k ≤ max k (max J1 J2) := Nat.le_max_left _ _
+  have h1 : J1 ≤ max k (max J1 J2) := Nat.le_trans (Nat.le_max_left _ _) (Nat.le_max_right _ _)
+  have h2 : J2 ≤ max k (max J1 J2) := Nat.le_trans (Nat.le_max_right _ _) (Nat.le_max_right _ _)
+  exact (trL_iff χ).2 ⟨_, h, Ent.mp2 (Ent.ofProv (Prov.ren _ hp)) (e1 _ h h1) (e2 _ h h2)⟩
+
+theorem trL_prov {k : Nat} {φ : Fm (chain n0 Γ0 k).Γ} (hp : Prov Ax _ φ) : TrL Ax φ0 (codeTm 0 0 φ) :=
+  trL_of_E (Ent.ofProv hp)
+
+theorem trL_cons (h0 : ¬ Prov Ax Γ0 φ0) {k : Nat} {φ : Fm (chain n0 Γ0 k).Γ}
+    (hφ : TrL Ax φ0 (codeTm 0 0 φ)) (hn : TrL Ax φ0 (codeTm 0 0 φ.neg)) : False := by
+  obtain ⟨J1, e1⟩ := trL_event hφ
+  obtain ⟨J2, e2⟩ := trL_event hn
+  have h : k ≤ max k (max J1 J2) := Nat.le_max_left _ _
+  have h1 : J1 ≤ max k (max J1 J2) := Nat.le_trans (Nat.le_max_left _ _) (Nat.le_max_right _ _)
+  have h2 : J2 ≤ max k (max J1 J2) := Nat.le_trans (Nat.le_max_right _ _) (Nat.le_max_right _ _)
+  exact theory_cons h0 _ (Ent.absurd (e1 _ h h1) (e2 _ h h2))
+
+theorem decideStep_two {n : Nat} {Γ : Ctx n} (H : List (Fm Γ)) (o : Option (Nat × Nat)) (c : Nat)
+    (ho : o = some (2, c)) :
+    Ent Ax Γ (decideStep Ax H o) (decodeF Γ c) ∨ Ent Ax Γ (decideStep Ax H o) (decodeF Γ c).neg := by
+  subst ho
+  show Ent Ax Γ (open Classical in if Cons Ax (H ++ [decodeF Γ c]) then H ++ [decodeF Γ c] else H ++ [(decodeF Γ c).neg]) _ ∨
+    Ent Ax Γ (open Classical in if Cons Ax (H ++ [decodeF Γ c]) then H ++ [decodeF Γ c] else H ++ [(decodeF Γ c).neg]) _
+  split
+  · exact Or.inl Ent.last
+  · exact Or.inr Ent.last
+
+theorem theory_decide (K c : Nat) (hK : task K = some (2, c)) :
+    E (Ax := Ax) φ0 (K + 1) (decodeF (chain n0 Γ0 (K + 1)).Γ c) ∨
+      E (Ax := Ax) φ0 (K + 1) (decodeF (chain n0 Γ0 (K + 1)).Γ c).neg :=
+  decideStep_two ((theory Ax φ0 K).map (liftF (step (chain n0 Γ0 K) K).L) ++ [(step (chain n0 Γ0 K) K).W]) (task K) c hK
+
+theorem codeF_up {k J : Nat} (h : k ≤ J) (φ : Fm (chain n0 Γ0 k).Γ) : codeF (up J h φ : Fm _) = codeF φ :=
+  congrArg encL (code_up h φ)
+
+theorem trL_max {k : Nat} (φ : Fm (chain n0 Γ0 k).Γ) :
+    TrL Ax φ0 (codeTm 0 0 φ) ∨ TrL Ax φ0 (codeTm 0 0 φ.neg) := by
+  have hK : k ≤ pairN 2 (pairN k (codeF φ)) + 1 :=
+    Nat.le_succ_of_le (Nat.le_trans (le_pairN_left _ _) (le_pairN_right _ _))
+  have hd := theory_decide (Ax := Ax) (φ0 := φ0) _ _ (task_pairN 2 k (codeF φ))
+  have e : decodeF _ (codeF φ) = up _ hK φ := (congrArg (decodeF _) (codeF_up hK φ)).symm.trans (decodeF_codeF _)
+  rw [e] at hd
+  rcases hd with hd | hd
+  · exact Or.inl ((trL_iff φ).2 ⟨_, hK, hd⟩)
+  · exact Or.inr ((trL_iff φ.neg).2 ⟨_, hK, hd⟩)
+
+theorem trL_neg (h0 : ¬ Prov Ax Γ0 φ0) {k : Nat} (φ : Fm (chain n0 Γ0 k).Γ) :
+    TrL Ax φ0 (codeTm 0 0 φ.neg) ↔ ¬ TrL Ax φ0 (codeTm 0 0 φ) :=
+  ⟨fun hn hφ => trL_cons h0 hφ hn, fun hn => (trL_max φ).resolve_left hn⟩
+
+theorem trL_imp {k : Nat} (φ ψ : Fm (chain n0 Γ0 k).Γ) :
+    TrL Ax φ0 (codeTm 0 0 (φ.imp ψ)) ↔ (TrL Ax φ0 (codeTm 0 0 φ) → TrL Ax φ0 (codeTm 0 0 ψ)) := by
+  constructor
+  · intro hi hφ
+    exact trL_mp2 (Prov.taut (.imp (.imp (.atom 0) (.atom 1)) (.imp (.atom 0) (.atom 1))) (v2 φ ψ) (fun _ f => f)) hi hφ
+  · intro hi
+    rcases trL_max (Ax := Ax) (φ0 := φ0) φ with hφ | hφ
+    · exact trL_mp (Prov.taut (.imp (.atom 1) (.imp (.atom 0) (.atom 1))) (v2 φ ψ) (fun _ b _ => b)) (hi hφ)
+    · exact trL_mp (Prov.taut (.imp (.neg (.atom 0)) (.imp (.atom 0) (.atom 1))) (v2 φ ψ) (fun _ na a => (na a).elim)) hφ
+
+theorem trL_conj {k : Nat} (φ ψ : Fm (chain n0 Γ0 k).Γ) :
+    TrL Ax φ0 (codeTm 0 0 (φ.conj ψ)) ↔ (TrL Ax φ0 (codeTm 0 0 φ) ∧ TrL Ax φ0 (codeTm 0 0 ψ)) := by
+  constructor
+  · intro hc
+    exact ⟨trL_mp (Prov.taut (.imp (.conj (.atom 0) (.atom 1)) (.atom 0)) (v2 φ ψ) (fun _ c => c.1)) hc,
+      trL_mp (Prov.taut (.imp (.conj (.atom 0) (.atom 1)) (.atom 1)) (v2 φ ψ) (fun _ c => c.2)) hc⟩
+  · rintro ⟨hφ, hψ⟩
+    exact trL_mp2 (Prov.taut (.imp (.atom 0) (.imp (.atom 1) (.conj (.atom 0) (.atom 1)))) (v2 φ ψ)
+      (fun _ a b => ⟨a, b⟩)) hφ hψ
+
+theorem trL_disj {k : Nat} (φ ψ : Fm (chain n0 Γ0 k).Γ) :
+    TrL Ax φ0 (codeTm 0 0 (φ.disj ψ)) ↔ (TrL Ax φ0 (codeTm 0 0 φ) ∨ TrL Ax φ0 (codeTm 0 0 ψ)) := by
+  constructor
+  · intro hd
+    rcases trL_max (Ax := Ax) (φ0 := φ0) φ with hφ | hφ
+    · exact Or.inl hφ
+    · exact Or.inr (trL_mp2 (Prov.taut (.imp (.disj (.atom 0) (.atom 1)) (.imp (.neg (.atom 0)) (.atom 1)))
+        (v2 φ ψ) (fun _ d na => d.resolve_left na)) hd hφ)
+  · rintro (h | h)
+    · exact trL_mp (Prov.taut (.imp (.atom 0) (.disj (.atom 0) (.atom 1))) (v2 φ ψ) (fun _ a => Or.inl a)) h
+    · exact trL_mp (Prov.taut (.imp (.atom 1) (.disj (.atom 0) (.atom 1))) (v2 φ ψ) (fun _ b => Or.inr b)) h
+
+theorem trL_iff' (h0 : ¬ Prov Ax Γ0 φ0) {k : Nat} (φ ψ : Fm (chain n0 Γ0 k).Γ) :
+    TrL Ax φ0 (codeTm 0 0 (φ.iff ψ)) ↔ (TrL Ax φ0 (codeTm 0 0 φ) ↔ TrL Ax φ0 (codeTm 0 0 ψ)) := by
+  constructor
+  · intro hi
+    exact ⟨fun hφ => trL_mp2 (Prov.taut (.imp (.iff (.atom 0) (.atom 1)) (.imp (.atom 0) (.atom 1))) (v2 φ ψ)
+        (fun _ e a => e.mp a)) hi hφ,
+      fun hψ => trL_mp2 (Prov.taut (.imp (.iff (.atom 0) (.atom 1)) (.imp (.atom 1) (.atom 0))) (v2 φ ψ)
+        (fun _ e b => e.mpr b)) hi hψ⟩
+  · intro he
+    rcases trL_max (Ax := Ax) (φ0 := φ0) φ with hφ | hφ
+    · exact trL_mp2 (Prov.taut (.imp (.atom 0) (.imp (.atom 1) (.iff (.atom 0) (.atom 1)))) (v2 φ ψ)
+        (fun _ a b => ⟨fun _ => b, fun _ => a⟩)) hφ (he.mp hφ)
+    · have hψ : TrL Ax φ0 (codeTm 0 0 ψ.neg) := (trL_neg h0 ψ).2 (fun hψ => (trL_neg h0 φ).1 hφ (he.mpr hψ))
+      exact trL_mp2 (Prov.taut (.imp (.neg (.atom 0)) (.imp (.neg (.atom 1)) (.iff (.atom 0) (.atom 1)))) (v2 φ ψ)
+        (fun _ na nb => ⟨fun a => (na a).elim, fun b => (nb b).elim⟩)) hφ hψ
+
+end Limit
+
 end Compl
 end PIF
