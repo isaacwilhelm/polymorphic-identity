@@ -76,6 +76,22 @@ window.LEANINDEX = {
   "PIAlgModels.lean",
   201
  ],
+ "AlI.Mif_Disjoint": [
+  "PIAlgIModels.lean",
+  63
+ ],
+ "AlI.Mif_LLEqv": [
+  "PIAlgIModels.lean",
+  52
+ ],
+ "AlI.Mif_model": [
+  "PIAlgIModels.lean",
+  48
+ ],
+ "AlI.Mif_not_PExt": [
+  "PIAlgIModels.lean",
+  71
+ ],
  "BoolSch": [
   "PIModal.lean",
   64
