@@ -296,6 +296,66 @@ window.LEANINDEX = {
   "PIExplore.lean",
   131
  ],
+ "MDtw_Cantor": [
+  "PIExplore.lean",
+  513
+ ],
+ "MDtw_Inj": [
+  "PIExplore.lean",
+  486
+ ],
+ "MDtw_Slogan": [
+  "PIExplore.lean",
+  515
+ ],
+ "MDtw_TopBot": [
+  "PIExplore.lean",
+  499
+ ],
+ "MDtw_Truth": [
+  "PIExplore.lean",
+  497
+ ],
+ "MDtw_Twin": [
+  "PIExplore.lean",
+  494
+ ],
+ "MDtw_model": [
+  "PIExplore.lean",
+  485
+ ],
+ "MDtw_not_Bridge": [
+  "PIExplore.lean",
+  544
+ ],
+ "MDtw_not_Disjoint": [
+  "PIExplore.lean",
+  505
+ ],
+ "MDtw_not_ExtT": [
+  "PIExplore.lean",
+  508
+ ],
+ "MDtw_not_Hae": [
+  "PIExplore.lean",
+  517
+ ],
+ "MDtw_not_IntT": [
+  "PIExplore.lean",
+  512
+ ],
+ "MDtw_not_LLEqv": [
+  "PIExplore.lean",
+  502
+ ],
+ "MDtw_not_PCong": [
+  "PIExplore.lean",
+  520
+ ],
+ "MDtw_not_WCong": [
+  "PIExplore.lean",
+  524
+ ],
  "ME_Cantor": [
   "PIExplore.lean",
   136
@@ -515,6 +575,62 @@ window.LEANINDEX = {
  "Mcard_not_Inj": [
   "PIFoundation.lean",
   2218
+ ],
+ "Mct_ExtT": [
+  "PIExplore.lean",
+  366
+ ],
+ "Mct_Inj": [
+  "PIExplore.lean",
+  332
+ ],
+ "Mct_IntT": [
+  "PIExplore.lean",
+  381
+ ],
+ "Mct_Slogan": [
+  "PIExplore.lean",
+  353
+ ],
+ "Mct_TopBot": [
+  "PIExplore.lean",
+  347
+ ],
+ "Mct_Truth": [
+  "PIExplore.lean",
+  345
+ ],
+ "Mct_model": [
+  "PIExplore.lean",
+  331
+ ],
+ "Mct_not_Cantor": [
+  "PIExplore.lean",
+  350
+ ],
+ "Mct_not_Disjoint": [
+  "PIExplore.lean",
+  385
+ ],
+ "Mct_not_Hae": [
+  "PIExplore.lean",
+  393
+ ],
+ "Mct_not_LLEqv": [
+  "PIExplore.lean",
+  382
+ ],
+ "Mct_not_PCong": [
+  "PIExplore.lean",
+  398
+ ],
+ "Mct_not_Twin": [
+  "PIExplore.lean",
+  388
+ ],
+ "Mct_not_WCong": [
+  "PIExplore.lean",
+  402
  ],
  "Mfn_Cantor": [
   "PIExplore.lean",
@@ -895,5 +1011,13 @@ window.LEANINDEX = {
  "d_LLPoly_of_Disjoint": [
   "PISchemas.lean",
   208
+ ],
+ "d_TopBot_of_Truth": [
+  "PIExplore.lean",
+  290
+ ],
+ "d_WCong_of_Cong": [
+  "PIExplore.lean",
+  300
  ]
 };

@@ -279,4 +279,270 @@ theorem Mcan_not_LLPoly : ¬ Mcan.Valid (LLPoly PredE) := fun h => by
     (Or.inr ⟨Or.inl rfl, Or.inr rfl⟩) rfl
   cases this
 
+
+/-! ## Two derivations in PI⁻ -/
+
+section MoreDerivations
+open Tm Derive
+variable {S : Fm Ctx.nil → Prop}
+
+/-- Truth proves `⊤ ≢ ⊥`: if `⊤ ≡ ⊥`, Truth gives `⊤ → ⊥`. -/
+theorem d_TopBot_of_Truth (hT : S Truth) : Prov S Ctx.nil TopBot := by
+  have h0 := Ent.inst (Ent.inst (Ent.ofProv (Γ := Ctx.nil) (Hs := [Tm.eqv tyT tyT topF botF]) (Prov.ax hT)) topF) botF
+  have h2 : Ent S Ctx.nil ([] ++ [Tm.eqv tyT tyT topF botF]) (topF.imp botF) := Ent.mp h0 (Ent.hyp _ 0 (by decide))
+  have h3 : Ent S Ctx.nil ([] ++ [Tm.eqv tyT tyT topF botF]) botF := Ent.mp h2 Ent.top
+  exact Ent.toProv (Ent.notI h3 Ent.top)
+
+abbrev Γc : Ctx 4 := (((Δ4.ext (tv3.arrow tv1)).ext (tv2.arrow tv0)).ext tv3).ext tv2
+
+set_option maxHeartbeats 4000000 in
+/-- Cong proves WCong, which is Cong with two further premises. -/
+theorem d_WCong_of_Cong (hC : S Cong) : Prov S Ctx.nil WCong := by
+  have h0 := (((((Ent.axm (Γ := Γc) (Hs := []) hC).tinst tv3).tinst tv2).tinst tv1).tinst tv0)
+  have h1 := Ent.inst (Ent.inst (Ent.inst (Ent.inst h0 (.var (.there (.there (.there .here))))) (.var (.there (.there .here))))
+    (.var (.there .here))) (.var .here)
+  have h2 := Ent.mp (Ent.taut (.imp (.imp (.atom 0) (.atom 1)) (.imp (.conj (.atom 2) (.atom 0)) (.atom 1)))
+    (v3 _ _ ((teq tv3 tv2).conj (teq tv1 tv0))) (fun _ f h => f h.2)) h1
+  exact Ent.toProv (Ent.tgen (Ent.tgen (Ent.tgen (Ent.tgen (Ent.gen (tv3.arrow tv1) (Ent.gen (tv2.arrow tv0)
+    (Ent.gen tv3 (Ent.gen tv2 h2))))))))
+
+end MoreDerivations
+
+/-! ## `𝔐_cant`: Cantor fails at `t`, while Slogan, Ext≈ and Int≈ hold
+
+`⊤` and every function from `t` to `t` form a single class of identified items; nothing else is
+identified with anything but itself. -/
+
+def cantC (p : Σ c : Code Empty, unitUniv.El c) : Prop := (p.1 = .t ∧ HEq p.2 True) ∨ p.1 = .arr .t .t
+
+def MctD : IdentData where
+  U := unitUniv
+  rel := fun p q => p = q ∨ (cantC p ∧ cantC q)
+  refl := fun _ => Or.inl rfl
+  symm := fun h => h.elim (fun e => Or.inl e.symm) (fun ⟨a, b⟩ => Or.inr ⟨b, a⟩)
+  trans := by
+    rintro p q r (rfl | ⟨_, hq⟩) (rfl | ⟨hq', hr⟩)
+    · exact Or.inl rfl
+    · exact Or.inr ⟨hq', hr⟩
+    · exact Or.inr ⟨by assumption, hq⟩
+    · exact Or.inr ⟨by assumption, hr⟩
+
+abbrev Mct : Frame := MctD.frame
+theorem Mct_model : Mct.IsModelPIm := MctD.model
+theorem Mct_Inj : Mct.Valid Inj := MctD.Inj_valid
+
+theorem cantC_t {p : Prop} (h : cantC ⟨.t, p⟩) : p = True := by
+  rcases h with ⟨_, h⟩ | h
+  · exact eq_of_heq h
+  · cases h
+
+theorem Mct_eqv_t (p q : Prop) : Mct.eqv .t .t p q ↔ p = q := by
+  refine ⟨fun h => ?_, fun h => h ▸ Or.inl rfl⟩
+  rcases h with h | ⟨hp, hq⟩
+  · exact eq_of_heq (Sigma.mk.inj h).2
+  · exact (cantC_t hp).trans (cantC_t hq).symm
+
+theorem Mct_Truth : Mct.Valid Truth := (Mct.valid_iff_tr _).mpr <| Mct.tr_Truth.mpr
+  fun p q h hp => (Mct_eqv_t p q).mp h ▸ hp
+theorem Mct_TopBot : Mct.Valid TopBot := (Mct.valid_iff_tr _).mpr <| Mct.tr_TopBot.mpr fun h => by
+  have e := (Mct_eqv_t _ _).mp h
+  exact (e ▸ (fun hall : ∀ p : Prop, p => hall False) : ¬ ∀ p : Prop, p) (e ▸ (fun hall => hall False))
+theorem Mct_not_Cantor : ¬ Mct.Valid Cantor := fun h => by
+  obtain ⟨_, hG⟩ := Mct.tr_Cantor.mp ((Mct.valid_iff_tr _).mp h) .t
+  exact hG True (Or.inr ⟨Or.inr rfl, Or.inl ⟨rfl, HEq.rfl⟩⟩)
+theorem Mct_Slogan : Mct.Valid Slogan := (Mct.valid_iff_tr _).mpr <| Mct.tr_Slogan.mpr fun _ _ _ h => by
+  rcases h with h | ⟨⟨h, _⟩ | h, _⟩
+  · cases congrArg Sigma.fst h
+  · cases h
+  · cases h
+
+/-- Outside `t→t`, each type has an item identified only with itself. -/
+theorem Mct_loner (c : Code Empty) (hc : c ≠ .arr .t .t) : ∃ z : unitUniv.El c, ¬ cantC ⟨c, z⟩ := by
+  by_cases ht : c = .t
+  · subst ht
+    exact ⟨False, fun h => by have := cantC_t h; exact this ▸ trivial⟩
+  · exact ⟨Classical.choice (Univ.El_nonempty (U := unitUniv) c), fun h => h.elim (fun h => ht h.1) hc⟩
+
+theorem Mct_ExtT : Mct.Valid ExtT := (Mct.valid_iff_tr _).mpr <| Mct.tr_ExtT.mpr fun a b ⟨h1, h2⟩ => by
+  show a = b
+  refine Classical.byContradiction fun hab => ?_
+  by_cases ha : a = .arr .t .t
+  · have hb : b ≠ .arr .t .t := fun hb => hab (ha.trans hb.symm)
+    obtain ⟨y, hy⟩ := Mct_loner b hb
+    obtain ⟨x, hx⟩ := h2 y
+    rcases hx with hx | ⟨_, hy'⟩
+    · exact hab (congrArg Sigma.fst hx)
+    · exact hy hy'
+  · obtain ⟨x, hx⟩ := Mct_loner a ha
+    obtain ⟨y, hy⟩ := h1 x
+    rcases hy with hy | ⟨hx', _⟩
+    · exact hab (congrArg Sigma.fst hy)
+    · exact hx hx'
+theorem Mct_IntT : Mct.Valid IntT := (Mct.IntT_iff_ExtT Mct_eqv_t).mpr Mct_ExtT
+theorem Mct_not_LLEqv : ¬ Mct.Valid LLEqv := fun h =>
+  Mct.tr_LLEqv.mp ((Mct.valid_iff_tr _).mp h) (.arr .t .t) (fun _ => False) (fun _ => True)
+    (Or.inr ⟨Or.inr rfl, Or.inr rfl⟩) (fun g => ¬ g True) id trivial
+theorem Mct_not_Disjoint : ¬ Mct.Valid Disjoint := fun h =>
+  Mct.tr_Disjoint.mp ((Mct.valid_iff_tr _).mp h) .t (.arr .t .t) (fun e => by cases e) True (fun p => p)
+    (Or.inr ⟨Or.inl ⟨rfl, HEq.rfl⟩, Or.inr rfl⟩)
+theorem Mct_not_Twin : ¬ Mct.Valid Twin := fun h => by
+  obtain ⟨b, hb, y, hy⟩ := Mct.tr_Twin.mp ((Mct.valid_iff_tr _).mp h) .t False
+  rcases hy with hy | ⟨hy, _⟩
+  · exact hb (congrArg Sigma.fst hy)
+  · exact (cantC_t hy) ▸ trivial
+theorem Mct_not_Hae : ¬ Mct.Valid Hae := fun h => by
+  have hy := Mct.tr_Hae.mp ((Mct.valid_iff_tr _).mp h) .t False
+  rcases hy with hy | ⟨hy, _⟩
+  · cases congrArg Sigma.fst hy
+  · exact (cantC_t hy) ▸ trivial
+theorem Mct_not_PCong : ¬ Mct.Valid PCong := fun h => by
+  have := Mct.tr_PCong.mp ((Mct.valid_iff_tr _).mp h) .t .t .t (fun _ => False) (fun _ => True) True
+    (Or.inr ⟨Or.inr rfl, Or.inr rfl⟩)
+  exact cast ((Mct_eqv_t _ _).mp this).symm trivial
+theorem Mct_not_WCong : ¬ Mct.Valid WCong := fun h => by
+  have := Mct.tr_WCong.mp ((Mct.valid_iff_tr _).mp h) .t .t .t .t (fun _ => False) (fun _ => True) True True
+    ⟨⟨rfl, rfl⟩, ⟨Or.inr ⟨Or.inr rfl, Or.inr rfl⟩, Or.inl rfl⟩⟩
+  exact cast ((Mct_eqv_t _ _).mp this).symm trivial
+
+/-! ## `𝔐_D,twin`: `𝔐_D` with twins
+
+Each of `e` and `t` has a duplicate type with the same items; every item is identified with its copy
+in the duplicate type, and, as in `𝔐_D`, `0 ∼ 1` at `e` and `χ ∼ ζ` at `e→t`. -/
+
+inductive DB : Type where
+  | de | dt
+  deriving DecidableEq
+
+def DBEl : DB → Type
+  | .de => Fin 3
+  | .dt => Prop
+
+def univDtw : Univ :=
+  { E := Fin 3, Base := DB, B := DBEl, neE := ⟨0⟩, neB := fun b => match b with | .de => ⟨(show Fin 3 from 0)⟩ | .dt => ⟨(show Prop from True)⟩ }
+
+def kc : Code DB → Code DB
+  | .e => .e
+  | .t => .t
+  | .base .de => .e
+  | .base .dt => .t
+  | .arr a c => .arr (kc a) (kc c)
+
+theorem El_kc : ∀ c, univDtw.El (kc c) = univDtw.El c
+  | .e => rfl
+  | .t => rfl
+  | .base .de => rfl
+  | .base .dt => rfl
+  | .arr a c => by show (univDtw.El (kc a) → univDtw.El (kc c)) = _; rw [El_kc a, El_kc c]; rfl
+
+def twc : Code DB → Code DB
+  | .e => .base .de
+  | .t => .base .dt
+  | .base .de => .e
+  | .base .dt => .t
+  | .arr a c => .arr (twc a) c
+
+theorem kc_twc : ∀ c, kc (twc c) = kc c
+  | .e => rfl
+  | .t => rfl
+  | .base .de => rfl
+  | .base .dt => rfl
+  | .arr a c => by show Code.arr (kc (twc a)) (kc c) = _; rw [kc_twc a]; rfl
+
+theorem twc_ne : ∀ c, twc c ≠ c
+  | .e => fun h => by cases h
+  | .t => fun h => by cases h
+  | .base .de => fun h => by cases h
+  | .base .dt => fun h => by cases h
+  | .arr a c => fun h => by injection h with h1 _; exact twc_ne a h1
+
+def chiT : Fin 3 → Prop := fun v => v = 0
+def zetaT : Fin 3 → Prop := fun _ => False
+
+/-- The two non-trivial classes of `𝔐_D`, up to duplication. -/
+def SDk (p : Σ c : Code DB, univDtw.El c) : Prop :=
+  (kc p.1 = .e ∧ (HEq p.2 (0 : Fin 3) ∨ HEq p.2 (1 : Fin 3))) ∨
+  (kc p.1 = .arr .e .t ∧ (HEq p.2 chiT ∨ HEq p.2 zetaT))
+
+theorem SDk_of {p q : Σ c : Code DB, univDtw.El c} (hk : kc p.1 = kc q.1) (h : HEq p.2 q.2) (hq : SDk q) : SDk p :=
+  hq.elim (fun ⟨h1, h2⟩ => Or.inl ⟨hk.trans h1, h2.elim (fun e => Or.inl (h.trans e)) (fun e => Or.inr (h.trans e))⟩)
+    (fun ⟨h1, h2⟩ => Or.inr ⟨hk.trans h1, h2.elim (fun e => Or.inl (h.trans e)) (fun e => Or.inr (h.trans e))⟩)
+
+def MDtwD : IdentData where
+  U := univDtw
+  rel := fun p q => kc p.1 = kc q.1 ∧ (HEq p.2 q.2 ∨ (SDk p ∧ SDk q))
+  refl := fun _ => ⟨rfl, Or.inl HEq.rfl⟩
+  symm := fun ⟨h, h'⟩ => ⟨h.symm, h'.elim (fun e => Or.inl e.symm) (fun ⟨a, b⟩ => Or.inr ⟨b, a⟩)⟩
+  trans := by
+    rintro p q r ⟨h1, a1⟩ ⟨h2, a2⟩
+    refine ⟨h1.trans h2, ?_⟩
+    rcases a1 with e1 | ⟨s1, s2⟩ <;> rcases a2 with e2 | ⟨s3, s4⟩
+    · exact Or.inl (e1.trans e2)
+    · exact Or.inr ⟨SDk_of h1 e1 s3, s4⟩
+    · exact Or.inr ⟨s1, SDk_of h2.symm e2.symm s2⟩
+    · exact Or.inr ⟨s1, s4⟩
+
+abbrev MDtw : Frame := MDtwD.frame
+theorem MDtw_model : MDtw.IsModelPIm := MDtwD.model
+theorem MDtw_Inj : MDtw.Valid Inj := MDtwD.Inj_valid
+
+theorem MDtw_eqv_t (p q : Prop) : MDtw.eqv .t .t p q ↔ p = q := by
+  refine ⟨fun ⟨_, h⟩ => ?_, fun h => h ▸ MDtwD.refl _⟩
+  rcases h with h | ⟨h, _⟩
+  · exact eq_of_heq h
+  · rcases h with ⟨h, _⟩ | ⟨h, _⟩ <;> cases h
+
+theorem MDtw_Twin : MDtw.Valid Twin := (MDtw.valid_iff_tr _).mpr <| MDtw.tr_Twin.mpr fun a x =>
+  have hE : univDtw.El a = univDtw.El (twc a) := (El_kc a).symm.trans ((congrArg univDtw.El (kc_twc a)).symm.trans (El_kc _))
+  ⟨twc a, fun h => twc_ne a h.symm, cast hE x, (kc_twc a).symm, Or.inl (cast_heq _ _).symm⟩
+theorem MDtw_Truth : MDtw.Valid Truth := (MDtw.valid_iff_tr _).mpr <| MDtw.tr_Truth.mpr
+  fun p q h hp => (MDtw_eqv_t p q).mp h ▸ hp
+theorem MDtw_TopBot : MDtw.Valid TopBot := (MDtw.valid_iff_tr _).mpr <| MDtw.tr_TopBot.mpr fun h => by
+  have e := (MDtw_eqv_t _ _).mp h
+  exact (e ▸ (fun hall : ∀ p : Prop, p => hall False) : ¬ ∀ p : Prop, p) (e ▸ (fun hall => hall False))
+theorem MDtw_not_LLEqv : ¬ MDtw.Valid LLEqv := fun h =>
+  absurd (MDtw.tr_LLEqv.mp ((MDtw.valid_iff_tr _).mp h) .e (0 : Fin 3) (1 : Fin 3)
+    ⟨rfl, Or.inr ⟨Or.inl ⟨rfl, Or.inl HEq.rfl⟩, Or.inl ⟨rfl, Or.inr HEq.rfl⟩⟩⟩ (fun (v : Fin 3) => v = 0) rfl) (by decide)
+theorem MDtw_not_Disjoint : ¬ MDtw.Valid Disjoint := fun h =>
+  MDtw.tr_Disjoint.mp ((MDtw.valid_iff_tr _).mp h) .e (.base .de) (fun e => by cases e) (0 : Fin 3) (0 : Fin 3)
+    ⟨rfl, Or.inl HEq.rfl⟩
+theorem MDtw_not_ExtT : ¬ MDtw.Valid ExtT := fun h => by
+  have := MDtw.tr_ExtT.mp ((MDtw.valid_iff_tr _).mp h) .e (.base .de)
+    ⟨fun x => ⟨x, rfl, Or.inl HEq.rfl⟩, fun y => ⟨y, rfl, Or.inl HEq.rfl⟩⟩
+  cases this
+theorem MDtw_not_IntT : ¬ MDtw.Valid IntT := fun h => MDtw_not_ExtT ((MDtw.IntT_iff_ExtT MDtw_eqv_t).mp h)
+theorem MDtw_Cantor : MDtw.Valid Cantor := (MDtw.valid_iff_tr _).mpr <| MDtw.tr_Cantor.mpr
+  fun a => ⟨fun _ => True, fun _ h => Code.arr_ne_left (kc a) .t h.1⟩
+theorem MDtw_Slogan : MDtw.Valid Slogan := (MDtw.valid_iff_tr _).mpr <| MDtw.tr_Slogan.mpr
+  fun _ _ _ h => by cases h.1
+theorem MDtw_not_Hae : ¬ MDtw.Valid Hae := fun h => by
+  have := MDtw.tr_Hae.mp ((MDtw.valid_iff_tr _).mp h) .e (0 : Fin 3)
+  cases this.1
+theorem MDtw_not_PCong : ¬ MDtw.Valid PCong := fun h => by
+  have := MDtw.tr_PCong.mp ((MDtw.valid_iff_tr _).mp h) .e .t .t chiT zetaT (0 : Fin 3)
+    ⟨rfl, Or.inr ⟨Or.inr ⟨rfl, Or.inl HEq.rfl⟩, Or.inr ⟨rfl, Or.inr HEq.rfl⟩⟩⟩
+  exact cast ((MDtw_eqv_t _ _).mp this) (show chiT 0 from rfl)
+theorem MDtw_not_WCong : ¬ MDtw.Valid WCong := fun h => by
+  have := MDtw.tr_WCong.mp ((MDtw.valid_iff_tr _).mp h) .e .e .t .t chiT zetaT (0 : Fin 3) (0 : Fin 3)
+    ⟨⟨rfl, rfl⟩, ⟨⟨rfl, Or.inr ⟨Or.inr ⟨rfl, Or.inl HEq.rfl⟩, Or.inr ⟨rfl, Or.inr HEq.rfl⟩⟩⟩, ⟨rfl, Or.inl HEq.rfl⟩⟩⟩
+  exact cast ((MDtw_eqv_t _ _).mp this) (show chiT 0 from rfl)
+
+theorem MDtw_R0 : MDtw.Rf .e (0 : Fin 3) :=
+  ⟨chiT, rfl, zetaT, ⟨rfl, Or.inr ⟨Or.inr ⟨rfl, Or.inl HEq.rfl⟩, Or.inr ⟨rfl, Or.inr HEq.rfl⟩⟩⟩, id⟩
+theorem MDtw_not_R1 : ¬ MDtw.Rf .e (1 : Fin 3) := by
+  rintro ⟨P, hP, G, ⟨_, hPG⟩, hG⟩
+  rcases hPG with h | ⟨hS, _⟩
+  · have e : P = G := eq_of_heq h
+    exact hG (e ▸ hP)
+  · rcases hS with ⟨h, _⟩ | ⟨_, h | h⟩
+    · cases h
+    · have e : P = chiT := eq_of_heq h
+      subst e
+      exact absurd (show (1 : Fin 3) = 0 from hP) (show ¬ (1 : Fin 3) = 0 by decide)
+    · have e : P = zetaT := eq_of_heq h
+      subst e
+      exact hP
+theorem MDtw_not_Bridge : ¬ MDtw.Valid (Bridge PredR) := fun h =>
+  MDtw_not_R1 (MDtw.tr_BridgeR.mp ((MDtw.valid_iff_tr _).mp h) .e .e (0 : Fin 3) (1 : Fin 3)
+    ⟨⟨rfl, Or.inr ⟨Or.inl ⟨rfl, Or.inl HEq.rfl⟩, Or.inl ⟨rfl, Or.inr HEq.rfl⟩⟩⟩, rfl⟩ MDtw_R0)
+
 end PIF
