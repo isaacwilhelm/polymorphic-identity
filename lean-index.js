@@ -1066,19 +1066,47 @@ window.LEANINDEX = {
  ],
  "Tg.Mi_IntT": [
   "PITagged.lean",
-  667
+  670
  ],
  "Tg.Mi_LLEqv": [
   "PITagged.lean",
-  644
+  647
  ],
  "Tg.Mi_model": [
   "PITagged.lean",
-  623
+  626
  ],
  "Tg.Mi_not_ExtT": [
   "PITagged.lean",
-  653
+  656
+ ],
+ "Tg.Mit_IntT": [
+  "PITagged.lean",
+  805
+ ],
+ "Tg.Mit_model": [
+  "PITagged.lean",
+  784
+ ],
+ "Tg.Mit_not_TopBot": [
+  "PITagged.lean",
+  787
+ ],
+ "Tg.Mit_not_Truth": [
+  "PITagged.lean",
+  790
+ ],
+ "Tg.Mtb_TopBot": [
+  "PITagged.lean",
+  756
+ ],
+ "Tg.Mtb_model": [
+  "PITagged.lean",
+  753
+ ],
+ "Tg.Mtb_not_Truth": [
+  "PITagged.lean",
+  764
  ],
  "TopBot": [
   "PIFoundation.lean",

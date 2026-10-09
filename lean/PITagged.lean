@@ -41,6 +41,8 @@ structure Frame where
   eqv : (a b : Code U.Base) → U.El a → U.El b → Prop
   /-- the value of `≈` -/
   teq : Code U.Base → Code U.Base → Prop
+  /-- the tag of a proposition quantified over a type -/
+  qtag : Code U.Base → Bool
 
 namespace Univ
 variable (U : Univ)
@@ -164,8 +166,8 @@ def constVal {n : Nat} {K : Cat n} (c : Const n K) (ρ : F.U.TEnv n) : F.U.CatVa
   | .and => fun p q => (p.1 ∧ q.1, true)
   | .or => fun p q => (p.1 ∨ q.1, true)
   | .iff => fun p q => (p.1 ↔ q.1, true)
-  | .all => fun _ P => (∀ x, (P x).1, false)
-  | .ex => fun _ P => (∃ x, (P x).1, false)
+  | .all => fun a P => (∀ x, (P x).1, F.qtag a)
+  | .ex => fun a P => (∃ x, (P x).1, F.qtag a)
   | .tall => fun Q => (∀ a, (Q a).1, false)
   | .tex => fun Q => (∃ a, (Q a).1, false)
   | .eqv => fun a b x y => (F.eqv a b x y, true)
@@ -381,16 +383,16 @@ variable (F : Frame)
 section EvalLemmas
 variable {n : Nat} {Γ : Ctx n}
 
-theorem cast_forall {A A' : Type} (hA : A = A') (h : ((A → TV) → TV) = ((A' → TV) → TV))
-    (P : A' → TV) : (cast h (fun Q : A → TV => ((∀ x, (Q x).1 : Prop), false)) P).1 ↔ ∀ x, (P x).1 := by
+theorem cast_forall {A A' : Type} (hA : A = A') (h : ((A → TV) → TV) = ((A' → TV) → TV)) (b : Bool)
+    (P : A' → TV) : (cast h (fun Q : A → TV => ((∀ x, (Q x).1 : Prop), b)) P).1 ↔ ∀ x, (P x).1 := by
   subst hA; rw [cast_eq]
 
-theorem cast_exists {A A' : Type} (hA : A = A') (h : ((A → TV) → TV) = ((A' → TV) → TV))
-    (P : A' → TV) : (cast h (fun Q : A → TV => ((∃ x, (Q x).1 : Prop), false)) P).1 ↔ ∃ x, (P x).1 := by
+theorem cast_exists {A A' : Type} (hA : A = A') (h : ((A → TV) → TV) = ((A' → TV) → TV)) (b : Bool)
+    (P : A' → TV) : (cast h (fun Q : A → TV => ((∃ x, (Q x).1 : Prop), b)) P).1 ↔ ∃ x, (P x).1 := by
   subst hA; rw [cast_eq]
 
-theorem cast_forall_snd {A A' : Type} (hA : A = A') (h : ((A → TV) → TV) = ((A' → TV) → TV))
-    (P : A' → TV) : (cast h (fun Q : A → TV => ((∀ x, (Q x).1 : Prop), false)) P).2 = false := by
+theorem cast_forall_snd {A A' : Type} (hA : A = A') (h : ((A → TV) → TV) = ((A' → TV) → TV)) (b : Bool)
+    (P : A' → TV) : (cast h (fun Q : A → TV => ((∀ x, (Q x).1 : Prop), b)) P).2 = b := by
   subst hA; rw [cast_eq]
 
 theorem eval_tapp {K : Cat (n+1)} (f : Tm Γ (.pi K)) (σ : Ty n) (ρ : F.U.TEnv n) (env : F.U.Env Γ ρ) :
@@ -402,11 +404,11 @@ theorem heq_eval_tapp {K : Cat (n+1)} (f : Tm Γ (.pi K)) (σ : Ty n) (ρ : F.U.
 
 theorem holds_all (σ : Ty n) (φ : Fm (.ext Γ σ)) (ρ : F.U.TEnv n) (env : F.U.Env Γ ρ) :
     F.Holds (Tm.all σ φ) ρ env ↔ ∀ v : F.U.CatVal σ.1 ρ, F.Holds φ ρ (env, v) :=
-  cast_forall (Univ.El_code ρ σ.2) _ _
+  cast_forall (Univ.El_code ρ σ.2) _ _ _
 
 theorem holds_ex (σ : Ty n) (φ : Fm (.ext Γ σ)) (ρ : F.U.TEnv n) (env : F.U.Env Γ ρ) :
     F.Holds (Tm.ex σ φ) ρ env ↔ ∃ v : F.U.CatVal σ.1 ρ, F.Holds φ ρ (env, v) :=
-  cast_exists (Univ.El_code ρ σ.2) _ _
+  cast_exists (Univ.El_code ρ σ.2) _ _ _
 
 theorem holds_tall (φ : Fm (.text Γ)) (ρ : F.U.TEnv n) (env : F.U.Env Γ ρ) :
     F.Holds (Tm.tall φ) ρ env ↔ ∀ a, F.Holds φ (scons a ρ) env := Iff.rfl
@@ -602,8 +604,8 @@ namespace Frame
 variable (F : Frame)
 
 theorem eval_all_snd {n : Nat} {Γ : Ctx n} (σ : Ty n) (φ : Fm (.ext Γ σ)) (ρ : F.U.TEnv n) (env : F.U.Env Γ ρ) :
-    (F.eval (Tm.all σ φ) ρ env).2 = false :=
-  cast_forall_snd (Univ.El_code ρ σ.2) _ _
+    (F.eval (Tm.all σ φ) ρ env).2 = F.qtag (F.U.code σ.1 ρ) :=
+  cast_forall_snd (Univ.El_code ρ σ.2) _ _ _
 
 end Frame
 
@@ -619,6 +621,7 @@ def MiF : Frame where
   U := univI
   eqv := fun a b x y => kI a = kI b ∧ HEq x y
   teq := fun a b => a = b
+  qtag := fun _ => false
 
 theorem Mi_model : MiF.IsModelPIm where
   refEqv := by
@@ -672,6 +675,138 @@ theorem Mi_IntT : MiF.Valid IntT := by
   have hs : (MiF.eval (subT (Γ := (Ctx.nil.text).text)) (scons b (scons a ρ)) env).2 = false :=
     MiF.eval_all_snd _ _ _ _
   exact (Bool.false_ne_true (hs.symm.trans (e.trans rfl))).elim
+
+
+/-! ## Truth, `⊤ ≢ ⊥`, and Int≈ in PI⁻ -/
+
+namespace Frame
+variable (F : Frame)
+
+/-- `≡` at type `t`, without casts. -/
+theorem holds_eqv_t {n : Nat} {Γ : Ctx n} (x y : Fm Γ) (ρ : F.U.TEnv n) (env : F.U.Env Γ ρ) :
+    F.Holds (Tm.eqv tyT tyT x y) ρ env ↔ F.eqv .t .t (F.eval x ρ env) (F.eval y ρ env) :=
+  F.holds_eqv tyT tyT x y ρ env
+
+/-- A frame in which `≈` is identity and `≡` is an equivalence relation is a model of PI⁻. -/
+theorem model_of_equiv (hteq : ∀ a b, F.teq a b ↔ a = b) (hr : ∀ a x, F.eqv a a x x)
+    (hs : ∀ a b x y, F.eqv a b x y → F.eqv b a y x)
+    (ht : ∀ a b c x y z, F.eqv a b x y → F.eqv b c y z → F.eqv a c x z) : F.IsModelPIm where
+  refEqv := by
+    intro ρ env a
+    exact (F.holds_all _ _ _ _).mpr fun v => (F.holds_eqv _ _ _ _ _ _).mpr (hr _ _)
+  symEqv := by
+    intro ρ env a b
+    refine (F.holds_all _ _ _ _).mpr fun x => (F.holds_all _ _ _ _).mpr fun y h => ?_
+    exact (F.holds_eqv _ _ _ _ _ _).mpr (hs _ _ _ _ ((F.holds_eqv _ _ _ _ _ _).mp h))
+  transEqv := by
+    intro ρ env a b c
+    refine (F.holds_all _ _ _ _).mpr fun x => (F.holds_all _ _ _ _).mpr fun y =>
+      (F.holds_all _ _ _ _).mpr fun z h => ?_
+    have h1 := (F.holds_eqv _ _ _ _ _ _).mp ((F.holds_conj _ _ _ _).mp h).1
+    have h2 := (F.holds_eqv _ _ _ _ _ _).mp ((F.holds_conj _ _ _ _).mp h).2
+    exact (F.holds_eqv _ _ _ _ _ _).mpr (ht _ _ _ _ _ _ h1 h2)
+  refTeq := by
+    intro ρ env a
+    exact (F.holds_teq _ _ _ _).mpr ((hteq _ _).mpr rfl)
+  llTeq := fun Q => F.llTeq_of_teq_eq (fun _ _ h => (hteq _ _).mp h) Q
+
+end Frame
+
+abbrev univU : Univ := { E := Unit, Base := Empty, B := Empty.elim, neE := ⟨()⟩, neB := fun b => b.elim }
+
+/-- Identification within types: identical items, or two items of a distinguished class. -/
+def clsEqv (S : (c : Code univU.Base) → univU.El c → Prop) (a b : Code univU.Base) (x : univU.El a) (y : univU.El b) : Prop :=
+  a = b ∧ (HEq x y ∨ (S a x ∧ S b y))
+
+theorem clsEqv_refl (S : (c : Code univU.Base) → univU.El c → Prop) (a : Code univU.Base) (x : univU.El a) : clsEqv S a a x x :=
+  ⟨rfl, Or.inl HEq.rfl⟩
+theorem clsEqv_symm (S : (c : Code univU.Base) → univU.El c → Prop) (a b : Code univU.Base) (x : univU.El a) (y : univU.El b)
+    (h : clsEqv S a b x y) : clsEqv S b a y x :=
+  ⟨h.1.symm, h.2.elim (fun e => Or.inl e.symm) (fun ⟨p, q⟩ => Or.inr ⟨q, p⟩)⟩
+theorem clsEqv_trans (S : (c : Code univU.Base) → univU.El c → Prop) (a b c : Code univU.Base) (x : univU.El a)
+    (y : univU.El b) (z : univU.El c) (h1 : clsEqv S a b x y) (h2 : clsEqv S b c y z) : clsEqv S a c x z := by
+  obtain ⟨hab, e1⟩ := h1
+  obtain ⟨hbc, e2⟩ := h2
+  subst hab; subst hbc
+  refine ⟨rfl, ?_⟩
+  rcases e1 with e1 | ⟨s1, s2⟩ <;> rcases e2 with e2 | ⟨s3, s4⟩
+  · exact Or.inl (e1.trans e2)
+  · exact Or.inr ⟨eq_of_heq e1 ▸ s3, s4⟩
+  · exact Or.inr ⟨s1, eq_of_heq e2 ▸ s2⟩
+  · exact Or.inr ⟨s1, s4⟩
+
+/-! ### `𝔐_tb`: `⊤ ≢ ⊥` without Truth
+
+All quantified propositions, true or false, are identified with each other; nothing else is
+identified with anything but itself. `⊤` is not quantified, so `⊤ ≢ ⊥`. -/
+
+def Stb : (c : Code univU.Base) → univU.El c → Prop
+  | .t, x => x.2 = false
+  | _, _ => False
+
+abbrev MtbF : Frame where
+  U := univU
+  eqv := clsEqv Stb
+  teq := fun a b => a = b
+  qtag := fun _ => false
+
+theorem Mtb_model : MtbF.IsModelPIm :=
+  MtbF.model_of_equiv (fun _ _ => Iff.rfl) (clsEqv_refl Stb) (clsEqv_symm Stb) (clsEqv_trans Stb)
+
+theorem Mtb_TopBot : MtbF.Valid TopBot := by
+  intro ρ env h
+  have h' := (MtbF.holds_eqv_t _ _ _ _).mp h
+  rcases h'.2 with e | ⟨s, _⟩
+  · have := congrArg Prod.snd (eq_of_heq e)
+    exact Bool.noConfusion (this.trans (MtbF.eval_all_snd _ _ _ _) : true = false)
+  · exact Bool.noConfusion (s : true = false)
+
+theorem Mtb_not_Truth : ¬ MtbF.Valid Truth := fun h => by
+  have h1 := (MtbF.holds_all _ _ _ _).mp ((MtbF.holds_all _ _ _ _).mp (h (fun i => i.elim0) ()) (True, false)) (False, false)
+  exact h1 ((MtbF.holds_eqv_t _ _ _ _).mpr ⟨rfl, Or.inr ⟨rfl, rfl⟩⟩) trivial
+
+/-! ### `𝔐_it`: Int≈ without `⊤ ≢ ⊥` or Truth
+
+Propositions quantified over `t` share their tag with `⊤`, and all propositions with that tag are
+identified with each other; so `⊤ ≡ ⊥`. Since `α ⊑ β` is quantified over `α`, `□(α ⊑ β)` holds just
+in case `α` is `t`; so the antecedent of Int≈ holds only when `α` and `β` are both `t`. -/
+
+def Sit : (c : Code univU.Base) → univU.El c → Prop
+  | .t, x => x.2 = true
+  | _, _ => False
+
+abbrev MitF : Frame where
+  U := univU
+  eqv := clsEqv Sit
+  teq := fun a b => a = b
+  qtag := fun a => decide (a = .t)
+
+theorem Mit_model : MitF.IsModelPIm :=
+  MitF.model_of_equiv (fun _ _ => Iff.rfl) (clsEqv_refl Sit) (clsEqv_symm Sit) (clsEqv_trans Sit)
+
+theorem Mit_not_TopBot : ¬ MitF.Valid TopBot := fun h =>
+  h (fun i => i.elim0) () ((MitF.holds_eqv_t _ _ _ _).mpr ⟨rfl, Or.inr ⟨rfl, MitF.eval_all_snd _ _ _ _⟩⟩)
+
+theorem Mit_not_Truth : ¬ MitF.Valid Truth := fun h => by
+  have h1 := (MitF.holds_all _ _ _ _).mp ((MitF.holds_all _ _ _ _).mp (h (fun i => i.elim0) ()) (True, true)) (False, true)
+  exact h1 ((MitF.holds_eqv_t _ _ _ _).mpr ⟨rfl, Or.inr ⟨rfl, rfl⟩⟩) trivial
+
+/-- If `□φ`, for `φ` quantified over `σ`, then `σ` is `t`. -/
+theorem Mit_box {n : Nat} {Γ : Ctx n} (σ : Ty n) (φ : Fm (.ext Γ σ)) (ρ : MitF.U.TEnv n) (env : MitF.U.Env Γ ρ)
+    (h : MitF.Holds (boxF (Tm.all σ φ)) ρ env) : MitF.U.code σ.1 ρ = .t := by
+  have h1 := ((MitF.holds_eqv_t _ _ _ _).mp h).2
+  have hs : (MitF.eval (Tm.all σ φ) ρ env).2 = true := by
+    rcases h1 with e | ⟨s, _⟩
+    · exact (congrArg Prod.snd (eq_of_heq e)).trans rfl
+    · exact s
+  rw [MitF.eval_all_snd] at hs
+  exact of_decide_eq_true hs
+
+theorem Mit_IntT : MitF.Valid IntT := by
+  intro ρ env a b hc
+  have ha := Mit_box _ _ _ _ ((MitF.holds_conj _ _ _ _).mp hc).1
+  have hb := Mit_box _ _ _ _ ((MitF.holds_conj _ _ _ _).mp hc).2
+  exact (MitF.holds_teq _ _ _ _).mpr (ha.trans hb.symm)
 
 end Tg
 end PIF
