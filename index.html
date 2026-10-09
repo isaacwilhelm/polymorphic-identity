@@ -35,6 +35,7 @@
           <span>Base logic</span>
           <button data-logic="PI" aria-pressed="true">PI</button>
           <button data-logic="PI-" aria-pressed="false">PI⁻</button>
+          <button data-logic="PIC" aria-pressed="false" title="PI + Classicism">PIᶜ</button>
         </div>
         <div id="checklist"></div>
         <button id="reset" class="reset">Clear selection</button>
@@ -56,7 +57,7 @@
     <section>
       <h2>About this site</h2>
       <p>This site collects the derivations and independence results in Isaac Wilhelm's <em>Formal Results</em> (Draft 5), the companion note to the paper on polymorphic identity. Theorem numbers refer to that draft.</p>
-      <p><b>PI</b>, the logic of polymorphic identity, is formulated in the predicative calculus of constructions. It has classical propositional logic, quantifiers over items of each type and over types, β-conversion, and the identity axioms Ref≡, Sym≡, Trans≡, LL≡, Ref≈ and LL≈. <b>PI⁻</b> is PI without LL≡.</p>
+      <p><b>PI</b>, the logic of polymorphic identity, is formulated in the predicative calculus of constructions. It has classical propositional logic, quantifiers over items of each type and over types, β-conversion, and the identity axioms Ref≡, Sym≡, Trans≡, LL≡, Ref≈ and LL≈. <b>PI⁻</b> is PI without LL≡. <b>PIᶜ</b> is PI with Classicism added: whenever PI proves φ ↔ ψ, the propositions φ and ψ are identical, and so are the properties λx.φ and λx.ψ. This is the polymorphic version of the thesis that logical equivalence suffices for identity.</p>
       <h3>How the statuses are computed</h3>
       <p>Each result in the notes is entered as data: a <em>derivation</em> (given PI⁻, these principles prove that one), an <em>inconsistency</em> (given PI⁻, these principles prove ⊥), or a <em>model</em> (a model of PI⁻ in which certain principles are true and others false). For any selection, the site then reasons as follows.</p>
       <ul>

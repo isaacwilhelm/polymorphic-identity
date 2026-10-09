@@ -72,6 +72,7 @@
     parts.forEach(p => {
       if (p === "PI-") state.logic = "PI-";
       else if (p === "PI") state.logic = "PI";
+      else if (p === "PIC") state.logic = "PIC";
       else if (p.startsWith("!") && P[p.slice(1)]) state.sel[p.slice(1)] = false;
       else if (P[p]) state.sel[p] = true;
     });
@@ -83,13 +84,15 @@
 
   function assumptions() {
     const a = Object.entries(state.sel).map(([id, pos]) => ({ id, pos, why: { assumed: true } }));
-    if (state.logic === "PI") {
-      a.splice(0, a.length, ...a.filter(x => x.id !== "LLeq"));
-      a.unshift({ id: "LLeq", pos: true, why: { assumed: true, base: true } });
+    if (state.logic === "PI" || state.logic === "PIC") {
+      const baseIds = state.logic === "PIC" ? ["LLeq", "Class"] : ["LLeq"];
+      a.splice(0, a.length, ...a.filter(x => !baseIds.includes(x.id)));
+      baseIds.slice().reverse().forEach(id => a.unshift({ id, pos: true, why: { assumed: true, base: true } }));
     }
     return a;
   }
-  const isLocked = id => state.logic === "PI" && id === "LLeq";
+  const isLocked = id => (state.logic === "PI" && id === "LLeq") || (state.logic === "PIC" && (id === "LLeq" || id === "Class"));
+  const logicName = () => (state.logic === "PIC" ? "PIᶜ" : state.logic === "PI" ? "PI" : "PI⁻");
 
   // ------------------------------------------------------------------ analysis
   function modelSatisfies(m, lits) {
@@ -263,7 +266,7 @@
       el.classList.toggle("focus", state.focus === id);
       el.querySelector(".t-yes").setAttribute("aria-pressed", v === true);
       el.querySelector(".t-no").setAttribute("aria-pressed", v === false);
-      el.querySelector(".t-yes").title = isLocked(id) ? "LL≡ is an axiom of PI. Switch to PI⁻ to drop it." : "Assume " + tag(id);
+      el.querySelector(".t-yes").title = isLocked(id) ? (id === "Class" ? "Classicism is part of PIᶜ. Switch to PI or PI⁻ to drop it." : "LL≡ is an axiom of " + logicName() + ". Switch to PI⁻ to drop it.") : "Assume " + tag(id);
     });
     document.querySelectorAll(".logic button").forEach(b => b.setAttribute("aria-pressed", b.dataset.logic === state.logic));
   }
@@ -371,7 +374,8 @@
   function renderGraph(an) {
     // hub
     hubG.innerHTML = "";
-    const lines = an.A.map(a => (a.why.base ? "PI (= PI⁻ + LL≡)" : litText(a.id, a.pos)));
+    const lines = an.A.filter(a => !(a.why.base && a.id === "Class"))
+      .map(a => (a.why.base ? (state.logic === "PIC" ? "PIᶜ (= PI + Classicism)" : "PI (= PI⁻ + LL≡)") : litText(a.id, a.pos)));
     if (state.logic === "PI-") lines.unshift("PI⁻");
     const hb = hubBox(lines);
     el("rect", { x: hb.x, y: hb.y, width: hb.w, height: hb.h, rx: 10, class: an.inconsistent ? "hubrect bad" : "hubrect" }, hubG);
@@ -497,7 +501,7 @@
   }
   function baseLabel() {
     const sel = Object.entries(state.sel).filter(([id]) => !isLocked(id)).map(([id, v]) => litText(id, v));
-    return (state.logic === "PI" ? "PI" : "PI⁻") + (sel.length ? " + " + sel.join(" + ") : "");
+    return logicName() + (sel.length ? " + " + sel.join(" + ") : "");
   }
 
   function strengthData() {
@@ -662,7 +666,7 @@
     $("#catalogue").innerHTML = `
       <label class="onlynew"><input type="checkbox" id="onlynew"> Show only results marked ◆ (not stated in the notes; observed while building this site, and to be checked)</label>
       <section class="nonew"><h2>The base logic</h2>
-        <p>PI⁻ consists of the propositional, quantifier, and β-conversion axioms, the rules MP, Gen∀ and Gen𝔸, and these identity axioms. PI adds LL≡.</p>
+        <p>PI⁻ consists of the propositional, quantifier, and β-conversion axioms, the rules MP, Gen∀ and Gen𝔸, and these identity axioms. PI adds LL≡. PIᶜ adds Classicism to PI: whenever PI proves φ ↔ ψ, the propositions φ and ψ are identical, and so are the properties λx.φ and λx.ψ.</p>
         <table class="ctable">${base}</table></section>
       <section class="nonew"><h2>Principles</h2><table class="ctable">${pr}</table></section>
       <section class="nonew"><h2>Theorems of PI⁻</h2><ul class="clist">${thms}</ul></section>
