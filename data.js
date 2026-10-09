@@ -115,14 +115,14 @@ const pimTheorems = [
 
 // Derivations. Each says: PI^- + from ⊢ to.
 const rules = [
-  { from: ["LLeq"], to: "Bridge", src: "Thm 3",
+  { from: ["LLeq"], to: "Bridge", src: "Thm 3", lean: "d_Bridge",
     note: "LL≡ cannot be dropped: PI⁻ does not prove every instance (Thm 12)." },
   { from: ["LLeq"], to: "WCong", src: "Thm 4", lean: "Derive.d_WCong" },
   { from: ["LLeq"], to: "Cantor", src: "Thm 6", lean: "Derive.d_Cantor", note: "The proof is analogous to the Russell–Myhill paradox." },
   { from: ["LLeq"], to: "TopBot", src: "Lemma 13", lean: "Derive.d_TopBot" },
   { from: ["LLeq"], to: "Truth", src: "immediate", lean: "Derive.d_Truth", note: "Truth is the instance of LL≡ at type t with λp.p for F." },
   { from: ["LLPoly"], to: "Disjoint", src: "Thm 11", lean: "Derive.d_Disjoint_of_LLPoly", note: "This half of Thm 11 uses only Ref≈ and LL≈, so holds given PI⁻ (remark after Thm 11)." },
-  { from: ["Disjoint", "LLeq"], to: "LLPoly", src: "Thm 11", note: "This half uses Thm 3, hence LL≡; that use cannot be avoided (Thm 12)." },
+  { from: ["Disjoint", "LLeq"], to: "LLPoly", src: "Thm 11", lean: "d_LLPoly_of_Disjoint", note: "This half uses Thm 3, hence LL≡; that use cannot be avoided (Thm 12)." },
   { from: ["Hae", "Cantor"], to: "Twin", src: "Thm 26", lean: "Derive.d_Twin", note: "Stated for PI; the proof uses Haecceitism and Cor 6 (no type is identical to the type of its properties), which follows from Cantor." },
   { from: ["Cong"], to: "PCong", src: "Thm 27(a)", lean: "Derive.d_PCong", note: "PCong is the instance of Cong with α for β and x for y, given Ref≡." },
   { from: ["Inj"], to: "Recovery", src: "remark after Thm 21", lean: "Derive.d_Recovery" },

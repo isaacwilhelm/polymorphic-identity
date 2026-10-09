@@ -631,5 +631,13 @@ window.LEANINDEX = {
  "WCong": [
   "PIFoundation.lean",
   1705
+ ],
+ "d_Bridge": [
+  "PISchemas.lean",
+  195
+ ],
+ "d_LLPoly_of_Disjoint": [
+  "PISchemas.lean",
+  208
  ]
 };

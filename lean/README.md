@@ -30,4 +30,9 @@ No output means every proof checks. It uses no `sorry` and only Lean's standard 
 The website shows a "Lean ✓" badge on every result checked here; `tools/check_lean_refs.py`
 verifies that each badge names a real declaration.
 
-Next milestone: the derivations, as PI proofs.
+10. `PIDerivations.lean`: the derivations and inconsistencies of *Formal Results*, written out as
+    formal PI proofs, and the new results found while building the site.
+11. `PISchemas.lean`: the two schemas, Theorem 3 (`d_Bridge`: LL≡ proves LL≡/≈ for every
+    polymorphic predicate `P`) and the second half of Theorem 11 (`d_LLPoly_of_Disjoint`).
+
+The files form a Lake project: run `lake build` in this folder.

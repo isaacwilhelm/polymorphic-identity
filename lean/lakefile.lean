@@ -8,3 +8,6 @@ lean_lib PIFoundation
 
 @[default_target]
 lean_lib PIDerivations
+
+@[default_target]
+lean_lib PISchemas
