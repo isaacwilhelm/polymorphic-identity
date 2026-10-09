@@ -1097,6 +1097,39 @@ theorem d_ExtT_of_Disjoint (hD : S Disjoint) : Prov S Ctx.nil ExtT := by
   have h3 : Ent S Δ2 ([] ++ [HypE]) (Tm.teq tv1 tv0) := Ent.strengthen (Hs := [HypE]) tv1 h2
   exact Ent.toProv (Ent.tgen (Hs := []) (Ent.tgen (Hs := []) (Ent.intro (Hs := []) h3)))
 
+abbrev HypI {Γ : Ctx 2} : Fm Γ := Tm.conj (boxF subT) (boxF supT)
+
+set_option maxHeartbeats 16000000 in
+/-- `□φ → φ` for `φ = subT`, from LL≡ (with Sym≡): from `φ ≡ ⊤` get `⊤ ≡ φ`, and LL≡ with `λv.v` gives `⊤ → φ`. -/
+theorem unbox_sub (hLL : S LLEqv) (h : Ent S Δ2 [HypI] (boxF (subT : Fm Δ2))) : Ent S Δ2 [HypI] (subT : Fm Δ2) := by
+  have hs : Ent S Δ2 [HypI] ((Tm.eqv tyT tyT (subT : Fm Δ2) topF).imp (Tm.eqv tyT tyT topF (subT : Fm Δ2))) :=
+    Ent.inst (Ent.inst (((Ent.closed (Γ := Δ2) (Hs := [HypI]) (Ax := S) Prov.symEqv).tinst tyT).tinst tyT) (subT : Fm Δ2)) topF
+  have hl : Ent S Δ2 [HypI] (topF.imp (subT : Fm Δ2)) :=
+    Ent.beta (Ent.inst (Ent.mp (Ent.inst (Ent.inst ((Ent.axm (Γ := Δ2) (Hs := [HypI]) hLL).tinst tyT) topF) (subT : Fm Δ2)) (Ent.mp hs h))
+      (Tm.lam tyT (.var .here))) (BetaEq.imp (.step (.beta _ _)) (.step (.beta _ _)))
+  exact Ent.mp hl Ent.top
+
+set_option maxHeartbeats 16000000 in
+/-- `□φ → φ` for `φ = supT`, from LL≡ (with Sym≡): from `φ ≡ ⊤` get `⊤ ≡ φ`, and LL≡ with `λv.v` gives `⊤ → φ`. -/
+theorem unbox_sup (hLL : S LLEqv) (h : Ent S Δ2 [HypI] (boxF (supT : Fm Δ2))) : Ent S Δ2 [HypI] (supT : Fm Δ2) := by
+  have hs : Ent S Δ2 [HypI] ((Tm.eqv tyT tyT (supT : Fm Δ2) topF).imp (Tm.eqv tyT tyT topF (supT : Fm Δ2))) :=
+    Ent.inst (Ent.inst (((Ent.closed (Γ := Δ2) (Hs := [HypI]) (Ax := S) Prov.symEqv).tinst tyT).tinst tyT) (supT : Fm Δ2)) topF
+  have hl : Ent S Δ2 [HypI] (topF.imp (supT : Fm Δ2)) :=
+    Ent.beta (Ent.inst (Ent.mp (Ent.inst (Ent.inst ((Ent.axm (Γ := Δ2) (Hs := [HypI]) hLL).tinst tyT) topF) (supT : Fm Δ2)) (Ent.mp hs h))
+      (Tm.lam tyT (.var .here))) (BetaEq.imp (.step (.beta _ _)) (.step (.beta _ _)))
+  exact Ent.mp hl Ent.top
+
+set_option maxHeartbeats 16000000 in
+/-- Given LL≡, Ext≈ yields Int≈ (found while exploring). -/
+theorem d_IntT_of_ExtT (hLL : S LLEqv) (hE : S ExtT) : Prov S Ctx.nil IntT := by
+  have hH : Ent S Δ2 [HypI] HypI := Ent.hyp _ 0 (by decide)
+  have h1 : Ent S Δ2 [HypI] (Tm.conj subT supT) :=
+    Ent.andI (unbox_sub hLL (Ent.andE1 hH)) (unbox_sup hLL (Ent.andE2 hH))
+  have he : Ent S Δ2 [HypI] ((Tm.conj subT supT).imp (Tm.teq tv1 tv0)) :=
+    ((Ent.axm (Γ := Δ2) (Hs := [HypI]) hE).tinst tv1).tinst tv0
+  have h2 : Ent S Δ2 ([] ++ [HypI]) (Tm.teq tv1 tv0) := Ent.mp he h1
+  exact Ent.toProv (Ent.tgen (Hs := []) (Ent.tgen (Hs := []) (Ent.intro (Hs := []) h2)))
+
 end Explore
 
 end Derive

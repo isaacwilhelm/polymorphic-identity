@@ -2857,6 +2857,40 @@ theorem Mrec_not_Disjoint : ¬ Mrec.Valid Disjoint := fun h =>
   Mrec.tr_Disjoint.mp ((Mrec.valid_iff_tr _).mp h) .t (.base ()) (show ¬ normK .t = normK (.base ()) by decide)
     True True ⟨rfl, HEq.rfl⟩
 
+/-! #### Int≈ and Ext≈ -/
+
+theorem Frame.tr_IntT (F : Frame) : F.Tr IntT ↔ ∀ a b,
+    (F.eqv .t .t (∀ x : F.U.El a, ∃ y : F.U.El b, F.eqv a b x y) (¬ ∀ p : Prop, p) ∧
+     F.eqv .t .t (∀ y : F.U.El b, ∃ x : F.U.El a, F.eqv a b x y) (¬ ∀ p : Prop, p)) → F.teq a b := Iff.rfl
+
+/-- Where `≡` at `t` is identity of truth values (as in every model of PI here), Int≈ and Ext≈ agree. -/
+theorem Frame.IntT_iff_ExtT (F : Frame) (h : ∀ p q : Prop, F.eqv .t .t p q ↔ p = q) : F.Valid IntT ↔ F.Valid ExtT := by
+  have key : ∀ P : Prop, F.eqv .t .t P (¬ ∀ p : Prop, p) ↔ P := fun P =>
+    (h _ _).trans ⟨fun e => e ▸ (fun hall => hall False), fun hP => propext ⟨fun _ hall => hall False, fun _ => hP⟩⟩
+  rw [F.valid_iff_tr, F.valid_iff_tr, F.tr_IntT, F.tr_ExtT]
+  exact ⟨fun H a b hab => H a b ⟨(key _).mpr hab.1, (key _).mpr hab.2⟩,
+         fun H a b hab => H a b ⟨(key _).mp hab.1, (key _).mp hab.2⟩⟩
+
+theorem KeyData.eqv_t (D : KeyData) (p q : Prop) : D.frame.eqv .t .t p q ↔ p = q :=
+  ⟨fun ⟨_, h⟩ => eq_of_heq h, fun h => ⟨rfl, h ▸ HEq.rfl⟩⟩
+
+theorem IdentData.eqv_t (D : IdentData) (hw : ∀ c (x y : D.U.El c), D.rel ⟨c, x⟩ ⟨c, y⟩ → x = y) (p q : Prop) :
+    D.frame.eqv .t .t p q ↔ p = q := ⟨hw .t p q, fun h => h ▸ D.refl _⟩
+
+theorem M0_IntT : M0.Valid IntT := (M0.IntT_iff_ExtT M0D.eqv_t).mpr M0_ExtT
+theorem M0e_IntT : M0e.Valid IntT := (M0e.IntT_iff_ExtT M0eD.eqv_t).mpr M0e_ExtT
+theorem Mk_IntT : Mk.Valid IntT := (Mk.IntT_iff_ExtT MkD.eqv_t).mpr Mk_ExtT
+theorem Mcard_IntT : Mcard.Valid IntT := (Mcard.IntT_iff_ExtT McardD.eqv_t).mpr Mcard_ExtT
+theorem Mr_not_IntT : ¬ Mr.Valid IntT := fun h => Mr_not_ExtT ((Mr.IntT_iff_ExtT MrD.eqv_t).mp h)
+theorem Mtw_not_IntT : ¬ Mtw.Valid IntT := fun h => Mtw_not_ExtT ((Mtw.IntT_iff_ExtT MtwD.eqv_t).mp h)
+theorem M1_IntT : M1.Valid IntT := (M1.IntT_iff_ExtT (M1D.eqv_t (pairIdent_within _ _ _ _))).mpr M1_ExtT
+theorem Mh_IntT : Mh.Valid IntT := (Mh.IntT_iff_ExtT (MhD.eqv_t relH_within)).mpr Mh_ExtT
+
+/-- In `𝔐_tot` (a model of PI⁻ only) every `□φ` is true, so Int≈ fails although Ext≈ holds. -/
+theorem Mtot_not_IntT : ¬ Mtot.Valid IntT := fun h =>
+  absurd (Mtot.tr_IntT.mp ((Mtot.valid_iff_tr _).mp h) .e .t
+    ⟨⟨rfl, Or.inr ⟨trivial, trivial⟩⟩, ⟨rfl, Or.inr ⟨trivial, trivial⟩⟩⟩) (fun e => by cases e)
+
 end Models
 
 /-! ## A first derivation

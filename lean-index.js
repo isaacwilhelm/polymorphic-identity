@@ -32,6 +32,10 @@ window.LEANINDEX = {
   "PIDerivations.lean",
   856
  ],
+ "Derive.d_IntT_of_ExtT": [
+  "PIDerivations.lean",
+  1124
+ ],
  "Derive.d_LLEqv_of_Cong_Truth": [
   "PIDerivations.lean",
   624
@@ -132,6 +136,10 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2076
  ],
+ "M0_IntT": [
+  "PIFoundation.lean",
+  2880
+ ],
  "M0_LLEqv": [
   "PIFoundation.lean",
   2071
@@ -168,6 +176,10 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2114
  ],
+ "M0e_IntT": [
+  "PIFoundation.lean",
+  2881
+ ],
  "M0e_LLEqv": [
   "PIFoundation.lean",
   2109
@@ -195,6 +207,10 @@ window.LEANINDEX = {
  "M1_Inj": [
   "PIFoundation.lean",
   2301
+ ],
+ "M1_IntT": [
+  "PIFoundation.lean",
+  2886
  ],
  "M1_LLEqv": [
   "PIFoundation.lean",
@@ -276,6 +292,10 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2710
  ],
+ "Mcard_IntT": [
+  "PIFoundation.lean",
+  2883
+ ],
  "Mcard_LLEqv": [
   "PIFoundation.lean",
   2212
@@ -328,6 +348,10 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2606
  ],
+ "Mh_IntT": [
+  "PIFoundation.lean",
+  2887
+ ],
  "Mh_LLEqv": [
   "PIFoundation.lean",
   2605
@@ -355,6 +379,10 @@ window.LEANINDEX = {
  "Mk_ExtT": [
   "PIFoundation.lean",
   2705
+ ],
+ "Mk_IntT": [
+  "PIFoundation.lean",
+  2882
  ],
  "Mk_LLEqv": [
   "PIFoundation.lean",
@@ -428,6 +456,10 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2696
  ],
+ "Mr_not_IntT": [
+  "PIFoundation.lean",
+  2884
+ ],
  "Mr_not_LLPoly": [
   "PIFoundation.lean",
   2255
@@ -480,6 +512,10 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2455
  ],
+ "Mtot_not_IntT": [
+  "PIFoundation.lean",
+  2890
+ ],
  "Mtot_not_LLEqv": [
   "PIFoundation.lean",
   2457
@@ -527,6 +563,10 @@ window.LEANINDEX = {
  "Mtw_not_Hae": [
   "PIFoundation.lean",
   2801
+ ],
+ "Mtw_not_IntT": [
+  "PIFoundation.lean",
+  2885
  ],
  "PCong": [
   "PIFoundation.lean",
