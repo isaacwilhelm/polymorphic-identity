@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Polymorphic Identity Results</title>
+<meta name="description" content="An interactive map of what does and does not follow from what, in the logic of polymorphic identity PI and its weakening PI⁻.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='5' fill='%23335c99'/%3E%3Cg stroke='%23335c99' stroke-width='2.5'%3E%3Cline x1='16' y1='16' x2='4' y2='6'/%3E%3Cline x1='16' y1='16' x2='28' y2='6'/%3E%3Cline x1='16' y1='16' x2='16' y2='29' stroke-dasharray='3 2'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Polymorphic Identity: what follows from what</h1>
+    <p class="sub">Check principles to assume them (✓) or to assume their negations (¬). The graph shows, for every other principle, whether it follows from your selection, is independent of it, or is inconsistent with it. Click a principle to see the derivation or the countermodel.</p>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="explorer" aria-selected="true">Explorer</button>
+      <button role="tab" data-tab="catalogue" aria-selected="false">All results</button>
+      <button role="tab" data-tab="about" aria-selected="false">About</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="explorer" class="tabpanel">
+    <div class="layout">
+      <aside class="side">
+        <div class="logic" role="group" aria-label="Base logic">
+          <span>Base logic</span>
+          <button data-logic="PI" aria-pressed="true">PI</button>
+          <button data-logic="PI-" aria-pressed="false">PI⁻</button>
+        </div>
+        <div id="checklist"></div>
+        <button id="reset" class="reset">Clear selection</button>
+      </aside>
+      <section class="center">
+        <div id="legend" class="legend"></div>
+        <div id="banner"></div>
+        <div class="graphbox"><svg id="graph" role="img" aria-label="Graph of what follows from the selected principles"></svg></div>
+        <div id="details" class="details" aria-live="polite"></div>
+      </section>
+    </div>
+  </div>
+
+  <div id="catalogue" class="tabpanel catalogue" hidden></div>
+
+  <div id="about" class="tabpanel about" hidden>
+    <section>
+      <h2>About this site</h2>
+      <p>This site collects the derivations and independence results in Isaac Wilhelm's <em>Formal Results</em> (Draft 5), the companion note to the paper on polymorphic identity. Theorem numbers refer to that draft.</p>
+      <p><b>PI</b>, the logic of polymorphic identity, is formulated in the predicative calculus of constructions. It has classical propositional logic, quantifiers over items of each type and over types, β-conversion, and the identity axioms Ref≡, Sym≡, Trans≡, LL≡, Ref≈ and LL≈. <b>PI⁻</b> is PI without LL≡.</p>
+      <h3>How the statuses are computed</h3>
+      <p>Each result in the notes is entered as data: a <em>derivation</em> (given PI⁻, these principles prove that one), an <em>inconsistency</em> (given PI⁻, these principles prove ⊥), or a <em>model</em> (a model of PI⁻ in which certain principles are true and others false). For any selection, the site then reasons as follows.</p>
+      <ul>
+        <li><b>Follows</b>: the derivations, chained together (including by contraposition), yield the principle. The derivation is shown step by step.</li>
+        <li><b>Inconsistent</b>: the derivations yield the principle's negation, or the principle together with the selection hits a known inconsistency.</li>
+        <li><b>Independent</b>: some model makes every selected principle true and this one false, and some model makes them all true together. By soundness, it neither follows nor is refuted.</li>
+        <li><b>Consistent</b> / <b>Does not follow</b>: only one of those two models is known.</li>
+        <li><b>Open</b>: the results in the notes do not settle it.</li>
+      </ul>
+      <p>The chaining is sound but not complete: “open” means only that the recorded results, combined in this simple way, do not settle the question. Values inside a model that are not stated in the notes but follow from the recorded derivations are filled in automatically.</p>
+      <p>Facts marked <span class="src added">◆</span> are not stated in the notes; they were observed when the site was built, and each comes with a one-line argument. They should be checked.</p>
+      <h3>Sharing a configuration</h3>
+      <p>The address bar records the current selection, so a link reproduces exactly what you are looking at.</p>
+      <h3>Updating the results</h3>
+      <p>All results live in one file, <code>data.js</code>. Adding a theorem means adding one line there.</p>
+    </section>
+  </div>
+</main>
+
+<footer class="wrap">Results from Isaac Wilhelm, <em>Formal Results</em>, Draft 5 (October 2026).</footer>
+
+<script src="data.js"></script>
+<script defer src="app.js"></script>
+</body>
+</html>
