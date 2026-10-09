@@ -2688,6 +2688,175 @@ theorem Mh_ExtT : Mh.Valid ExtT := by
       refine not_hh_false hD (hn j ⟨b, y1⟩).2 ?_
       exact (cast_heq _ _).symm.trans hsnd
 
+/-! ### Further facts and models found while exploring (not stated in *Formal Results*) -/
+
+theorem KeyData.Slogan_valid (D : KeyData) (h : ∀ b, D.K .e ≠ D.K (.arr b .t)) : D.frame.Valid Slogan :=
+  (D.frame.valid_iff_tr _).mpr <| D.frame.tr_Slogan.mpr fun _ b _ ⟨hk, _⟩ => h b hk
+
+theorem Mr_not_ExtT : ¬ Mr.Valid ExtT := fun h =>
+  absurd (Mr.tr_ExtT.mp ((Mr.valid_iff_tr _).mp h) .e (.base ())
+    ⟨fun _ => ⟨(), rfl, HEq.rfl⟩, fun _ => ⟨(), rfl, HEq.rfl⟩⟩) (show ¬ (Code.e : Code Unit) = .base () by decide)
+
+theorem Mk_not_PCong : ¬ Mk.Valid PCong := fun h =>
+  absurd (Mk.tr_PCong.mp ((Mk.valid_iff_tr _).mp h) .e .t (.base ()) (fun _ => True) (fun _ => True) ()
+    ⟨show normK (.arr .e .t) = normK (.arr .e (.base ())) by decide, HEq.rfl⟩).1
+    (show ¬ normK .t = normK (.base ()) by decide)
+theorem Mk_Disjoint : Mk.Valid Disjoint := MkD.Disjoint_valid (fun _ _ h => h)
+theorem Mk_ExtT : Mk.Valid ExtT := MkD.ExtT_valid (fun _ _ h => h)
+theorem Mk_Slogan : Mk.Valid Slogan := MkD.Slogan_valid fun b h => by
+  change Code.e = specialK (normK b) .t at h
+  unfold specialK at h; split at h <;> cases h
+theorem Mcard_Disjoint : Mcard.Valid Disjoint := McardD.Disjoint_valid (fun _ _ h => h)
+theorem Mcard_ExtT : Mcard.Valid ExtT := McardD.ExtT_valid (fun _ _ h => h)
+
+theorem M1_Slogan : M1.Valid Slogan :=
+  (M1.valid_iff_tr _).mpr <| M1.tr_Slogan.mpr fun _ b _ h => by
+    rcases h with h | ⟨_, h2⟩ | ⟨h1, _⟩
+    · exact sigma_fst_ne h (fun e => by cases e)
+    · exact sigma_fst_ne h2 (fun e => by cases e)
+    · exact sigma_fst_ne h1 (fun e => by cases e)
+
+theorem Mp_Slogan : Mp.Valid Slogan :=
+  (Mp.valid_iff_tr _).mpr <| Mp.tr_Slogan.mpr fun _ b _ h => by
+    rcases h with h | ⟨h1, _⟩ | ⟨h1, _⟩
+    · exact sigma_fst_ne h (fun e => by cases e)
+    · exact sigma_fst_ne h1 (fun e => by cases e)
+    · exact sigma_fst_ne h1 (fun e => by cases e)
+
+/-! #### The twin model: every type has a duplicate, with the same items. -/
+
+def Btw : Bool → Type
+  | true => Unit
+  | false => Prop
+
+theorem Btw_ne : ∀ b, Nonempty (Btw b)
+  | true => ⟨()⟩
+  | false => ⟨True⟩
+
+def univTw : Univ := { E := Unit, Base := Bool, B := Btw, neE := ⟨()⟩, neB := Btw_ne }
+
+/-- `base true` duplicates `e`, and `base false` duplicates `t`. -/
+def normTw : Code Bool → Code Bool
+  | .e => .e
+  | .t => .t
+  | .base true => .e
+  | .base false => .t
+  | .arr a c => .arr (normTw a) (normTw c)
+
+theorem El_normTw : ∀ a, univTw.El (normTw a) = univTw.El a
+  | .e => rfl
+  | .t => rfl
+  | .base true => rfl
+  | .base false => rfl
+  | .arr a c => by
+    show (univTw.El (normTw a) → univTw.El (normTw c)) = (univTw.El a → univTw.El c)
+    rw [El_normTw a, El_normTw c]
+
+/-- The duplicate of a type. -/
+def twinC : Code Bool → Code Bool
+  | .e => .base true
+  | .t => .base false
+  | .base true => .e
+  | .base false => .t
+  | .arr a c => .arr (twinC a) c
+
+theorem normTw_twin : ∀ a, normTw (twinC a) = normTw a
+  | .e => rfl
+  | .t => rfl
+  | .base true => rfl
+  | .base false => rfl
+  | .arr a c => by show Code.arr (normTw (twinC a)) (normTw c) = _; rw [normTw_twin a]; rfl
+
+theorem twin_ne : ∀ a, twinC a ≠ a
+  | .e => fun h => by cases h
+  | .t => fun h => by cases h
+  | .base true => fun h => by cases h
+  | .base false => fun h => by cases h
+  | .arr a c => fun h => by injection h with h1; exact twin_ne a h1
+
+def MtwD : KeyData where
+  U := univTw
+  T := id
+  K := normTw
+  hK := fun a b h => (El_normTw a).symm.trans ((congrArg univTw.El h).trans (El_normTw b))
+  hTK := fun _ _ h => congrArg normTw h
+  hT := fun _ _ _ _ h1 h2 => arr_congr h1 h2
+
+abbrev Mtw : Frame := MtwD.frame
+theorem Mtw_model : Mtw.IsModelPIm := MtwD.model
+theorem Mtw_LLEqv : Mtw.Valid LLEqv := MtwD.LLEqv_valid
+theorem Mtw_Cong : Mtw.Valid Cong := MtwD.Cong_valid (fun _ _ _ _ h _ => by injection h)
+theorem Mtw_Inj : Mtw.Valid Inj :=
+  (Mtw.valid_iff_tr _).mpr <| Mtw.tr_Inj.mpr fun _ _ _ _ h => by injection h with h1 h2; exact ⟨h1, h2⟩
+theorem Mtw_Twin : Mtw.Valid Twin :=
+  (Mtw.valid_iff_tr _).mpr <| Mtw.tr_Twin.mpr fun a x =>
+    ⟨twinC a, fun h => twin_ne a h.symm,
+     cast (MtwD.hK _ _ (normTw_twin a).symm) x, (normTw_twin a).symm, (cast_heq _ _).symm⟩
+theorem Mtw_Slogan : Mtw.Valid Slogan := MtwD.Slogan_valid fun _ h => by cases h
+theorem Mtw_not_Disjoint : ¬ Mtw.Valid Disjoint := fun h =>
+  Mtw.tr_Disjoint.mp ((Mtw.valid_iff_tr _).mp h) .e (.base true) (fun e => by cases e) () () ⟨rfl, HEq.rfl⟩
+theorem Mtw_not_ExtT : ¬ Mtw.Valid ExtT := fun h =>
+  absurd (Mtw.tr_ExtT.mp ((Mtw.valid_iff_tr _).mp h) .e (.base true)
+    ⟨fun _ => ⟨(), rfl, HEq.rfl⟩, fun _ => ⟨(), rfl, HEq.rfl⟩⟩) (fun e => by cases e)
+theorem Mtw_not_Hae : ¬ Mtw.Valid Hae := fun h => by
+  have := (Mtw.tr_Hae.mp ((Mtw.valid_iff_tr _).mp h) .e ()).1
+  cases this
+
+/-! #### A model of Cong in which Recovery fails. -/
+
+/-- `normKt` collapses `D` onto `t`, so items of `D` and of `t` are identified; `≈` is given by
+`normK`, which identifies `e→D` with `e→t` but not `D` with `t`. -/
+def normKt : Code Unit → Code Unit
+  | .e => .e
+  | .t => .t
+  | .base _ => .t
+  | .arr a c => .arr (normKt a) (normKt c)
+
+theorem El_normKt : ∀ a, univK.El (normKt a) = univK.El a
+  | .e => rfl
+  | .t => rfl
+  | .base _ => rfl
+  | .arr a c => by
+    show (univK.El (normKt a) → univK.El (normKt c)) = (univK.El a → univK.El c)
+    rw [El_normKt a, El_normKt c]
+
+theorem normKt_normK : ∀ a, normKt (normK a) = normKt a
+  | .e => rfl
+  | .t => rfl
+  | .base _ => rfl
+  | .arr a c => by
+    show normKt (specialK (normK a) (normK c)) = Code.arr (normKt a) (normKt c)
+    rw [← normKt_normK a, ← normKt_normK c]
+    unfold specialK
+    split
+    · next h => obtain ⟨h1, h2⟩ := h; rw [h1, h2]; rfl
+    · rfl
+
+def MrecD : KeyData where
+  U := univK
+  T := normK
+  K := normKt
+  hK := fun a b h => (El_normKt a).symm.trans ((congrArg univK.El h).trans (El_normKt b))
+  hTK := fun a b h => (normKt_normK a).symm.trans ((congrArg normKt h).trans (normKt_normK b))
+  hT := fun _ _ _ _ h1 h2 => by show specialK _ _ = specialK _ _; rw [h1, h2]
+
+abbrev Mrec : Frame := MrecD.frame
+theorem Mrec_model : Mrec.IsModelPIm := MrecD.model
+theorem Mrec_LLEqv : Mrec.Valid LLEqv := MrecD.LLEqv_valid
+theorem Mrec_Cong : Mrec.Valid Cong := MrecD.Cong_valid (fun _ _ _ _ h _ => by injection h)
+theorem Mrec_not_Recovery : ¬ Mrec.Valid Recovery := fun h =>
+  absurd (Mrec.tr_Recovery.mp ((Mrec.valid_iff_tr _).mp h) .e .e .t (.base ())
+    ⟨show normK (.arr .e .t) = normK (.arr .e (.base ())) by decide, rfl⟩)
+    (show ¬ normK .t = normK (.base ()) by decide)
+theorem Mrec_not_Inj : ¬ Mrec.Valid Inj := fun h =>
+  absurd (Mrec.tr_Inj.mp ((Mrec.valid_iff_tr _).mp h) .e .e .t (.base ())
+    (show normK (.arr .e .t) = normK (.arr .e (.base ())) by decide)).2
+    (show ¬ normK .t = normK (.base ()) by decide)
+theorem Mrec_Slogan : Mrec.Valid Slogan := MrecD.Slogan_valid fun _ h => by cases h
+theorem Mrec_not_Disjoint : ¬ Mrec.Valid Disjoint := fun h =>
+  Mrec.tr_Disjoint.mp ((Mrec.valid_iff_tr _).mp h) .t (.base ()) (show ¬ normK .t = normK (.base ()) by decide)
+    True True ⟨rfl, HEq.rfl⟩
+
 end Models
 
 /-! ## A first derivation

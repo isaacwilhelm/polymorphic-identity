@@ -24,6 +24,10 @@ window.LEANINDEX = {
   "PIDerivations.lean",
   655
  ],
+ "Derive.d_ExtT_of_Disjoint": [
+  "PIDerivations.lean",
+  1087
+ ],
  "Derive.d_Hae_Cong": [
   "PIDerivations.lean",
   856
@@ -196,6 +200,10 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2300
  ],
+ "M1_Slogan": [
+  "PIFoundation.lean",
+  2712
+ ],
  "M1_model": [
   "PIFoundation.lean",
   2299
@@ -259,6 +267,14 @@ window.LEANINDEX = {
  "Mcard_Cong": [
   "PIFoundation.lean",
   2215
+ ],
+ "Mcard_Disjoint": [
+  "PIFoundation.lean",
+  2709
+ ],
+ "Mcard_ExtT": [
+  "PIFoundation.lean",
+  2710
  ],
  "Mcard_LLEqv": [
   "PIFoundation.lean",
@@ -332,6 +348,14 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2644
  ],
+ "Mk_Disjoint": [
+  "PIFoundation.lean",
+  2704
+ ],
+ "Mk_ExtT": [
+  "PIFoundation.lean",
+  2705
+ ],
  "Mk_LLEqv": [
   "PIFoundation.lean",
   2153
@@ -339,6 +363,10 @@ window.LEANINDEX = {
  "Mk_LLPoly": [
   "PIFoundation.lean",
   2154
+ ],
+ "Mk_Slogan": [
+  "PIFoundation.lean",
+  2706
  ],
  "Mk_model": [
   "PIFoundation.lean",
@@ -352,6 +380,10 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2156
  ],
+ "Mk_not_PCong": [
+  "PIFoundation.lean",
+  2700
+ ],
  "Mp_Inj": [
   "PIFoundation.lean",
   2347
@@ -359,6 +391,10 @@ window.LEANINDEX = {
  "Mp_LLEqv": [
   "PIFoundation.lean",
   2346
+ ],
+ "Mp_Slogan": [
+  "PIFoundation.lean",
+  2719
  ],
  "Mp_model": [
   "PIFoundation.lean",
@@ -388,9 +424,41 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2252
  ],
+ "Mr_not_ExtT": [
+  "PIFoundation.lean",
+  2696
+ ],
  "Mr_not_LLPoly": [
   "PIFoundation.lean",
   2255
+ ],
+ "Mrec_Cong": [
+  "PIFoundation.lean",
+  2846
+ ],
+ "Mrec_LLEqv": [
+  "PIFoundation.lean",
+  2845
+ ],
+ "Mrec_Slogan": [
+  "PIFoundation.lean",
+  2855
+ ],
+ "Mrec_model": [
+  "PIFoundation.lean",
+  2844
+ ],
+ "Mrec_not_Disjoint": [
+  "PIFoundation.lean",
+  2856
+ ],
+ "Mrec_not_Inj": [
+  "PIFoundation.lean",
+  2851
+ ],
+ "Mrec_not_Recovery": [
+  "PIFoundation.lean",
+  2847
  ],
  "Mtot_Cong": [
   "PIFoundation.lean",
@@ -423,6 +491,42 @@ window.LEANINDEX = {
  "Mtot_not_Truth": [
   "PIFoundation.lean",
   2459
+ ],
+ "Mtw_Cong": [
+  "PIFoundation.lean",
+  2788
+ ],
+ "Mtw_Inj": [
+  "PIFoundation.lean",
+  2789
+ ],
+ "Mtw_LLEqv": [
+  "PIFoundation.lean",
+  2787
+ ],
+ "Mtw_Slogan": [
+  "PIFoundation.lean",
+  2795
+ ],
+ "Mtw_Twin": [
+  "PIFoundation.lean",
+  2791
+ ],
+ "Mtw_model": [
+  "PIFoundation.lean",
+  2786
+ ],
+ "Mtw_not_Disjoint": [
+  "PIFoundation.lean",
+  2796
+ ],
+ "Mtw_not_ExtT": [
+  "PIFoundation.lean",
+  2798
+ ],
+ "Mtw_not_Hae": [
+  "PIFoundation.lean",
+  2801
  ],
  "PCong": [
   "PIFoundation.lean",

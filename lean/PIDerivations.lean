@@ -1071,6 +1071,34 @@ theorem d_Recovery_of_Cong (hP : S (Tm.tall (LLPoly PredA))) (hC : S Cong) : Pro
 end Thm20
 
 
+/-! ### Found while exploring: Disjoint yields Ext≈ -/
+
+section Explore
+variable {S : Fm Ctx.nil → Prop}
+
+abbrev HypE {Γ : Ctx 2} : Fm Γ := Tm.conj subT supT
+abbrev Cx2 : Ctx 2 := Δ2.ext tv1
+abbrev Cx2y : Ctx 2 := Cx2.ext tv0
+abbrev ExyE : Fm Cx2y := Tm.eqv tv1 tv0 (.var (.there .here)) (.var .here)
+
+set_option maxHeartbeats 16000000 in
+/-- Disjoint yields Ext≈: if every item of `α` is identical to an item of `β`, then since `α` is
+non-empty some item of `α` is identical to some item of `β`, and Disjoint gives `α ≈ β`. -/
+theorem d_ExtT_of_Disjoint (hD : S Disjoint) : Prov S Ctx.nil ExtT := by
+  have inner : Ent S Cx2y ([HypE] ++ [ExyE]) (Tm.teq tv1 tv0) := by
+    have hd : Ent S Cx2y [HypE, ExyE] ((Tm.teq tv1 tv0).neg.imp
+        (Tm.all tv1 (Tm.all tv0 (Tm.eqv tv1 tv0 (.var (.there .here)) (.var .here)).neg))) :=
+      ((Ent.axm (Γ := Cx2y) (Hs := [HypE, ExyE]) hD).tinst tv1).tinst tv0
+    exact teq_of_eqv (Ent.impInst (Ent.impInst hd (.var (.there .here))) (.var .here))
+      (Ent.hyp (Ax := S) [HypE, ExyE] 1 (by decide))
+  have hex : Ent S Cx2 [HypE] (Tm.ex tv0 (Tm.eqv tv1 tv0 (.var (.there .here)) (.var .here))) :=
+    Ent.inst (Ent.andE1 (Ent.hyp (Ax := S) [HypE] 0 (by decide))) (.var .here)
+  have h2 : Ent S Cx2 [HypE] (Tm.teq tv1 tv0) := Ent.exE (Hs := [HypE]) hex inner
+  have h3 : Ent S Δ2 ([] ++ [HypE]) (Tm.teq tv1 tv0) := Ent.strengthen (Hs := [HypE]) tv1 h2
+  exact Ent.toProv (Ent.tgen (Hs := []) (Ent.tgen (Hs := []) (Ent.intro (Hs := []) h3)))
+
+end Explore
+
 end Derive
 
 
