@@ -126,11 +126,15 @@
   }
 
   // ------------------------------------------------------------------ explanations
-  const LEANURL = "https://github.com/isaacwilhelm/polymorphic-identity/blob/main/lean/PIFoundation.lean";
+  const LEANBASE = "https://github.com/isaacwilhelm/polymorphic-identity/blob/main/lean/";
+  function leanURL(name) {
+    const e = (window.LEANINDEX || {})[name];
+    return e ? `${LEANBASE}${e[0]}#L${e[1]}` : null;
+  }
   function leanBadge(name, label) {
-    const idx = window.LEANINDEX || {};
-    if (!name || !(name in idx)) return "";
-    return `<a class="leanb" href="${LEANURL}#L${idx[name]}" target="_blank" rel="noopener" title="Checked in Lean: PIF.${name}">${label || "Lean ✓"}</a>`;
+    const u = name && leanURL(name);
+    if (!u) return "";
+    return `<a class="leanb" href="${u}" target="_blank" rel="noopener" title="Checked in Lean: PIF.${name}">${label || "Lean ✓"}</a>`;
   }
   function srcBadge(src, added) {
     return `<span class="src${added ? " added" : ""}" title="${added ? "Observed when building this site; not stated in the notes. Please check." : D.SOURCE}">${src}${added ? " ◆" : ""}</span>`;
@@ -153,7 +157,7 @@
     else if (c.kind === "rule") how = `from ${used}, by contraposition of ${describeClause(c)}`;
     else how = `from ${used}, since ${describeClause(c)}`;
     const note = c.info.note ? `<div class="stepnote">${c.info.note}</div>` : "";
-    return `<li><b>${litText(id, pos)}</b> <span class="by">${how}</span> ${srcBadge(c.info.src, c.info.added)}${note}</li>`;
+    return `<li><b>${litText(id, pos)}</b> <span class="by">${how}</span> ${srcBadge(c.info.src, c.info.added)} ${leanBadge(c.info.lean)}${note}</li>`;
   }
   // Collect the steps that lead to the given literals, in order.
   function traceSteps(res, roots) {
@@ -177,7 +181,7 @@
     let roots, last;
     if (c.clause) {
       roots = c.used.map(u => u.id);
-      last = `<li class="contra"><b>⊥</b> <span class="by">since ${describeClause(c.clause)}</span> ${srcBadge(c.clause.info.src, c.clause.info.added)}${c.clause.info.note ? `<div class="stepnote">${c.clause.info.note}</div>` : ""}</li>`;
+      last = `<li class="contra"><b>⊥</b> <span class="by">since ${describeClause(c.clause)}</span> ${srcBadge(c.clause.info.src, c.clause.info.added)} ${leanBadge(c.clause.info.lean)}${c.clause.info.note ? `<div class="stepnote">${c.clause.info.note}</div>` : ""}</li>`;
     } else {
       roots = [c.id];
       if (c.reason && c.reason.used) roots = roots.concat(c.reason.used.map(u => u.id));
@@ -635,9 +639,9 @@
   function renderCatalogue() {
     const pr = D.principles.map(p => `<tr><td class="ctag">${p.tag}</td><td>${tex(p.tex)}<div class="cg">${p.gloss}</div></td></tr>`).join("");
     const base = D.baseAxioms.map(a => `<tr><td class="ctag">${a.tag}</td><td>${tex(a.tex)}</td></tr>`).join("");
-    const thms = D.pimTheorems.map(t => `<li>PI⁻ ⊢ <b>${tag(t.to)}</b> ${srcBadge(t.src)} <span class="cn">${t.note || ""}</span></li>`).join("");
-    const rl = D.rules.map(r => `<li>PI⁻ + ${r.from.map(tag).join(" + ")} ⊢ <b>${tag(r.to)}</b> ${srcBadge(r.src, r.added)} <span class="cn">${r.note || ""}</span></li>`).join("");
-    const inc = D.inconsistent.map(s => `<li>PI⁻ + ${s.set.map(tag).join(" + ")} ⊢ ⊥ ${srcBadge(s.src, s.added)} <span class="cn">${s.note || ""}</span></li>`).join("");
+    const thms = D.pimTheorems.map(t => `<li>PI⁻ ⊢ <b>${tag(t.to)}</b> ${srcBadge(t.src)} ${leanBadge(t.lean)} <span class="cn">${t.note || ""}</span></li>`).join("");
+    const rl = D.rules.map(r => `<li>PI⁻ + ${r.from.map(tag).join(" + ")} ⊢ <b>${tag(r.to)}</b> ${srcBadge(r.src, r.added)} ${leanBadge(r.lean) || '<span class="cn">(not yet checked in Lean)</span>'} <span class="cn">${r.note || ""}</span></li>`).join("");
+    const inc = D.inconsistent.map(s => `<li>PI⁻ + ${s.set.map(tag).join(" + ")} ⊢ ⊥ ${srcBadge(s.src, s.added)} ${leanBadge(s.lean)} <span class="cn">${s.note || ""}</span></li>`).join("");
     const md = models.map(m => {
       const vals = D.principles.filter(p => p.id in m.val).map(p => {
         const w = m.why[p.id];
@@ -646,7 +650,7 @@
         const inner = `${m.val[p.id] ? "" : "¬"}${p.tag}${w && w.added ? " ◆" : ""}${ln ? " ✓" : ""}`;
         const title = (stated ? w.src : "follows in this model by the rules") + (ln ? " — checked in Lean: PIF." + m.lean[p.id] : "");
         const cls = `mv ${m.val[p.id] ? "t" : "f"}${stated ? "" : " derived"}`;
-        return ln ? `<a class="${cls}" href="${LEANURL}#L${window.LEANINDEX[m.lean[p.id]]}" target="_blank" rel="noopener" title="${title}">${inner}</a>`
+        return ln ? `<a class="${cls}" href="${leanURL(m.lean[p.id])}" target="_blank" rel="noopener" title="${title}">${inner}</a>`
                   : `<span class="${cls}" title="${title}">${inner}</span>`;
       }).join(" ");
       const lm = m.lean ? leanBadge(m.lean.model, "Lean ✓ model") : "";

@@ -108,36 +108,37 @@ const baseAxioms = [
 
 // Principles PI^- proves outright.
 const pimTheorems = [
-  { to: "SymA",  src: "Lemma 9", note: "The proof uses only Ref≈ and LL≈." },
-  { to: "TransA", src: "Lemma 9", note: "The proof uses only Ref≈ and LL≈." },
-  { to: "Link",  src: "Thm 2", note: "The proof uses Ref≡ and LL≈, not LL≡." },
+  { to: "SymA", lean: "Derive.d_SymTeq",  src: "Lemma 9", note: "The proof uses only Ref≈ and LL≈." },
+  { to: "TransA", lean: "Derive.d_TransTeq", src: "Lemma 9", note: "The proof uses only Ref≈ and LL≈." },
+  { to: "Link", lean: "Derive.d_Link",  src: "Thm 2", note: "The proof uses Ref≡ and LL≈, not LL≡." },
 ];
 
 // Derivations. Each says: PI^- + from ⊢ to.
 const rules = [
   { from: ["LLeq"], to: "Bridge", src: "Thm 3",
     note: "LL≡ cannot be dropped: PI⁻ does not prove every instance (Thm 12)." },
-  { from: ["LLeq"], to: "WCong", src: "Thm 4" },
-  { from: ["LLeq"], to: "Cantor", src: "Thm 6", note: "The proof is analogous to the Russell–Myhill paradox." },
-  { from: ["LLeq"], to: "TopBot", src: "Lemma 13" },
-  { from: ["LLeq"], to: "Truth", src: "immediate", note: "Truth is the instance of LL≡ at type t with λp.p for F." },
-  { from: ["LLPoly"], to: "Disjoint", src: "Thm 11", note: "This half of Thm 11 uses only Ref≈ and LL≈, so holds given PI⁻ (remark after Thm 11)." },
+  { from: ["LLeq"], to: "WCong", src: "Thm 4", lean: "Derive.d_WCong" },
+  { from: ["LLeq"], to: "Cantor", src: "Thm 6", lean: "Derive.d_Cantor", note: "The proof is analogous to the Russell–Myhill paradox." },
+  { from: ["LLeq"], to: "TopBot", src: "Lemma 13", lean: "Derive.d_TopBot" },
+  { from: ["LLeq"], to: "Truth", src: "immediate", lean: "Derive.d_Truth", note: "Truth is the instance of LL≡ at type t with λp.p for F." },
+  { from: ["LLPoly"], to: "Disjoint", src: "Thm 11", lean: "Derive.d_Disjoint_of_LLPoly", note: "This half of Thm 11 uses only Ref≈ and LL≈, so holds given PI⁻ (remark after Thm 11)." },
   { from: ["Disjoint", "LLeq"], to: "LLPoly", src: "Thm 11", note: "This half uses Thm 3, hence LL≡; that use cannot be avoided (Thm 12)." },
-  { from: ["Hae", "Cantor"], to: "Twin", src: "Thm 26", note: "Stated for PI; the proof uses Haecceitism and Cor 6 (no type is identical to the type of its properties), which follows from Cantor." },
-  { from: ["Cong"], to: "PCong", src: "Thm 27(a)", note: "PCong is the instance of Cong with α for β and x for y, given Ref≡." },
-  { from: ["Inj"], to: "Recovery", src: "remark after Thm 21" },
-  { from: ["LLeq", "LLPoly", "Recovery"], to: "Cong", src: "Thm 20" },
-  { from: ["LLeq", "LLPoly", "Cong"], to: "Recovery", src: "Thm 20" },
-  { from: ["Cong", "Truth"], to: "LLeq", src: "Thm 22" },
+  { from: ["Hae", "Cantor"], to: "Twin", src: "Thm 26", lean: "Derive.d_Twin", note: "Stated for PI; the proof uses Haecceitism and Cor 6 (no type is identical to the type of its properties), which follows from Cantor." },
+  { from: ["Cong"], to: "PCong", src: "Thm 27(a)", lean: "Derive.d_PCong", note: "PCong is the instance of Cong with α for β and x for y, given Ref≡." },
+  { from: ["Inj"], to: "Recovery", src: "remark after Thm 21", lean: "Derive.d_Recovery" },
+  { from: ["LLeq", "LLPoly", "Recovery"], to: "Cong", src: "Thm 20", lean: "Derive.d_Cong_of_Recovery" },
+  { from: ["LLPoly", "Cong"], to: "Recovery", src: "Thm 20", lean: "Derive.d_Recovery_of_Cong",
+    note: "Thm 20 states this given PI; the Lean derivation shows that LL≡ is not needed for this direction, so it holds given PI⁻." },
+  { from: ["Cong", "Truth"], to: "LLeq", src: "Thm 22", lean: "Derive.d_LLEqv_of_Cong_Truth" },
 ];
 
 // Sets of principles which, given PI^-, are inconsistent.
 const inconsistent = [
-  { set: ["LLeq", "Hae", "Cong"], src: "Thm 25",
+  { set: ["LLeq", "Hae", "Cong"], src: "Thm 25", lean: "Derive.d_Hae_Cong",
     note: "Given PI, Haecceitism and Polymorphic Congruence are incompatible. (Additional Results, 2026-10-09: given PI and Cong, a type whose items and whose constant property are identical to their haecceities has exactly one item.)" },
-  { set: ["Slogan", "Hae"], src: "observed", added: true,
+  { set: ["Slogan", "Hae"], src: "observed", added: true, lean: "Derive.d_Slogan_Hae",
     note: "Haecceitism at e makes each entity identical to its haecceity, an item of type e→t; Slogan, with e for β, says no entity is identical to an item of type e→t. Type e is non-empty." },
-  { set: ["Twin", "Disjoint"], src: "remark after Thm 9",
+  { set: ["Twin", "Disjoint"], src: "remark after Thm 9", lean: "Derive.d_Twin_Disjoint",
     note: "Twin identifies each item with an item of a type not identical to its own, which Disjoint forbids (types are non-empty)." },
 ];
 

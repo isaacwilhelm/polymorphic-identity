@@ -71,8 +71,9 @@
       <h3>What is checked in Lean</h3>
       <p>The folder <code>lean/</code> contains a formalization of PI in the Lean proof assistant: the language, the proof system, the models, and a proof that the proof system is sound (whatever PI proves is true in every model). With soundness, a model in which a principle is false is a proof that PI does not prove it.</p>
       <ul>
-        <li><b>Checked:</b> every model on this site is a model of PI⁻ (and of PI where LL≡ is true in it), and every true/false value recorded for it in the notes. These carry a <span class="leanb">Lean ✓</span> badge, which links to the proof. Each principle's <span class="leanb">Lean definition</span> links to the sentence as written in Lean.</li>
-        <li><b>Not yet checked:</b> the derivations (that given PI⁻, some principles prove another). Statuses which rest on derivations (“Follows”, “Inconsistent”) are not yet verified.</li>
+        <li><b>Checked:</b> every model on this site is a model of PI⁻ (and of PI where LL≡ is true in it), and every true/false value recorded for it in the notes. Each principle's <span class="leanb">Lean definition</span> links to the sentence as written in Lean.</li>
+        <li><b>Checked:</b> the derivations and inconsistencies, written out as formal derivations in PI (file <code>lean/PIDerivations.lean</code>). Each step of a “Follows” or “Inconsistent” explanation that rests on one of them carries a <span class="leanb">Lean ✓</span> badge.</li>
+        <li><b>Not yet checked:</b> two schema results, theorem 3 (LL≡ ⊢ LL≡/≈) and the second half of theorem 11 (Disjoint + LL≡ ⊢ LL≡-Poly). Each is about an arbitrary predicate <i>P</i>, which needs further lemmas about substitution in Lean.</li>
       </ul>
       <p>Three Lean models (for 𝔐_κ, 𝔐_card, and 𝔐_ρ) are simpler constructions than the paper's, with the same pattern of true and false principles; they establish the same independence results. Each model's Lean note says how it is built.</p>
       <h3>Sharing a configuration</h3>

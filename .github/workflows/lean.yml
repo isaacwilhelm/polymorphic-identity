@@ -9,14 +9,14 @@ jobs:
         run: |
           curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-      - name: Check PIFoundation.lean
+      - name: Build the Lean files
         working-directory: lean
         run: |
           lean --version
-          out=$(lean PIFoundation.lean 2>&1); echo "$out"
-          test -z "$out"
+          out=$(lake build 2>&1); echo "$out"
+          if echo "$out" | grep -E "error|warning|sorry"; then exit 1; fi
       - name: Check that the site's Lean references are real declarations
         run: |
-          python3 tools/check_lean_refs.py --check --leanfile /tmp/refs.lean
-          out=$(cd lean && lean /tmp/refs.lean 2>&1 | grep -i error || true); echo "$out"
+          python3 tools/check_lean_refs.py --check --leanfile lean/Refs.lean
+          out=$(cd lean && lake env lean Refs.lean 2>&1 | grep -i error || true); echo "$out"
           test -z "$out"
