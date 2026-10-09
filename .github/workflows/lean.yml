@@ -18,5 +18,5 @@ jobs:
       - name: Check that the site's Lean references are real declarations
         run: |
           python3 tools/check_lean_refs.py --check --leanfile /tmp/refs.lean
-          out=$(lean /tmp/refs.lean 2>&1 | grep -i error || true); echo "$out"
+          out=$(cd lean && lean /tmp/refs.lean 2>&1 | grep -i error || true); echo "$out"
           test -z "$out"
