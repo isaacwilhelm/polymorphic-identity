@@ -53,3 +53,6 @@ lean_lib PIWorlds
 
 @[default_target]
 lean_lib PIAlg
+
+@[default_target]
+lean_lib PIAlgModels
