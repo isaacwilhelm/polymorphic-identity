@@ -268,3 +268,189 @@ theorem MEkT_not_WCong : ¬ MEkT.Valid WCong := fun h => by
     exact absurd s' (by decide)
 
 end PIF
+
+/-! ## `𝔐_hw`: Haecceitism, with worlds and tags
+
+A haecceity tower (as in `PIHae.lean`) in which propositions are pairs of a set of two worlds and
+a tag. Identity of items holds only at the actual world and has tag `false`; identity of types
+is identity at the actual world and difference at the other world; the connectives and
+quantifiers act world by world, with tag `true`. -/
+
+namespace PIF
+namespace Al
+
+def univH : Univ where
+  P := (Bool → Prop) × Bool
+  V := fun p => p.1 true
+  p0 := (fun _ => True, true)
+  E := Unit
+  Base := Empty
+  B := Empty.elim
+  neE := ⟨()⟩
+  neB := fun b => b.elim
+
+section TowerW
+attribute [local instance] Classical.propDecidable
+
+abbrev RW := Σ c : Code univH.Base, univH.El c
+
+/-- Roots: the root of the haecceity of `x` is the root of `x`. -/
+noncomputable def hrW : (c : Code univH.Base) → univH.El c → RW
+  | .arr a .t, G =>
+    if h : ∃ x, G = (fun y => ((fun w => hrW a y = hrW a x ∧ w = true), false)) then hrW a (Classical.choose h)
+    else ⟨.arr a .t, G⟩
+  | c, x => ⟨c, x⟩
+
+theorem hrW_arr_t (a : Code univH.Base) (G : univH.El (.arr a .t)) :
+    hrW (.arr a .t) G = if h : ∃ x, G = (fun y => ((fun w => hrW a y = hrW a x ∧ w = true), false))
+      then hrW a (Classical.choose h) else ⟨.arr a .t, G⟩ := by
+  rw [hrW]
+
+theorem hrW_hae (a : Code univH.Base) (x : univH.El a) :
+    hrW (.arr a .t) (fun y => ((fun w => hrW a y = hrW a x ∧ w = true), false)) = hrW a x := by
+  refine (hrW_arr_t a _).trans ?_
+  split
+  · next h =>
+    have hc := Classical.choose_spec h
+    exact ((congrArg (fun p : univH.P => p.1 true) (congrFun hc (Classical.choose h))).mpr ⟨rfl, rfl⟩).1
+  · next h => exact absurd ⟨x, rfl⟩ h
+
+theorem hrW_le : ∀ (c : Code univH.Base) (x : univH.El c), csz (hrW c x).1 ≤ csz c
+  | .arr a .t, G => by
+    rw [hrW_arr_t]
+    split
+    · exact Nat.le_trans (hrW_le a _) (Nat.le_trans (Nat.le_add_right _ _) (Nat.le_succ _))
+    · exact Nat.le_refl _
+  | .e, _ => Nat.le_refl _
+  | .t, _ => Nat.le_refl _
+  | .base b, _ => b.elim
+  | .arr _ .e, _ => Nat.le_refl _
+  | .arr _ (.base b), _ => b.elim
+  | .arr _ (.arr _ _), _ => Nat.le_refl _
+
+theorem hrW_inj : ∀ (c : Code univH.Base) (x y : univH.El c), hrW c x = hrW c y → x = y
+  | .arr a .t, G1, G2, h => by
+    rw [hrW_arr_t, hrW_arr_t] at h
+    have big : ∀ z, csz (hrW a z).1 < csz (Code.arr a .t) := fun z =>
+      Nat.lt_of_le_of_lt (hrW_le a z) (Nat.lt_of_lt_of_le (Nat.lt_succ_self _) (Nat.succ_le_succ (Nat.le_add_right _ _)))
+    split at h <;> split at h
+    · next h1 h2 =>
+      rw [Classical.choose_spec h1, Classical.choose_spec h2]
+      funext y
+      rw [h]
+    · next h1 _ =>
+      have := congrArg (fun p => csz p.1) h
+      exact absurd (this ▸ big (Classical.choose h1)) (Nat.lt_irrefl _)
+    · next _ h2 =>
+      have := congrArg (fun p => csz p.1) h
+      exact absurd (this.symm ▸ big (Classical.choose h2)) (Nat.lt_irrefl _)
+    · exact eq_of_heq (Sigma.mk.inj h).2
+  | .e, x, y, h => eq_of_heq (Sigma.mk.inj h).2
+  | .t, x, y, h => eq_of_heq (Sigma.mk.inj h).2
+  | .base b, _, _, _ => b.elim
+  | .arr _ .e, x, y, h => eq_of_heq (Sigma.mk.inj h).2
+  | .arr _ (.base b), _, _, _ => b.elim
+  | .arr _ (.arr _ _), x, y, h => eq_of_heq (Sigma.mk.inj h).2
+
+noncomputable def MhwF : Frame where
+  U := univH
+  eqv := fun a b x y => ((fun w => hrW a x = hrW b y ∧ w = true), false)
+  teq := fun a b => ((fun w => if w = true then a = b else a ≠ b), true)
+  neg := fun p => ((fun w => ¬ p.1 w), true)
+  imp := fun p q => ((fun w => p.1 w → q.1 w), true)
+  cnj := fun p q => ((fun w => p.1 w ∧ q.1 w), true)
+  dsj := fun p q => ((fun w => p.1 w ∨ q.1 w), true)
+  bic := fun p q => ((fun w => p.1 w ↔ q.1 w), true)
+  all := fun _ f => ((fun w => ∀ x, (f x).1 w), true)
+  ex := fun _ f => ((fun w => ∃ x, (f x).1 w), true)
+  tall := fun Q => ((fun w => ∀ a, (Q a).1 w), true)
+  tex := fun Q => ((fun w => ∃ a, (Q a).1 w), true)
+  hneg := fun _ => Iff.rfl
+  himp := fun _ _ => Iff.rfl
+  hcnj := fun _ _ => Iff.rfl
+  hdsj := fun _ _ => Iff.rfl
+  hbic := fun _ _ => Iff.rfl
+  hall := fun _ _ => Iff.rfl
+  hex := fun _ _ => Iff.rfl
+  htall := fun _ => Iff.rfl
+  htex := fun _ => Iff.rfl
+
+end TowerW
+
+theorem Mhw_model : MhwF.IsModelPIm :=
+  MhwF.model_of_equiv (fun a b => show (if true = true then a = b else a ≠ b) ↔ a = b by simp)
+    (fun _ _ => ⟨rfl, rfl⟩) (fun _ _ _ _ h => ⟨h.1.symm, rfl⟩) (fun _ _ _ _ _ _ h1 h2 => ⟨h1.1.trans h2.1, rfl⟩)
+
+theorem Mhw_Hae : MhwF.Valid Hae := by
+  intro ρ env
+  refine (MhwF.holds_tall _ _ _).mpr fun a => (MhwF.holds_all _ _ _ _).mpr fun x => ?_
+  exact (MhwF.holds_eqv _ _ _ _ _ _).mpr ⟨(hrW_hae a x).symm, rfl⟩
+
+theorem Mhw_LLEqv : MhwF.Valid LLEqv := by
+  intro ρ env
+  refine (MhwF.holds_tall _ _ _).mpr fun a => ?_
+  refine (MhwF.holds_all _ _ _ _).mpr fun x => (MhwF.holds_all _ _ _ _).mpr fun y => ?_
+  refine (MhwF.holds_imp _ _ _ _).mpr fun hxy => ?_
+  refine (MhwF.holds_all _ _ _ _).mpr fun G => (MhwF.holds_imp _ _ _ _).mpr fun hGx => ?_
+  have e := hrW_inj a _ _ ((MhwF.holds_eqv _ _ _ _ _ _).mp hxy).1
+  have e' : x = y := e
+  subst e'
+  exact hGx
+
+theorem Mhw_topF {n : Nat} {Γ : Ctx n} (ρ : MhwF.U.TEnv n) (env : MhwF.U.Env Γ ρ) :
+    MhwF.eval (topF : Fm Γ) ρ env = ((fun _ => True), true) :=
+  Prod.ext (funext fun w => propext ⟨fun _ => trivial, fun _ h => by
+    have := (MhwF.holds_all (Γ := Γ) tyT (.var .here) ρ env)
+    exact (h ((fun _ => False), true) : False)⟩) rfl
+
+theorem Mhw_not_NIEqv : ¬ MhwF.Valid NIEqv := fun h => by
+  have h0 := (MhwF.holds_all _ _ _ _).mp ((MhwF.holds_all _ _ _ _).mp
+    ((MhwF.holds_tall _ _ _).mp (h (fun i => i.elim0) ()) .e) ()) ()
+  have hb := (MhwF.holds_imp _ _ _ _).mp h0 ((MhwF.holds_eqv _ _ _ _ _ _).mpr ⟨rfl, rfl⟩)
+  have e := hrW_inj .t _ _ ((MhwF.holds_eqv_t _ _ _ _).mp hb).1
+  exact Bool.noConfusion (congrArg Prod.snd e : false = true)
+
+theorem Mhw_not_NITeq : ¬ MhwF.Valid NITeq := fun h => by
+  have h0 := (MhwF.holds_tall _ _ _).mp ((MhwF.holds_tall _ _ _).mp (h (fun i => i.elim0) ()) .e) .e
+  have hb := (MhwF.holds_imp _ _ _ _).mp h0 ((MhwF.holds_teq _ _ _ _).mpr
+    (show (if true = true then (Code.e : Code Empty) = Code.e else (Code.e : Code Empty) ≠ Code.e) by simp))
+  have e := (hrW_inj .t _ _ ((MhwF.holds_eqv_t _ _ _ _).mp hb).1).trans
+    (Mhw_topF (Γ := Ctx.nil.text.text) _ _)
+  have e2 := congrFun (congrArg Prod.fst e) false
+  exact (cast e2.symm trivial : if false = true then (Code.e : Code Empty) = .e else (Code.e : Code Empty) ≠ .e) (by simp) |>.elim
+
+theorem Mhw_not_NDTeq : ¬ MhwF.Valid NDTeq := fun h => by
+  have h0 := (MhwF.holds_tall _ _ _).mp ((MhwF.holds_tall _ _ _).mp (h (fun i => i.elim0) ()) .e) .t
+  have hn : MhwF.Holds (Tm.neg (Tm.teq tv1 tv0) : Fm Ctx.nil.text.text) (scons .t (scons .e fun i => i.elim0)) () :=
+    (MhwF.holds_neg _ _ _).mpr fun ht => nomatch ((MhwF.holds_teq _ _ _ _).mp ht : if true = true then (Code.e : Code Empty) = .t else _)
+  have hb := (MhwF.holds_imp _ _ _ _).mp h0 hn
+  have e := (hrW_inj .t _ _ ((MhwF.holds_eqv_t _ _ _ _).mp hb).1).trans
+    (Mhw_topF (Γ := Ctx.nil.text.text) _ _)
+  have e2 := congrFun (congrArg Prod.fst e) false
+  exact (cast e2.symm trivial : ¬ (if false = true then (Code.e : Code Empty) = .t else (Code.e : Code Empty) ≠ .t))
+    (by simp)
+
+theorem Mhw_not_Collapse : ¬ MhwF.Valid Collapse := fun h => by
+  have h0 := (MhwF.holds_all _ _ _ _).mp (h (fun i => i.elim0) ()) ((fun w => w = true), true)
+  have hb := (MhwF.holds_imp _ _ _ _).mp h0 rfl
+  have e := (hrW_inj .t _ _ ((MhwF.holds_eqv_t _ _ _ _).mp hb).1).trans
+    (Mhw_topF (Γ := Ctx.nil.ext tyT) _ _)
+  exact Bool.noConfusion (cast (congrFun (congrArg Prod.fst e) false).symm trivial : false = true)
+
+theorem Mhw_not_DNeg : ¬ MhwF.Valid DNeg := fun h => by
+  rw [DNeg_eq] at h
+  have h0 := (MhwF.holds_all _ _ _ _).mp (h (fun i => i.elim0) ()) ((fun _ => True), false)
+  have e := hrW_inj .t _ _ ((MhwF.holds_eqv_t _ _ _ _).mp h0).1
+  exact Bool.noConfusion (congrArg Prod.snd e : true = false)
+
+theorem Mhw_not_Bool : ¬ ∀ φ, BoolSch φ → MhwF.Valid φ := fun h => Mhw_not_DNeg (h _ DNeg_bool)
+
+theorem Mhw_not_IdId : ¬ MhwF.Valid IdId := fun h => by
+  have h0 := (MhwF.holds_all _ _ _ _).mp ((MhwF.holds_all _ _ _ _).mp
+    ((MhwF.holds_tall _ _ _).mp (h (fun i => i.elim0) ()) .e) ()) ()
+  have e := hrW_inj .t _ _ ((MhwF.holds_eqv_t _ _ _ _).mp h0).1
+  have e2 := congrArg Prod.snd ((MhwF.eval_eqv _ _ _ _ _ _).symm.trans (e.trans (MhwF.eval_all _ _ _ _)))
+  exact Bool.noConfusion (e2 : false = true)
+
+end Al
+end PIF
