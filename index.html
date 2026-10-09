@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
-<link rel="stylesheet" href="style.css?v=20261010">
+<link rel="stylesheet" href="style.css?v=20261010c">
 </head>
 <body>
 <header>
@@ -36,7 +36,7 @@
           <button data-logic="PI" aria-pressed="true">PI</button>
           <button data-logic="PI-" aria-pressed="false">PI⁻</button>
           <button data-logic="PIC" aria-pressed="false" title="PI + Classicism">PIᶜ</button>
-          <button id="showlogic" class="showlogic" type="button">Show its axioms and rules</button>
+          <button id="showlogic" class="showlogic" type="button">Axioms and rules common to all three</button>
         </div>
         <div id="checklist"></div>
         <button id="reset" class="reset">Clear selection</button>
@@ -93,21 +93,24 @@
 
 <dialog id="logicdlg" class="logicdlg" aria-labelledby="logicdlg-title">
   <div class="lhead">
-    <h2 id="logicdlg-title">The base logics</h2>
-    <div class="ltabs" role="tablist">
-      <button role="tab" data-l="PI-">PI⁻</button>
-      <button role="tab" data-l="PI">PI</button>
-      <button role="tab" data-l="PIC">PIᶜ</button>
-    </div>
+    <h2 id="logicdlg-title">Axioms and rules common to PI⁻, PI and PIᶜ</h2>
     <button class="lclose" type="button" aria-label="Close">✕</button>
   </div>
   <div id="logicbody" class="logicbody"></div>
 </dialog>
 
+<aside id="iddrawer" class="iddrawer" aria-label="Identity axioms of the base logic">
+  <button id="idtoggle" class="idtoggle" type="button" aria-expanded="true" aria-controls="idpanel">Identity axioms</button>
+  <div id="idpanel" class="idpanel">
+    <h3 id="idtitle">Identity axioms</h3>
+    <div id="idbody"></div>
+  </div>
+</aside>
+
 <footer class="wrap">Results from Isaac Wilhelm, <em>Formal Results</em>, Draft 5 (October 2026).</footer>
 
-<script src="data.js?v=20261010"></script>
-<script src="lean-index.js?v=20261010"></script>
-<script defer src="app.js?v=20261010"></script>
+<script src="data.js?v=20261010c"></script>
+<script src="lean-index.js?v=20261010c"></script>
+<script defer src="app.js?v=20261010c"></script>
 </body>
 </html>

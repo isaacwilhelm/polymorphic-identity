@@ -223,9 +223,6 @@ a.mv { text-decoration: none; }
 .logicdlg::backdrop { background: rgba(0, 0, 0, 0.35); }
 .logicdlg .lhead { position: sticky; top: 0; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px 18px; background: var(--panel); border-bottom: 1px solid var(--line); }
 .logicdlg .lhead h2 { margin: 0; font-size: 1.1em; }
-.logicdlg .ltabs { display: flex; gap: 4px; }
-.logicdlg .ltabs button { font: inherit; padding: 4px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); cursor: pointer; }
-.logicdlg .ltabs button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--panel); }
 .logicdlg .lclose { margin-left: auto; font: inherit; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.1em; }
 .logicbody { padding: 4px 18px 18px; overflow-x: auto; }
 .lsec h4 { margin: 18px 0 6px; }
@@ -235,3 +232,13 @@ a.mv { text-decoration: none; }
 .llang summary { cursor: pointer; color: var(--muted); }
 .lsec .katex-display { margin: 4px 0; text-align: left; font-weight: normal; }
 .lsec .katex-display > .katex { text-align: left; font-weight: normal; }
+
+/* identity-axioms drawer, on the right */
+.iddrawer { position: fixed; top: 96px; right: 0; bottom: 16px; z-index: 20; display: flex; align-items: flex-start; pointer-events: none; }
+.idtoggle { pointer-events: auto; writing-mode: vertical-rl; transform: rotate(180deg); margin-top: 12px; padding: 12px 6px; font: inherit; font-size: 13px; font-weight: 600; color: #fff; background: var(--accent); border: none; border-radius: 0 6px 6px 0; cursor: pointer; }
+.idpanel { pointer-events: auto; display: none; width: min(420px, calc(100vw - 56px)); max-height: 100%; overflow: auto; padding: 4px 16px 16px; background: var(--panel); border: 1px solid var(--line); border-right: none; border-radius: 8px 0 0 8px; box-shadow: -4px 4px 16px rgba(0, 0, 0, 0.12); }
+.iddrawer.open .idpanel { display: block; }
+.idpanel h3 { margin: 12px 0 0; font-size: 1em; }
+.idpanel .lblurb { font-size: 0.9em; color: var(--muted); }
+.idpanel .ctable td { font-size: 0.92em; }
+.idpanel .katex-display { overflow-x: auto; overflow-y: hidden; padding-bottom: 2px; }

@@ -664,7 +664,7 @@
     const other = D.otherResults.map(o => `<li><b>${o.title}.</b> ${o.text} ${srcBadge(o.src)}</li>`).join("");
     $("#catalogue").innerHTML = `
       <label class="onlynew"><input type="checkbox" id="onlynew"> Show only results marked ◆ (not stated in the notes; observed while building this site, and to be checked)</label>
-      <section class="nonew"><h2>The base logics</h2>${["PI-", "PI", "PIC"].map(k => `<h3>${D.logicSpec.logics[k].name}</h3>${logicHTML(k, k !== "PI-")}`).join("")}</section>
+      <section class="nonew"><h2>The base logics</h2><h3>Common to all three</h3>${commonHTML()}${["PI-", "PI", "PIC"].map(k => `<h3>${D.logicSpec.logics[k].name}</h3>${identityHTML(k, k !== "PI-")}`).join("")}</section>
       <section class="nonew"><h2>Principles</h2><table class="ctable">${pr}</table></section>
       <section class="nonew"><h2>Theorems of PI⁻</h2><ul class="clist">${thms}</ul></section>
       <section><h2>Derivations</h2><ul class="clist">${rl}</ul></section>
@@ -677,27 +677,33 @@
     cb.addEventListener("change", apply); apply();
   }
 
-  // ------------------------------------------------------------------ base-logic window
-  function logicHTML(key, onlyNew) {
+  // ------------------------------------------------------------------ base logics
+  const secHTML = (sec, badge) => {
+    const rows = sec.items.map(it => `<tr><td class="ctag">${it.tag}</td><td>${tex(it.tex, true)}${it.side ? `<div class="cg">${it.side}</div>` : ""}</td></tr>`).join("");
+    return `<section class="lsec${badge ? " ladded" : ""}"><h4>${sec.title}${badge ? ` <span class="lbadge">${badge}</span>` : ""}</h4><table class="ctable">${rows}</table></section>`;
+  };
+  // the axioms and rules shared by PI⁻, PI and PIᶜ
+  function commonHTML() {
+    return `<p class="lblurb">PI⁻, PI and PIᶜ all have these axioms and rules. They differ only in their axioms for identity.</p>
+      <details class="llang"><summary>The language</summary><p>${D.logicSpec.language}</p></details>` +
+      D.logicSpec.sections.filter(sec => sec.common).map(sec => secHTML(sec)).join("");
+  }
+  // the identity axioms of one logic; with onlyNew, just those it adds
+  function identityHTML(key, onlyNew) {
     const L = D.logicSpec.logics[key];
     const lvName = lv => D.logicSpec.logics[lv].name;
-    const secs = D.logicSpec.sections.filter(sec => onlyNew ? sec.level === key : L.levels.includes(sec.level)).map(sec => {
-      const added = sec.level !== "PI-";
-      const rows = sec.items.map(it => `<tr><td class="ctag">${it.tag}</td><td>${tex(it.tex, true)}${it.side ? `<div class="cg">${it.side}</div>` : ""}</td></tr>`).join("");
-      return `<section class="lsec${added ? " ladded" : ""}"><h4>${sec.title}${added ? ` <span class="lbadge">added in ${lvName(sec.level)}</span>` : ""}</h4><table class="ctable">${rows}</table></section>`;
-    }).join("");
-    if (onlyNew) return `<p class="lblurb">${L.blurb}</p>${secs}`;
-    return `<p class="lblurb">${L.blurb}</p><details class="llang"><summary>The language</summary><p>${D.logicSpec.language}</p></details>${secs}`;
+    return `<p class="lblurb">${L.blurb}</p>` + D.logicSpec.sections
+      .filter(sec => !sec.common && (onlyNew ? sec.level === key : L.levels.includes(sec.level)))
+      .map(sec => secHTML(sec, sec.level !== "PI-" && !onlyNew ? "added in " + lvName(sec.level) : "")).join("");
   }
-  function openLogicWindow(key) {
-    const dlg = $("#logicdlg");
-    const show = k => {
-      dlg.querySelectorAll(".ltabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.l === k));
-      $("#logicbody").innerHTML = logicHTML(k);
-    };
-    dlg.querySelectorAll(".ltabs button").forEach(b => b.onclick = () => show(b.dataset.l));
-    show(key);
-    if (!dlg.open) dlg.showModal();
+  function renderIdentityDrawer() {
+    $("#idtitle").textContent = "Identity axioms of " + logicName();
+    $("#idbody").innerHTML = identityHTML(state.logic);
+  }
+  function setDrawer(open) {
+    $("#iddrawer").classList.toggle("open", open);
+    $("#idtoggle").setAttribute("aria-expanded", open);
+    try { localStorage.setItem("pi-iddrawer", open ? "1" : "0"); } catch (e) {}
   }
 
   // ------------------------------------------------------------------ main
@@ -705,6 +711,7 @@
     writeHash();
     const an = analyse();
     syncChecklist();
+    renderIdentityDrawer();
     renderGraph(an);
     renderDetails(an);
     if (!$("#strength").hidden) renderStrength();
@@ -717,10 +724,13 @@
     document.querySelectorAll(".logic button[data-logic]").forEach(b => b.addEventListener("click", () => {
       state.logic = b.dataset.logic;
       update();
-      openLogicWindow(state.logic);
     }));
-    $("#showlogic").addEventListener("click", () => openLogicWindow(state.logic));
+    $("#showlogic").addEventListener("click", () => { $("#logicbody").innerHTML = commonHTML(); $("#logicdlg").showModal(); });
     $("#logicdlg .lclose").addEventListener("click", () => $("#logicdlg").close());
+    let drawerOpen = window.innerWidth >= 1400;
+    try { const v = localStorage.getItem("pi-iddrawer"); if (v !== null) drawerOpen = v === "1"; } catch (e) {}
+    setDrawer(drawerOpen);
+    $("#idtoggle").addEventListener("click", () => setDrawer(!$("#iddrawer").classList.contains("open")));
     $("#logicdlg").addEventListener("click", e => { if (e.target.id === "logicdlg") e.target.close(); });
     $("#reset").addEventListener("click", () => { state.sel = {}; state.focus = null; update(); });
     document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {

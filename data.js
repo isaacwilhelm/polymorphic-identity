@@ -152,7 +152,7 @@ const baseAxioms = [
 const logicSpec = {
   language: "Types: e, t, type variables α, β, …, and σ → τ. Items of each type σ, with variables x, y, … and quantifiers ∀_σ, ∃_σ; type variables with quantifiers 𝔸, 𝔼; λ-abstraction over items and Λ-abstraction over types; identity of items x ≡_{σ,τ} y (written ≡_σ when σ = τ) and identity of types σ ≈ τ. φ, ψ are formulas (terms of type t), κ is a term, Q is a term of category Πγ:∗.t.",
   sections: [
-    { level: "PI-", title: "Propositional and quantifier axioms", items: [
+    { level: "PI-", common: true, title: "Propositional and quantifier axioms", items: [
       { tag: "Taut", tex: String.raw`\varphi`, side: "every instance of a tautology of classical propositional logic" },
       { tag: "Inst∀", tex: String.raw`\forall_{\sigma}x\,\varphi\rightarrow\varphi[\kappa/x]`, side: "κ a term of type σ" },
       { tag: "Dist∀", tex: String.raw`\forall_{\sigma}x\,(\varphi\rightarrow\psi)\rightarrow(\varphi\rightarrow\forall_{\sigma}x\,\psi)`, side: "x not free in φ" },
@@ -162,12 +162,12 @@ const logicSpec = {
       { tag: "Dual𝔼", tex: String.raw`\TE\alpha\,\varphi\leftrightarrow\neg\TA\alpha\,\neg\varphi` },
       { tag: "β", tex: String.raw`\varphi\leftrightarrow\psi`, side: "φ and ψ β-equivalent: (λx.κ)κ′ ↝ κ[κ′/x] and (Λα.κ)σ ↝ κ[σ/α]" },
     ] },
-    { level: "PI-", title: "Rules", items: [
+    { level: "PI-", common: true, title: "Rules", items: [
       { tag: "MP", tex: String.raw`\dfrac{\varphi\qquad\varphi\rightarrow\psi}{\psi}` },
       { tag: "Gen∀", tex: String.raw`\dfrac{\varphi}{\forall_{\sigma}x\,\varphi}` },
       { tag: "Gen𝔸", tex: String.raw`\dfrac{\varphi}{\TA\alpha\,\varphi}` },
     ] },
-    { level: "PI-", title: "Identity axioms", items: [
+    { level: "PI-", title: "Basic identity axioms (in all three logics)", items: [
       { tag: "Ref≡", tex: String.raw`\TA\alpha\,\forall_{\alpha}x\,(x\equiv_{\alpha}x)` },
       { tag: "Sym≡", tex: String.raw`\TA\alpha\,\TA\beta\,\forall_{\alpha}x\,\forall_{\beta}y\,(x\equiv_{\alpha,\beta}y\rightarrow y\equiv_{\beta,\alpha}x)` },
       { tag: "Trans≡", tex: String.raw`\TA\alpha\,\TA\beta\,\TA\gamma\,\forall_{\alpha}x\,\forall_{\beta}y\,\forall_{\gamma}z\,\big((x\equiv_{\alpha,\beta}y\wedge y\equiv_{\beta,\gamma}z)\rightarrow x\equiv_{\alpha,\gamma}z\big)` },
