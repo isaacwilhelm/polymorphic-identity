@@ -11,3 +11,6 @@ lean_lib PIDerivations
 
 @[default_target]
 lean_lib PISchemas
+
+@[default_target]
+lean_lib PIExplore

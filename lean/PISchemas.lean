@@ -219,6 +219,23 @@ theorem d_LLPoly_of_Disjoint (hLL : S LLEqv) (hD : S Disjoint) : Prov S Ctx.nil 
   rw [llPoly_eq]
   exact Ent.toProv (Ent.tgen (Ent.tgen (Ent.gen tv1 (Ent.gen tv0 h3))))
 
+theorem QBg_congr {a a' : Tm Γb PK} (ha : a = a') : QBg tv1 tv0 a = QBg tv1 tv0 a' := by rw [ha]
+
+set_option maxHeartbeats 4000000 in
+/-- LL≡-Poly proves LL≡/≈, instance by instance, in PI⁻: the latter only adds a premise. -/
+theorem d_Bridge_of_LLPoly (h : S (LLPoly P)) : Prov S Ctx.nil (Bridge P) := by
+  have h' : S (LLPolyT (Pc P Γb)) := llPoly_eq P ▸ h
+  have h1 := ((((Ent.axm (Γ := Γb) (Hs := []) h').tinst tv1).tinst tv0).inst (.var (.there .here))).inst (.var .here)
+  have h2 : Ent S Γb [] (QBg tv1 tv0 (Pc P Γb)) := Ent.congr h1 (QBg_congr (eq_of_heq (by pc_heq)))
+  have h3 : Ent S Γb [] (BridgeB (Pc P Γb)) :=
+    Ent.mp (Ent.taut (.imp (.imp (.atom 1) (.imp (.atom 2) (.atom 3)))
+        (.imp (.conj (.atom 1) (.atom 0)) (.imp (.atom 2) (.atom 3))))
+      (v4 (teq tv1 tv0) (eqv tv1 tv0 (.var (.there .here)) (.var .here))
+        (.app (.tapp (Pc P Γb) tv1) (.var (.there .here))) (.app (.tapp (Pc P Γb) tv0) (.var .here)))
+      (fun _ f h => f h.1)) h2
+  rw [bridge_eq]
+  exact Ent.toProv (Ent.tgen (Ent.tgen (Ent.gen tv1 (Ent.gen tv0 h3))))
+
 end Bridge
 
 end PIF

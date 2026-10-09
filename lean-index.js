@@ -232,13 +232,37 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2305
  ],
+ "MD_Cantor": [
+  "PIExplore.lean",
+  119
+ ],
  "MD_Disjoint": [
   "PIFoundation.lean",
   2397
  ],
+ "MD_ExtT": [
+  "PIExplore.lean",
+  123
+ ],
  "MD_Inj": [
   "PIFoundation.lean",
   2398
+ ],
+ "MD_IntT": [
+  "PIExplore.lean",
+  126
+ ],
+ "MD_Slogan": [
+  "PIExplore.lean",
+  120
+ ],
+ "MD_TopBot": [
+  "PIExplore.lean",
+  125
+ ],
+ "MD_Truth": [
+  "PIExplore.lean",
+  124
  ],
  "MD_model": [
   "PIFoundation.lean",
@@ -248,6 +272,10 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2417
  ],
+ "MD_not_Hae": [
+  "PIExplore.lean",
+  121
+ ],
  "MD_not_LLEqv": [
   "PIFoundation.lean",
   2399
@@ -256,29 +284,201 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2414
  ],
+ "MD_not_PCong": [
+  "PIExplore.lean",
+  127
+ ],
+ "MD_not_Twin": [
+  "PIExplore.lean",
+  122
+ ],
+ "MD_not_WCong": [
+  "PIExplore.lean",
+  131
+ ],
+ "ME_Cantor": [
+  "PIExplore.lean",
+  136
+ ],
  "ME_Disjoint": [
   "PIFoundation.lean",
   2429
+ ],
+ "ME_ExtT": [
+  "PIExplore.lean",
+  140
  ],
  "ME_Inj": [
   "PIFoundation.lean",
   2430
  ],
+ "ME_IntT": [
+  "PIExplore.lean",
+  143
+ ],
  "ME_PCong": [
   "PIFoundation.lean",
   2434
+ ],
+ "ME_Slogan": [
+  "PIExplore.lean",
+  137
+ ],
+ "ME_TopBot": [
+  "PIExplore.lean",
+  142
+ ],
+ "ME_Truth": [
+  "PIExplore.lean",
+  141
  ],
  "ME_model": [
   "PIFoundation.lean",
   2428
  ],
+ "ME_not_Hae": [
+  "PIExplore.lean",
+  138
+ ],
  "ME_not_LLEqv": [
   "PIFoundation.lean",
   2431
  ],
+ "ME_not_Twin": [
+  "PIExplore.lean",
+  139
+ ],
  "ME_not_WCong": [
   "PIFoundation.lean",
   2442
+ ],
+ "Mall_Bridge": [
+  "PIExplore.lean",
+  202
+ ],
+ "Mall_Cong": [
+  "PIExplore.lean",
+  175
+ ],
+ "Mall_Hae": [
+  "PIExplore.lean",
+  178
+ ],
+ "Mall_Inj": [
+  "PIExplore.lean",
+  174
+ ],
+ "Mall_PCong": [
+  "PIExplore.lean",
+  177
+ ],
+ "Mall_Twin": [
+  "PIExplore.lean",
+  179
+ ],
+ "Mall_WCong": [
+  "PIExplore.lean",
+  176
+ ],
+ "Mall_model": [
+  "PIExplore.lean",
+  173
+ ],
+ "Mall_not_Cantor": [
+  "PIExplore.lean",
+  186
+ ],
+ "Mall_not_Disjoint": [
+  "PIExplore.lean",
+  189
+ ],
+ "Mall_not_ExtT": [
+  "PIExplore.lean",
+  193
+ ],
+ "Mall_not_IntT": [
+  "PIExplore.lean",
+  196
+ ],
+ "Mall_not_LLEqv": [
+  "PIExplore.lean",
+  181
+ ],
+ "Mall_not_LLPoly": [
+  "PIExplore.lean",
+  199
+ ],
+ "Mall_not_Slogan": [
+  "PIExplore.lean",
+  191
+ ],
+ "Mall_not_TopBot": [
+  "PIExplore.lean",
+  185
+ ],
+ "Mall_not_Truth": [
+  "PIExplore.lean",
+  183
+ ],
+ "Mcan_Inj": [
+  "PIExplore.lean",
+  227
+ ],
+ "Mcan_TopBot": [
+  "PIExplore.lean",
+  238
+ ],
+ "Mcan_Truth": [
+  "PIExplore.lean",
+  236
+ ],
+ "Mcan_model": [
+  "PIExplore.lean",
+  226
+ ],
+ "Mcan_not_Cantor": [
+  "PIExplore.lean",
+  241
+ ],
+ "Mcan_not_Disjoint": [
+  "PIExplore.lean",
+  247
+ ],
+ "Mcan_not_ExtT": [
+  "PIExplore.lean",
+  272
+ ],
+ "Mcan_not_Hae": [
+  "PIExplore.lean",
+  266
+ ],
+ "Mcan_not_IntT": [
+  "PIExplore.lean",
+  276
+ ],
+ "Mcan_not_LLEqv": [
+  "PIExplore.lean",
+  244
+ ],
+ "Mcan_not_LLPoly": [
+  "PIExplore.lean",
+  277
+ ],
+ "Mcan_not_PCong": [
+  "PIExplore.lean",
+  252
+ ],
+ "Mcan_not_Slogan": [
+  "PIExplore.lean",
+  250
+ ],
+ "Mcan_not_Twin": [
+  "PIExplore.lean",
+  260
+ ],
+ "Mcan_not_WCong": [
+  "PIExplore.lean",
+  256
  ],
  "Mcard_Cong": [
   "PIFoundation.lean",
@@ -316,21 +516,57 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2218
  ],
+ "Mfn_Cantor": [
+  "PIExplore.lean",
+  150
+ ],
+ "Mfn_ExtT": [
+  "PIExplore.lean",
+  154
+ ],
  "Mfn_Inj": [
   "PIFoundation.lean",
   2485
+ ],
+ "Mfn_IntT": [
+  "PIExplore.lean",
+  157
  ],
  "Mfn_LLPoly": [
   "PIFoundation.lean",
   2496
  ],
+ "Mfn_Slogan": [
+  "PIExplore.lean",
+  151
+ ],
+ "Mfn_TopBot": [
+  "PIExplore.lean",
+  156
+ ],
+ "Mfn_Truth": [
+  "PIExplore.lean",
+  155
+ ],
  "Mfn_model": [
   "PIFoundation.lean",
   2484
  ],
+ "Mfn_not_Hae": [
+  "PIExplore.lean",
+  152
+ ],
  "Mfn_not_LLEqv": [
   "PIFoundation.lean",
   2486
+ ],
+ "Mfn_not_PCong": [
+  "PIExplore.lean",
+  158
+ ],
+ "Mfn_not_Twin": [
+  "PIExplore.lean",
+  153
  ],
  "Mfn_not_WCong": [
   "PIFoundation.lean",
@@ -520,6 +756,10 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   3029
  ],
+ "Mtot_Cantor": [
+  "PIExplore.lean",
+  145
+ ],
  "Mtot_Cong": [
   "PIFoundation.lean",
   2463
@@ -536,9 +776,17 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2469
  ],
+ "Mtot_Slogan": [
+  "PIExplore.lean",
+  146
+ ],
  "Mtot_model": [
   "PIFoundation.lean",
   2455
+ ],
+ "Mtot_not_Hae": [
+  "PIExplore.lean",
+  147
  ],
  "Mtot_not_IntT": [
   "PIFoundation.lean",
@@ -555,6 +803,10 @@ window.LEANINDEX = {
  "Mtot_not_Truth": [
   "PIFoundation.lean",
   2459
+ ],
+ "Mtot_not_Twin": [
+  "PIExplore.lean",
+  148
  ],
  "Mtw_Cong": [
   "PIFoundation.lean",
@@ -635,6 +887,10 @@ window.LEANINDEX = {
  "d_Bridge": [
   "PISchemas.lean",
   195
+ ],
+ "d_Bridge_of_LLPoly": [
+  "PISchemas.lean",
+  226
  ],
  "d_LLPoly_of_Disjoint": [
   "PISchemas.lean",
