@@ -640,8 +640,8 @@
     const pr = D.principles.map(p => `<tr><td class="ctag">${p.tag}</td><td>${tex(p.tex)}<div class="cg">${p.gloss}</div></td></tr>`).join("");
     const base = D.baseAxioms.map(a => `<tr><td class="ctag">${a.tag}</td><td>${tex(a.tex)}</td></tr>`).join("");
     const thms = D.pimTheorems.map(t => `<li>PI⁻ ⊢ <b>${tag(t.to)}</b> ${srcBadge(t.src)} ${leanBadge(t.lean)} <span class="cn">${t.note || ""}</span></li>`).join("");
-    const rl = D.rules.map(r => `<li>PI⁻ + ${r.from.map(tag).join(" + ")} ⊢ <b>${tag(r.to)}</b> ${srcBadge(r.src, r.added)} ${leanBadge(r.lean) || '<span class="cn">(not yet checked in Lean)</span>'} <span class="cn">${r.note || ""}</span></li>`).join("");
-    const inc = D.inconsistent.map(s => `<li>PI⁻ + ${s.set.map(tag).join(" + ")} ⊢ ⊥ ${srcBadge(s.src, s.added)} ${leanBadge(s.lean)} <span class="cn">${s.note || ""}</span></li>`).join("");
+    const rl = D.rules.map(r => `<li${r.added ? ' class="isnew"' : ""}>PI⁻ + ${r.from.map(tag).join(" + ")} ⊢ <b>${tag(r.to)}</b> ${srcBadge(r.src, r.added)} ${leanBadge(r.lean) || '<span class="cn">(not yet checked in Lean)</span>'} <span class="cn">${r.note || ""}</span></li>`).join("");
+    const inc = D.inconsistent.map(s => `<li${s.added ? ' class="isnew"' : ""}>PI⁻ + ${s.set.map(tag).join(" + ")} ⊢ ⊥ ${srcBadge(s.src, s.added)} ${leanBadge(s.lean)} <span class="cn">${s.note || ""}</span></li>`).join("");
     const md = models.map(m => {
       const vals = D.principles.filter(p => p.id in m.val).map(p => {
         const w = m.why[p.id];
@@ -649,25 +649,31 @@
         const ln = stated && m.lean && m.lean[p.id] && window.LEANINDEX && (m.lean[p.id] in window.LEANINDEX);
         const inner = `${m.val[p.id] ? "" : "¬"}${p.tag}${w && w.added ? " ◆" : ""}${ln ? " ✓" : ""}`;
         const title = (stated ? w.src : "follows in this model by the rules") + (ln ? " — checked in Lean: PIF." + m.lean[p.id] : "");
-        const cls = `mv ${m.val[p.id] ? "t" : "f"}${stated ? "" : " derived"}`;
+        const cls = `mv ${m.val[p.id] ? "t" : "f"}${stated ? "" : " derived"}${w && w.added ? " isnew" : ""}`;
         return ln ? `<a class="${cls}" href="${leanURL(m.lean[p.id])}" target="_blank" rel="noopener" title="${title}">${inner}</a>`
                   : `<span class="${cls}" title="${title}">${inner}</span>`;
       }).join(" ");
       const lm = m.lean ? leanBadge(m.lean.model, "Lean ✓ model") : "";
       const ln = m.leanNote ? `<div class="mdesc"><i>Lean:</i> ${m.leanNote}</div>` : "";
-      return `<div class="mcard"><div class="mname">${m.name} ${srcBadge(m.src)} ${lm}</div><div class="mdesc">${m.desc}</div>${ln}<div class="mvals">${vals}</div></div>`;
+      const hasNew = m.src === "observed" || Object.values(m.why).some(w => w && w.model && w.added);
+      return `<div class="mcard${hasNew ? " isnew" : ""}"><div class="mname">${m.name} ${srcBadge(m.src)} ${lm}</div><div class="mdesc">${m.desc}</div>${ln}<div class="mvals">${vals}</div></div>`;
     }).join("");
     const other = D.otherResults.map(o => `<li><b>${o.title}.</b> ${o.text} ${srcBadge(o.src)}</li>`).join("");
     $("#catalogue").innerHTML = `
-      <section><h2>The base logic</h2>
+      <label class="onlynew"><input type="checkbox" id="onlynew"> Show only results marked ◆ (not stated in the notes; observed while building this site, and to be checked)</label>
+      <section class="nonew"><h2>The base logic</h2>
         <p>PI⁻ consists of the propositional, quantifier, and β-conversion axioms, the rules MP, Gen∀ and Gen𝔸, and these identity axioms. PI adds LL≡.</p>
         <table class="ctable">${base}</table></section>
-      <section><h2>Principles</h2><table class="ctable">${pr}</table></section>
-      <section><h2>Theorems of PI⁻</h2><ul class="clist">${thms}</ul></section>
+      <section class="nonew"><h2>Principles</h2><table class="ctable">${pr}</table></section>
+      <section class="nonew"><h2>Theorems of PI⁻</h2><ul class="clist">${thms}</ul></section>
       <section><h2>Derivations</h2><ul class="clist">${rl}</ul></section>
       <section><h2>Inconsistencies</h2><ul class="clist">${inc}</ul></section>
       <section><h2>Models</h2><p>All are models of PI⁻; those in which LL≡ is true are models of PI. Faded entries are not stated in the notes but follow in the model from the derivations above. Entries marked ✓ are checked in Lean: click one to see the proof.</p>${md}</section>
-      <section><h2>Other results</h2><ul class="clist">${other}</ul></section>`;
+      <section class="nonew"><h2>Other results</h2><ul class="clist">${other}</ul></section>`;
+    const cb = $("#onlynew");
+    try { cb.checked = localStorage.getItem("pi-onlynew") === "1"; } catch (e) {}
+    const apply = () => { $("#catalogue").classList.toggle("only-new", cb.checked); try { localStorage.setItem("pi-onlynew", cb.checked ? "1" : "0"); } catch (e) {} };
+    cb.addEventListener("change", apply); apply();
   }
 
   // ------------------------------------------------------------------ main
