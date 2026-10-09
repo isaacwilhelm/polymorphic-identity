@@ -44,3 +44,6 @@ lean_lib PICompleteness
 
 @[default_target]
 lean_lib PICanonical
+
+@[default_target]
+lean_lib PIModal
