@@ -412,6 +412,26 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2442
  ],
+ "MEk_Disjoint": [
+  "PIBridge.lean",
+  225
+ ],
+ "MEk_Inj": [
+  "PIBridge.lean",
+  53
+ ],
+ "MEk_PCong": [
+  "PIBridge.lean",
+  61
+ ],
+ "MEk_model": [
+  "PIBridge.lean",
+  52
+ ],
+ "MEk_not_Bridge": [
+  "PIBridge.lean",
+  100
+ ],
  "Mall_Bridge": [
   "PIExplore.lean",
   202
@@ -723,6 +743,26 @@ window.LEANINDEX = {
  "Mh_not_Cong": [
   "PIFoundation.lean",
   2644
+ ],
+ "Mhb_Hae": [
+  "PIBridge.lean",
+  132
+ ],
+ "Mhb_Inj": [
+  "PIBridge.lean",
+  134
+ ],
+ "Mhb_Twin": [
+  "PIBridge.lean",
+  133
+ ],
+ "Mhb_model": [
+  "PIBridge.lean",
+  131
+ ],
+ "Mhb_not_Bridge": [
+  "PIBridge.lean",
+  218
  ],
  "Mhk_Hae": [
   "PIHae.lean",

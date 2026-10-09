@@ -20,3 +20,6 @@ lean_lib PIHae
 
 @[default_target]
 lean_lib PITagged
+
+@[default_target]
+lean_lib PIBridge

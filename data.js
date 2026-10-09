@@ -372,6 +372,26 @@ const models = [
       TopBot: [false, "⊤ and ⊥ have the same tag, so they are identified", true],
       Truth: [false, "⊤ ≡ ⊥", true],
     } },
+  { id: "MEk", lean: { model: "MEk_model", PCong: "MEk_PCong", Bridge: "MEk_not_Bridge", Inj: "MEk_Inj", Disjoint: "MEk_Disjoint" },
+    leanNote: "Built for this site: 𝔐_E (E = {0,1,2}, 0 ∼ 1) with k₁ = (0↦0, 1↦0, 2↦2) and k₂ = (0↦1, 1↦0, 2↦2) identified in e→e. LL≡/≈ fails for the predicate λγ.λz.∃f,g:γ→γ (f ≡ g ∧ f z ≐ z ∧ ¬ g z ≐ z), with ≐ Leibniz equality.",
+    name: "𝔐_E,k (new; a model of PI⁻ only)",
+    desc: "As 𝔐_E (0 ∼ 1 at type e), and in addition two functions k₁, k₂ from e to e are identified, whose values at each argument are identified. So PCong holds. But 0 is a fixed point of k₁ and not of k₂, while 1 is a fixed point of neither; a predicate saying so holds of 0 and not of 1, though 0 ≡ 1. So LL≡/≈ fails. Not in the notes: built while exploring, and checked in Lean.",
+    src: "observed",
+    values: {
+      PCong: [true, "identified functions have identified values at each argument", true],
+      Bridge: [false, "0 ≡ 1, but 0 is a fixed point of one of two identified functions and 1 is not", true],
+      Inj: [true, "≈ is identity of types", true], Disjoint: [true, "nothing is identified across types", true],
+    } },
+  { id: "Mhb", lean: { model: "Mhb_model", Hae: "Mhb_Hae", Twin: "Mhb_Twin", Inj: "Mhb_Inj", Bridge: "Mhb_not_Bridge" },
+    leanNote: "Built for this site: a haecceity tower (lean/PIHae.lean) over E = {0,1,2}, in which 1 and the property λy.(y = 1) have the root of 0.",
+    name: "𝔐_hae,R (new; a model of PI⁻ only)",
+    desc: "A haecceitist model over E = {0,1,2}: each item is identified with its haecceity; in addition, 1 is identified with 0, and the property of being 1 is identified with the haecceity of 0. Then the predicate R of Thm 12 holds of 0 and not of 1, though 0 ≡ 1; so LL≡/≈ fails while Haecceitism holds. Not in the notes: built while exploring, and checked in Lean.",
+    src: "observed",
+    values: {
+      Hae: [true, "each item has the same root as its haecceity", true], Twin: [true, "each item is identified with its haecceity, of another type", true],
+      Inj: [true, "≈ is identity of types", true],
+      Bridge: [false, "R(0) holds and R(1) fails (R as in Thm 12), though 0 ≡ 1", true],
+    } },
   { id: "Mk", lean: { model: "Mk_model", LLeq: "Mk_LLEqv", LLPoly: "Mk_LLPoly", Cong: "Mk_not_Cong", Inj: "Mk_not_Inj", PCong: "Mk_not_PCong", Disjoint: "Mk_Disjoint", Ext: "Mk_ExtT", Slogan: "Mk_Slogan" , Int: "Mk_IntT" },
     leanNote: "A simpler model with the same pattern: e→t and e→D are identified (D a second two-element type) while t and D are not. Not the paper's construction.",
     name: "𝔐_κ",
@@ -445,6 +465,8 @@ const models = [
 
 // Results which do not fit the graph (they concern other languages, or are about expressibility).
 const otherResults = [
+  { title: "The open questions given PI⁻ (observed while building this site; not checked in Lean)", src: "observed ◆",
+    text: "Nine single-principle questions given PI⁻ remain open, and none can be settled by a model with full function spaces, standard or tagged. (1) Cong ⊢ LL≡/≈? WCong ⊢ LL≡/≈? In every such model, Cong or WCong implies LL≡/≈: if x ≡ y with x ≠ y in some type, then for any u, v of any type some function sends x to u and y to v, so every type is wholly identified with itself, and LL≡/≈ follows by invariance. Proof-theoretically, Cong (or WCong) together with Truth proves LL≡/≈: Cong, with the same function on both sides, gives P_α x ≡_t P_α y; Truth turns that into P_α x → P_α y; and LL≈ carries this from α to β. (2) The other seven, namely Disjoint ⊢ Cantor, LL≡-Poly ⊢ Cantor, Haecceitism ⊢ Twin, and the consistency of Haecceitism with Disjoint and with LL≡-Poly, each need a type α with α ≈ α→t. In a model with full function spaces that is impossible: the predicate λγ.(there is an injection, in the sense of Leibniz identity, from γ into α) holds of α and not of α→t, which LL≈ forbids. Settling these would need a derivation, or a model whose function spaces are not full (a general, Henkin-style model)." },
   { title: "Soundness and consistency", src: "Thm 1; Cor 2; Lemma 5",
     text: "PI is sound for its models, and consistent. Every identification on HF⁺ yields a model of PI. The same holds for PI⁻." },
   { title: "Identity within a type", src: "Prop 1",
