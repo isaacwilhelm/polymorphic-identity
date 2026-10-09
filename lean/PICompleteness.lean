@@ -254,5 +254,105 @@ theorem theory_cons (h0 : ¬ Prov Ax Γ0 φ0) : ∀ k, Cons Ax (theory Ax φ0 k)
 
 end Theory
 
+
+/-! ## Lifting along the chain -/
+
+theorem codeTm_heq {n : Nat} {Γ : Ctx n} {K K' : Cat n} (h : K = K') {M : Tm Γ K} {M' : Tm Γ K'} (hM : HEq M M')
+    (d td : Nat) : codeTm d td M = codeTm d td M' := by
+  subst h; cases hM; rfl
+
+def Lift.id (S : St) : Lift S S :=
+  ⟨fun i => i, idRen S.Γ, fun M => (codeTm_heq (Cat.ren_id _) (Tm.ren_id_heq M) 0 0),
+    fun K => by rw [Cat.ren_id]⟩
+
+def Lift.comp {S S' S'' : St} (L1 : Lift S S') (L2 : Lift S' S'') : Lift S S'' :=
+  ⟨fun i => L2.r (L1.r i), fun x => Var.castK (Cat.ren_ren _ _ _) (L2.ρ (L1.ρ x)),
+    fun M => (codeTm_heq (Cat.ren_ren _ _ _).symm
+      (Tm.ren_ren_heq M L1.ρ L2.ρ _ (fun _ => rfl) (fun _ => (var_castK_heq' _ _).symm)).symm 0 0).trans
+      ((L2.codeT _).trans (L1.codeT M)),
+    fun K => by rw [← Cat.ren_ren, L2.codeC, L1.codeC]⟩
+
+theorem liftF_comp {S S' S'' : St} (L1 : Lift S S') (L2 : Lift S' S'') (φ : Fm S.Γ) :
+    liftF (L1.comp L2) φ = liftF L2 (liftF L1 φ) :=
+  eq_of_heq (Tm.ren_ren_heq φ L1.ρ L2.ρ _ (fun _ => rfl) (fun _ => (var_castK_heq' _ _).symm)).symm
+
+theorem codeF_liftF {S S' : St} (L : Lift S S') (φ : Fm S.Γ) : codeF (liftF L φ) = codeF φ :=
+  congrArg encL (L.codeT φ)
+
+theorem chain_liftF {S S' : St} (L : Lift S S') (Hs : List (Fm S.Γ)) (φ : Fm S.Γ) :
+    Derive.chain (Hs.map (liftF L)) (liftF L φ) = liftF L (Derive.chain Hs φ) := by
+  induction Hs with
+  | nil => rfl
+  | cons h hs ih => show (liftF L h).imp (Derive.chain (hs.map (liftF L)) (liftF L φ)) = _; rw [ih]; rfl
+
+theorem ent_lift {Ax : Fm Ctx.nil → Prop} {S S' : St} (L : Lift S S') {Hs : List (Fm S.Γ)} {φ : Fm S.Γ}
+    (h : Ent Ax S.Γ Hs φ) : Ent Ax S'.Γ (Hs.map (liftF L)) (liftF L φ) := by
+  unfold Ent; rw [chain_liftF]; exact Prov.ren _ h
+
+theorem ent_append {Ax : Fm Ctx.nil → Prop} {n : Nat} {Γ : Ctx n} {Hs : List (Fm Γ)} {φ : Fm Γ}
+    (h : Ent Ax Γ Hs φ) : ∀ (extra : List (Fm Γ)), Ent Ax Γ (Hs ++ extra) φ := by
+  intro extra
+  induction extra generalizing Hs with
+  | nil => simpa using h
+  | cons a l ih =>
+    have e : Hs ++ a :: l = (Hs ++ [a]) ++ l := by simp
+    rw [e]; exact ih (Ent.weaken h)
+
+section Lifts
+variable (n0 : Nat) (Γ0 : Ctx n0)
+
+noncomputable def upd (k : Nat) : (d : Nat) → Lift (chain n0 Γ0 k) (chain n0 Γ0 (k + d))
+  | 0 => Lift.id _
+  | d + 1 => (upd k d).comp (step (chain n0 Γ0 (k + d)) (k + d)).L
+
+/-- The lift from stage `k` to any later stage `J`. -/
+noncomputable def liftL (k J : Nat) (h : k ≤ J) : Lift (chain n0 Γ0 k) (chain n0 Γ0 J) :=
+  (Nat.add_sub_cancel' h) ▸ (upd n0 Γ0 k (J - k))
+
+end Lifts
+
+section Mono
+variable {Ax : Fm Ctx.nil → Prop} {n0 : Nat} {Γ0 : Ctx n0} {φ0 : Fm Γ0}
+
+theorem decideStep_ext {n : Nat} {Γ : Ctx n} (H : List (Fm Γ)) (o : Option (Nat × Nat)) :
+    ∃ extra, decideStep Ax H o = H ++ extra := by
+  unfold decideStep
+  split
+  · split
+    · exact ⟨_, rfl⟩
+    · exact ⟨_, rfl⟩
+  · exact ⟨[], (List.append_nil _).symm⟩
+
+theorem theory_step {k : Nat} {φ : Fm (chain n0 Γ0 k).Γ} (h : Ent Ax _ (theory Ax φ0 k) φ) :
+    Ent Ax _ (theory Ax φ0 (k + 1)) (liftF (step (chain n0 Γ0 k) k).L φ) := by
+  obtain ⟨extra, e⟩ := decideStep_ext (Ax := Ax)
+    ((theory Ax φ0 k).map (liftF (step (chain n0 Γ0 k) k).L) ++ [(step (chain n0 Γ0 k) k).W]) (task k)
+  have := ent_append (ent_append (ent_lift (Ax := Ax) (step (chain n0 Γ0 k) k).L h) [(step (chain n0 Γ0 k) k).W]) extra
+  rw [← e] at this
+  exact this
+
+theorem theory_upd {k : Nat} {φ : Fm (chain n0 Γ0 k).Γ} (h : Ent Ax _ (theory Ax φ0 k) φ) :
+    ∀ d, Ent Ax _ (theory Ax φ0 (k + d)) (liftF (upd n0 Γ0 k d) φ)
+  | 0 => by
+    show Ent Ax _ (theory Ax φ0 k) (liftF (Lift.id _) φ)
+    have : liftF (Lift.id (chain n0 Γ0 k)) φ = φ := eq_of_heq (Tm.ren_id_heq φ)
+    rw [this]; exact h
+  | d + 1 => by
+    have e : (liftF (upd n0 Γ0 k (d + 1)) φ : Fm (chain n0 Γ0 (k + d + 1)).Γ) =
+        (liftF (step (chain n0 Γ0 (k + d)) (k + d)).L (liftF (upd n0 Γ0 k d) φ) : Fm (chain n0 Γ0 (k + d + 1)).Γ) :=
+      liftF_comp _ _ _
+    show Ent Ax (chain n0 Γ0 (k + d + 1)).Γ (theory Ax φ0 (k + d + 1)) (liftF (upd n0 Γ0 k (d + 1)) φ)
+    rw [e]
+    exact theory_step (theory_upd h d)
+
+theorem theory_liftL {k : Nat} {φ : Fm (chain n0 Γ0 k).Γ} (h : Ent Ax _ (theory Ax φ0 k) φ) (J : Nat) (hJ : k ≤ J) :
+    Ent Ax _ (theory Ax φ0 J) (liftF (liftL n0 Γ0 k J hJ) φ) := by
+  have key : ∀ (d j : Nat) (e : k + d = j), Ent Ax _ (theory Ax φ0 j)
+      (liftF (e ▸ upd n0 Γ0 k d : Lift (chain n0 Γ0 k) (chain n0 Γ0 j)) φ) := by
+    intro d j e; subst e; exact theory_upd h d
+  exact key _ _ _
+
+end Mono
+
 end Compl
 end PIF
