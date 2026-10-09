@@ -4,7 +4,9 @@ import PISyntax
 /-!
 # Modal and Booleanist principles
 
-Principles suggested by Bacon and Dorr, "Classicism", stated with PI's own `□φ`, that is
+Principles of necessity and grain, from Classicism (the view that provably equivalent formulas of
+classical higher-order logic express identical propositions and properties), stated with PI's own
+`□φ`, that is
 `φ ≡_t ⊤`: the T axiom, Collapse (every truth is necessary), the necessity of identity and of
 distinctness, Booleanism (tautologically equivalent propositions are identical), and the Identity
 Identity (that `x` is `y` is the proposition that `y` has every property `x` has).

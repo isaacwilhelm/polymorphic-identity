@@ -102,10 +102,10 @@ const principles = [
     tex: String.raw`\TA\alpha\,\TA\beta\,\big((\Box(\alpha\sqsubseteq\beta)\wedge\Box(\beta\sqsubseteq\alpha))\rightarrow\alpha\approx\beta\big)`,
     gloss: "Intensional individuation of types (□φ abbreviates φ ≡ₜ ⊤). In every model of PI used here, □φ holds just in case φ does, so Int≈ and Ext≈ agree in them; whether PI + Int≈ proves Ext≈ is open." },
 
-  // ---------------------------------------------------------------- necessity and grain (Bacon and Dorr, "Classicism")
+  // ---------------------------------------------------------------- necessity and grain
   { id: "TAx", lean: "TAx", tag: "T", group: "Necessity and grain",
     tex: String.raw`\forall_{t}p\,(\Box p\rightarrow p)`,
-    gloss: "What is necessary is true, where □p abbreviates p ≡ₜ ⊤. From Bacon and Dorr, 'Classicism'." },
+    gloss: "What is necessary is true, where □p abbreviates p ≡ₜ ⊤." },
   { id: "Collapse", lean: "Collapse", tag: "Collapse", group: "Necessity and grain",
     tex: String.raw`\forall_{t}p\,(p\rightarrow\Box p)`,
     gloss: "Every truth is necessary: every true proposition is identical to ⊤." },
@@ -120,10 +120,10 @@ const principles = [
     gloss: "Necessity of distinctness, for types." },
   { id: "Bool", lean: "BoolSch", tag: "Bool", group: "Necessity and grain",
     tex: String.raw`\forall_{t}p_{1}\cdots\forall_{t}p_{k}\,\big(P(\vec p)\equiv_{t}Q(\vec p)\big)`,
-    gloss: "Booleanism (schema): whenever P ↔ Q is a tautology, the propositions P(p⃗) and Q(p⃗) are identical; for example, ¬¬p ≡ₜ p. From Bacon and Dorr, 'Classicism'." },
+    gloss: "Booleanism (schema): whenever P ↔ Q is a tautology, the propositions P(p⃗) and Q(p⃗) are identical; for example, ¬¬p ≡ₜ p." },
   { id: "IdId", lean: "IdId", tag: "IdId", group: "Necessity and grain",
     tex: String.raw`\TA\alpha\,\forall_{\alpha}x\,\forall_{\alpha}y\,\big((x\equiv_{\alpha}y)\equiv_{t}\forall_{\alpha\to t}F\,(Fx\rightarrow Fy)\big)`,
-    gloss: "The Identity Identity: that x is y is the proposition that y has every property x has. Bacon and Dorr's version, with → in place of ↔." },
+    gloss: "The Identity Identity: that x is y is the proposition that y has every property x has." },
 ];
 
 // The identity axioms of PI^- (always assumed), shown for reference.
@@ -154,7 +154,7 @@ const rules = [
   { from: ["Collapse", "Int"], to: "Ext", src: "observed", added: true, lean: "d_ExtT_of_Collapse", note: "Collapse turns α ⊑ β and β ⊑ α into □(α ⊑ β) and □(β ⊑ α); then Int≈ applies. This generalizes PropExt≡ + Int≈ ⊢ Ext≈." },
   { from: ["TAx", "Ext"], to: "Int", src: "observed", added: true, lean: "d_IntT_of_TAx", note: "T turns □(α ⊑ β) and □(β ⊑ α) into α ⊑ β and β ⊑ α; then Ext≈ applies." },
   { from: ["Collapse", "Bool", "LLeq"], to: "PropExt", src: "observed", added: true, lean: "d_PropExt_of_Collapse",
-    note: "Suppose p ↔ q. If p, Collapse gives p ≡ ⊤ ≡ q. If ¬p, Collapse gives ¬p ≡ ⊤ ≡ ¬q; LL≡, with F := λr.(p ≡ ¬r), turns p ≡ ¬¬p into p ≡ ¬¬q; and ¬¬q ≡ q. Only the instance ¬¬p ≡ p of Booleanism is used. So, given PI, PropExt≡ is exactly Collapse plus (enough of) Booleanism, much as Bacon and Dorr's Fregean Axiom adds to Classicism." },
+    note: "Suppose p ↔ q. If p, Collapse gives p ≡ ⊤ ≡ q. If ¬p, Collapse gives ¬p ≡ ⊤ ≡ ¬q; LL≡, with F := λr.(p ≡ ¬r), turns p ≡ ¬¬p into p ≡ ¬¬q; and ¬¬q ≡ q. Only the instance ¬¬p ≡ p of Booleanism is used. So, given PI, PropExt≡ is exactly Collapse plus (enough of) Booleanism." },
   { from: ["IdId", "Truth"], to: "LLeq", src: "observed", added: true, lean: "d_LLEqv_of_IdId", note: "If x ≡ y, the Identity Identity says x ≡ y is the proposition ∀F(Fx → Fy), and Truth makes that proposition true." },
   { from: ["PropExt", "LLeq"], to: "IdId", src: "observed", added: true, lean: "d_IdId_of_PropExt", note: "LL≡ gives x ≡ y → ∀F(Fx → Fy); F := λz.(x ≡ z) and Ref≡ give the converse; PropExt≡ turns the biconditional into an identity." },
   { from: ["PropExt", "TopBot"], to: "Truth", src: "observed", added: true, lean: "d_Truth_of_PropExt", note: "If p ≡ q, p and ¬q, then PropExt≡ gives p ≡ ⊤ and q ≡ ⊥, so ⊤ ≡ ⊥." },
@@ -723,8 +723,8 @@ const models = [
 
 // Results which do not fit the graph (they concern other languages, or are about expressibility).
 const otherResults = [
-  { title: "Necessity, Booleanism, and the Identity Identity (principles from Bacon and Dorr, 'Classicism'; observed while building this site; checked in Lean)", src: "observed ◆",
-    text: "PI's □φ, that is φ ≡ₜ ⊤, is Bacon and Dorr's 'broad necessity', so their principles can be stated in PI as they stand. PropExt≡ is their Fregean Axiom. Given PI, PropExt≡ is equivalent to Collapse (every truth is necessary) together with Booleanism; in fact the single instance ¬¬p ≡ p suffices (Lean: d_PropExt_of_Collapse, d_Collapse_of_PropExt, d_Bool_of_PropExt). Collapse plus Int≈ proves Ext≈, and T plus Ext≈ proves Int≈, so Int≈ and Ext≈ differ only by modal principles. The countermodels use a new semantics (lean/PIWorlds.lean) in which propositions are sets of worlds and identity can vary from world to world; PI is sound for it. One consequence: PI⁻ does not prove □(α ≈ α), since NI≈ fails in 𝔐_ni while LL≈ holds there, and LL≈ with □(α ≈ α) gives NI≈. Open: does PI + Collapse prove PropExt≡ (equivalently, given the derivation above, Booleanism)? Does the Identity Identity prove NI≡, or Booleanism? And how do Twin and Haecceitism bear on the modal principles?" },
+  { title: "Necessity, Booleanism, and the Identity Identity (observed while building this site; checked in Lean)", src: "observed ◆",
+    text: "These principles come from Classicism, the view that whenever two formulas are provably equivalent in classical higher-order logic, the properties (or propositions) they express are identical. In PI, □φ abbreviates φ ≡ₜ ⊤, so the modal principles can be stated directly. Given PI, PropExt≡ is equivalent to Collapse (every truth is necessary) together with Booleanism; in fact the single instance ¬¬p ≡ p suffices (Lean: d_PropExt_of_Collapse, d_Collapse_of_PropExt, d_Bool_of_PropExt). Collapse plus Int≈ proves Ext≈, and T plus Ext≈ proves Int≈, so Int≈ and Ext≈ differ only by modal principles. The countermodels use a new semantics (lean/PIWorlds.lean) in which propositions are sets of worlds and identity can vary from world to world; PI is sound for it. One consequence: PI⁻ does not prove □(α ≈ α), since NI≈ fails in 𝔐_ni while LL≈ holds there, and LL≈ with □(α ≈ α) gives NI≈. Open: does PI + Collapse prove PropExt≡ (equivalently, given the derivation above, Booleanism)? Does the Identity Identity prove NI≡, or Booleanism? And how do Twin and Haecceitism bear on the modal principles?" },
   { title: "Identity of indiscernibles, and uniqueness of counterparts (observed while building this site; checked in Lean)", src: "observed ◆",
     text: "Two further principles turn out not to be new. Identity of indiscernibles, 𝔸α∀x∀y(∀F(Fx → Fy) → x ≡ y), is a theorem of PI⁻: take F := λz.(x ≡ z); Fx holds by Ref≡, so Fy, which is x ≡ y (Lean: d_PII). Uniqueness of counterparts, 𝔸α𝔸β∀x∀y∀y′((x ≡ y ∧ x ≡ y′) → ∀F(Fy → Fy′)), is equivalent to LL≡ given PI⁻: its instance with β := α and y := x is LL≡ (Lean: d_LLEqv_of_Uniq); conversely, Sym≡ and Trans≡ give y ≡ y′, and then LL≡ applies (Lean: d_Uniq_of_LLEqv)." },
   { title: "The open questions (observed while building this site; not checked in Lean)", src: "observed ◆",

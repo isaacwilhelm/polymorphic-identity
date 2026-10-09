@@ -2,7 +2,7 @@
 window.LEANINDEX = {
  "BoolSch": [
   "PIModal.lean",
-  62
+  64
  ],
  "Bridge": [
   "PIFoundation.lean",
@@ -14,7 +14,7 @@ window.LEANINDEX = {
  ],
  "Collapse": [
   "PIModal.lean",
-  21
+  23
  ],
  "Cong": [
   "PIFoundation.lean",
@@ -114,7 +114,7 @@ window.LEANINDEX = {
  ],
  "IdId": [
   "PIModal.lean",
-  35
+  37
  ],
  "Inj": [
   "PIFoundation.lean",
@@ -1242,15 +1242,15 @@ window.LEANINDEX = {
  ],
  "NDTeq": [
   "PIModal.lean",
-  32
+  34
  ],
  "NIEqv": [
   "PIModal.lean",
-  24
+  26
  ],
  "NITeq": [
   "PIModal.lean",
-  29
+  31
  ],
  "PCong": [
   "PIFoundation.lean",
@@ -1278,7 +1278,7 @@ window.LEANINDEX = {
  ],
  "TAx": [
   "PIModal.lean",
-  18
+  20
  ],
  "Tg.Mht_Hae": [
   "PINew.lean",
@@ -1722,7 +1722,7 @@ window.LEANINDEX = {
  ],
  "d_Bool_of_PropExt": [
   "PIModal.lean",
-  201
+  203
  ],
  "d_Bridge": [
   "PISchemas.lean",
@@ -1734,11 +1734,11 @@ window.LEANINDEX = {
  ],
  "d_Collapse_of_PropExt": [
   "PIModal.lean",
-  96
+  98
  ],
  "d_ExtT_of_Collapse": [
   "PIModal.lean",
-  130
+  132
  ],
  "d_ExtT_of_PropExt": [
   "PINew.lean",
@@ -1746,15 +1746,15 @@ window.LEANINDEX = {
  ],
  "d_IdId_of_PropExt": [
   "PIModal.lean",
-  171
+  173
  ],
  "d_IntT_of_TAx": [
   "PIModal.lean",
-  145
+  147
  ],
  "d_LLEqv_of_IdId": [
   "PIModal.lean",
-  161
+  163
  ],
  "d_LLPoly_of_Disjoint": [
   "PISchemas.lean",
@@ -1762,27 +1762,27 @@ window.LEANINDEX = {
  ],
  "d_NDTeq_of_Collapse": [
   "PIModal.lean",
-  123
+  125
  ],
  "d_NIEqv_of_Collapse": [
   "PIModal.lean",
-  109
+  111
  ],
  "d_NITeq_of_Collapse": [
   "PIModal.lean",
-  116
+  118
  ],
  "d_PropExt_of_Collapse": [
   "PIModal.lean",
-  267
+  269
  ],
  "d_TAx_of_Truth": [
   "PIModal.lean",
-  85
+  87
  ],
  "d_TopBot_of_TAx": [
   "PIModal.lean",
-  278
+  280
  ],
  "d_TopBot_of_Truth": [
   "PIExplore.lean",
