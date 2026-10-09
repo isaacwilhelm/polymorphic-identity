@@ -609,11 +609,21 @@ theorem eval_all_snd {n : Nat} {Γ : Ctx n} (σ : Ty n) (φ : Fm (.ext Γ σ)) (
 
 end Frame
 
-def univI : Univ := { E := Unit, Base := Unit, B := fun _ => Unit, neE := ⟨()⟩, neB := fun _ => ⟨()⟩ }
+/-- The duplicate types: `true` for a copy of `e`, `false` for a copy of `t`. -/
+def BI : Bool → Type
+  | true => Unit
+  | false => TV
 
-/-- `d` is sent to `e`. -/
-def kI : Code Unit → Code Unit
-  | .base _ => .e
+theorem BI_ne : ∀ b, Nonempty (BI b)
+  | true => ⟨(show Unit from ())⟩
+  | false => ⟨(show TV from (True, true))⟩
+
+def univI : Univ := { E := Unit, Base := Bool, B := BI, neE := ⟨()⟩, neB := BI_ne }
+
+/-- The duplicates are sent to `e` and `t`. -/
+def kI : Code Bool → Code Bool
+  | .base true => .e
+  | .base false => .t
   | .arr a c => .arr (kI a) (kI c)
   | c => c
 
@@ -654,9 +664,9 @@ theorem Mi_LLEqv : MiF.Valid LLEqv := by
   exact hGx
 
 theorem Mi_not_ExtT : ¬ MiF.Valid ExtT := fun h => by
-  have := h (fun i => i.elim0) () .e (.base ())
+  have := h (fun i => i.elim0) () .e (.base true)
   have hc : MiF.Holds (Tm.conj (subT (Γ := (Ctx.nil.text).text)) supT)
-      (scons (Code.base ()) (scons .e (fun i => i.elim0))) () := by
+      (scons (Code.base true) (scons .e (fun i => i.elim0))) () := by
     refine (MiF.holds_conj _ _ _ _).mpr ⟨?_, ?_⟩
     · refine (MiF.holds_all _ _ _ _).mpr fun x => (MiF.holds_ex _ _ _ _).mpr ⟨(), ?_⟩
       refine (MiF.holds_eqv _ _ _ _ _ _).mpr ⟨rfl, ?_⟩

@@ -96,6 +96,10 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   1735
  ],
+ "Frame.PropExt_valid": [
+  "PINew.lean",
+  47
+ ],
  "Hae": [
   "PIFoundation.lean",
   1695
@@ -148,6 +152,10 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2073
  ],
+ "M0_PExt": [
+  "PINew.lean",
+  190
+ ],
  "M0_Slogan": [
   "PIFoundation.lean",
   2080
@@ -187,6 +195,10 @@ window.LEANINDEX = {
  "M0e_LLPoly": [
   "PIFoundation.lean",
   2111
+ ],
+ "M0e_PExt": [
+  "PINew.lean",
+  191
  ],
  "M0e_model": [
   "PIFoundation.lean",
@@ -287,6 +299,10 @@ window.LEANINDEX = {
  "MD_not_PCong": [
   "PIExplore.lean",
   127
+ ],
+ "MD_not_PExt": [
+  "PINew.lean",
+  210
  ],
  "MD_not_Twin": [
   "PIExplore.lean",
@@ -452,6 +468,10 @@ window.LEANINDEX = {
   "PIExplore.lean",
   177
  ],
+ "Mall_PExt": [
+  "PINew.lean",
+  246
+ ],
  "Mall_Twin": [
   "PIExplore.lean",
   179
@@ -499,6 +519,38 @@ window.LEANINDEX = {
  "Mall_not_Truth": [
   "PIExplore.lean",
   183
+ ],
+ "Mbt_Cong": [
+  "PINew.lean",
+  303
+ ],
+ "Mbt_ExtT": [
+  "PINew.lean",
+  337
+ ],
+ "Mbt_Inj": [
+  "PINew.lean",
+  287
+ ],
+ "Mbt_IntT": [
+  "PINew.lean",
+  352
+ ],
+ "Mbt_LLEqv": [
+  "PINew.lean",
+  302
+ ],
+ "Mbt_Slogan": [
+  "PINew.lean",
+  322
+ ],
+ "Mbt_model": [
+  "PINew.lean",
+  286
+ ],
+ "Mbt_not_PExt": [
+  "PINew.lean",
+  315
  ],
  "Mcan_Inj": [
   "PIExplore.lean",
@@ -583,6 +635,10 @@ window.LEANINDEX = {
  "Mcard_LLPoly": [
   "PIFoundation.lean",
   2213
+ ],
+ "Mcard_PExt": [
+  "PINew.lean",
+  193
  ],
  "Mcard_Recovery": [
   "PIFoundation.lean",
@@ -671,6 +727,10 @@ window.LEANINDEX = {
  "Mfn_LLPoly": [
   "PIFoundation.lean",
   2496
+ ],
+ "Mfn_PExt": [
+  "PINew.lean",
+  249
  ],
  "Mfn_Slogan": [
   "PIExplore.lean",
@@ -848,6 +908,10 @@ window.LEANINDEX = {
   "PIHae.lean",
   229
  ],
+ "Mhp_not_PExt": [
+  "PINew.lean",
+  254
+ ],
  "Mk_Disjoint": [
   "PIFoundation.lean",
   2704
@@ -867,6 +931,10 @@ window.LEANINDEX = {
  "Mk_LLPoly": [
   "PIFoundation.lean",
   2154
+ ],
+ "Mk_PExt": [
+  "PINew.lean",
+  192
  ],
  "Mk_Slogan": [
   "PIFoundation.lean",
@@ -912,6 +980,10 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2352
  ],
+ "Mp_not_PExt": [
+  "PINew.lean",
+  201
+ ],
  "Mr_Cong": [
   "PIFoundation.lean",
   2251
@@ -919,6 +991,10 @@ window.LEANINDEX = {
  "Mr_LLEqv": [
   "PIFoundation.lean",
   2250
+ ],
+ "Mr_PExt": [
+  "PINew.lean",
+  194
  ],
  "Mr_model": [
   "PIFoundation.lean",
@@ -948,6 +1024,10 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2845
  ],
+ "Mrec_PExt": [
+  "PINew.lean",
+  196
+ ],
  "Mrec_Slogan": [
   "PIFoundation.lean",
   2855
@@ -971,6 +1051,10 @@ window.LEANINDEX = {
  "Mt2_LLEqv": [
   "PIFoundation.lean",
   3016
+ ],
+ "Mt2_PExt": [
+  "PINew.lean",
+  197
  ],
  "Mt2_Twin": [
   "PIFoundation.lean",
@@ -1016,6 +1100,10 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2469
  ],
+ "Mtot_PExt": [
+  "PINew.lean",
+  247
+ ],
  "Mtot_Slogan": [
   "PIExplore.lean",
   146
@@ -1060,6 +1148,10 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   2787
  ],
+ "Mtw_PExt": [
+  "PINew.lean",
+  195
+ ],
  "Mtw_Slogan": [
   "PIFoundation.lean",
   2795
@@ -1092,6 +1184,14 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   1713
  ],
+ "PExt": [
+  "PINew.lean",
+  34
+ ],
+ "PropExt": [
+  "PINew.lean",
+  16
+ ],
  "Recovery": [
   "PIFoundation.lean",
   1721
@@ -1104,49 +1204,117 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   1678
  ],
+ "Tg.Mi_Cong": [
+  "PINew.lean",
+  420
+ ],
+ "Tg.Mi_Inj": [
+  "PINew.lean",
+  418
+ ],
  "Tg.Mi_IntT": [
   "PITagged.lean",
-  670
+  680
  ],
  "Tg.Mi_LLEqv": [
   "PITagged.lean",
-  647
+  657
+ ],
+ "Tg.Mi_PExt": [
+  "PINew.lean",
+  423
+ ],
+ "Tg.Mi_Slogan": [
+  "PINew.lean",
+  417
+ ],
+ "Tg.Mi_Twin": [
+  "PINew.lean",
+  415
  ],
  "Tg.Mi_model": [
   "PITagged.lean",
-  626
+  636
  ],
  "Tg.Mi_not_ExtT": [
   "PITagged.lean",
-  656
+  666
+ ],
+ "Tg.Mi_not_PropExt": [
+  "PINew.lean",
+  220
  ],
  "Tg.Mit_IntT": [
   "PITagged.lean",
-  805
+  815
  ],
  "Tg.Mit_model": [
   "PITagged.lean",
-  784
+  794
+ ],
+ "Tg.Mit_not_PropExt": [
+  "PINew.lean",
+  231
  ],
  "Tg.Mit_not_TopBot": [
   "PITagged.lean",
-  787
+  797
  ],
  "Tg.Mit_not_Truth": [
   "PITagged.lean",
-  790
+  800
  ],
  "Tg.Mtb_TopBot": [
   "PITagged.lean",
-  756
+  766
  ],
  "Tg.Mtb_model": [
   "PITagged.lean",
-  753
+  763
+ ],
+ "Tg.Mtb_not_PropExt": [
+  "PINew.lean",
+  225
  ],
  "Tg.Mtb_not_Truth": [
   "PITagged.lean",
-  764
+  774
+ ],
+ "Tg.Mz_Cong": [
+  "PINew.lean",
+  464
+ ],
+ "Tg.Mz_Disjoint": [
+  "PINew.lean",
+  448
+ ],
+ "Tg.Mz_ExtT": [
+  "PINew.lean",
+  449
+ ],
+ "Tg.Mz_IntT": [
+  "PINew.lean",
+  451
+ ],
+ "Tg.Mz_LLEqv": [
+  "PINew.lean",
+  439
+ ],
+ "Tg.Mz_PExt": [
+  "PINew.lean",
+  468
+ ],
+ "Tg.Mz_Slogan": [
+  "PINew.lean",
+  463
+ ],
+ "Tg.Mz_model": [
+  "PINew.lean",
+  435
+ ],
+ "Tg.Mz_not_PropExt": [
+  "PINew.lean",
+  459
  ],
  "TopBot": [
   "PIFoundation.lean",
@@ -1176,6 +1344,10 @@ window.LEANINDEX = {
   "PISchemas.lean",
   226
  ],
+ "d_ExtT_of_PropExt": [
+  "PINew.lean",
+  156
+ ],
  "d_LLPoly_of_Disjoint": [
   "PISchemas.lean",
   208
@@ -1183,6 +1355,10 @@ window.LEANINDEX = {
  "d_TopBot_of_Truth": [
   "PIExplore.lean",
   290
+ ],
+ "d_Truth_of_PropExt": [
+  "PINew.lean",
+  124
  ],
  "d_WCong_of_Cong": [
   "PIExplore.lean",

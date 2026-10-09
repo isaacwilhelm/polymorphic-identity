@@ -23,3 +23,6 @@ lean_lib PITagged
 
 @[default_target]
 lean_lib PIBridge
+
+@[default_target]
+lean_lib PINew
