@@ -62,3 +62,9 @@ lean_lib PIAlgI
 
 @[default_target]
 lean_lib PIAlgIModels
+
+@[default_target]
+lean_lib PIBarcan
+
+@[default_target]
+lean_lib PIBarcanModels
