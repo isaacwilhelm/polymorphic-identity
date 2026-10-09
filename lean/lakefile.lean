@@ -29,3 +29,6 @@ lean_lib PINew
 
 @[default_target]
 lean_lib PINF
+
+@[default_target]
+lean_lib PIGeneral
