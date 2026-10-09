@@ -732,6 +732,88 @@ theorem tr_Inj : F.Tr Inj ↔ ∀ a b c d, F.teq (.arr a c) (.arr b d) F.U.w0 �
 
 end Frame
 
+/-! ## Soundness at every world -/
+
+namespace Frame
+variable (F : Frame)
+
+/-- Truth at every world, under every valuation. -/
+def ValidAt {n : Nat} {Γ : Ctx n} (φ : Fm Γ) : Prop := ∀ w ρ env, F.HoldsAt φ ρ env w
+
+/-- The identity axioms of PI⁻ hold at every world. -/
+structure IsModelAt : Prop where
+  refEqv : F.ValidAt RefEqv
+  symEqv : F.ValidAt SymEqv
+  transEqv : F.ValidAt TransEqv
+  refTeq : F.ValidAt RefTeq
+  llTeq : ∀ {n : Nat} {Γ : Ctx n} (Q : Tm Γ (.pi .t)), F.ValidAt (LLTeq Q)
+
+theorem holdsAt_of_heq {n m : Nat} {Γ : Ctx n} {Δ : Ctx m} {φ : Fm Γ} {ψ : Fm Δ} {ρ : F.U.TEnv n}
+    {ρ' : F.U.TEnv m} {env : F.U.Env Γ ρ} {env' : F.U.Env Δ ρ'} (h : HEq (F.eval φ ρ env) (F.eval ψ ρ' env')) (w : F.U.W) :
+    F.HoldsAt φ ρ env w = F.HoldsAt ψ ρ' env' w :=
+  congrArg (fun f : F.U.CatVal Cat.t ρ => F.U.ap f w) (eq_of_heq h)
+
+/-- **Soundness at every world.** -/
+theorem soundnessAt {Ax : Fm Ctx.nil → Prop} (hM : F.IsModelAt) (hAx : ∀ φ, Ax φ → F.ValidAt φ)
+    {n : Nat} {Γ : Ctx n} {φ : Fm Γ} (h : Prov Ax Γ φ) : F.ValidAt φ := by
+  induction h with
+  | taut P as hP => intro w ρ env; exact (F.holdsAt_inst P as ρ env w).mpr (hP _)
+  | instAll σ φ κ =>
+    intro w ρ env
+    refine (F.holdsAt_imp _ _ ρ env w).mpr fun h => ?_
+    exact (F.holdsAt_of_heq (heq_of_eq (F.eval_subst0 φ κ ρ env)) w).mpr ((F.holdsAt_all σ φ ρ env w).mp h _)
+  | distAll σ φ ψ =>
+    intro w ρ env
+    refine (F.holdsAt_imp _ _ ρ env w).mpr fun h => (F.holdsAt_imp _ _ ρ env w).mpr fun hφ => ?_
+    refine (F.holdsAt_all σ ψ ρ env w).mpr fun v => ?_
+    have h' := (F.holdsAt_imp _ _ _ _ w).mp ((F.holdsAt_all σ _ ρ env w).mp h v)
+    exact h' ((F.holdsAt_of_heq (heq_of_eq (F.eval_wk σ φ ρ env v)) w).mpr hφ)
+  | dualEx σ φ =>
+    intro w ρ env
+    show F.HoldsAt (Tm.ex σ φ) ρ env w ↔ ¬ F.HoldsAt (Tm.all σ φ.neg) ρ env w
+    refine (F.holdsAt_ex σ φ ρ env w).trans ?_
+    refine Iff.trans ?_ (not_congr (F.holdsAt_all σ φ.neg ρ env w)).symm
+    constructor
+    · rintro ⟨v, hv⟩ h; exact h v hv
+    · intro h; exact Classical.byContradiction fun hn => h fun v hv => hn ⟨v, hv⟩
+  | instTAll φ σ =>
+    intro w ρ env
+    refine (F.holdsAt_imp _ _ ρ env w).mpr fun h => ?_
+    exact cast (F.holdsAt_of_heq (F.eval_tinst φ σ ρ env) w).symm (h (F.U.code σ.1 ρ))
+  | distTAll φ ψ =>
+    intro w ρ env
+    refine (F.holdsAt_imp _ _ ρ env w).mpr fun h => (F.holdsAt_imp _ _ ρ env w).mpr fun hφ a => ?_
+    exact h a (cast (F.holdsAt_of_heq (F.eval_twk φ a ρ env) w).symm hφ)
+  | dualTEx φ =>
+    intro w ρ env
+    show (∃ a, F.HoldsAt φ (scons a ρ) env w) ↔ ¬ ∀ a, ¬ F.HoldsAt φ (scons a ρ) env w
+    constructor
+    · rintro ⟨a, ha⟩ h; exact h a ha
+    · intro h; exact Classical.byContradiction fun hn => h fun a ha => hn ⟨a, ha⟩
+  | beta h => intro w ρ env; exact Iff.of_eq (F.holdsAt_of_heq (heq_of_eq (F.eval_betaEq h ρ env)) w)
+  | refEqv => exact hM.refEqv
+  | symEqv => exact hM.symEqv
+  | transEqv => exact hM.transEqv
+  | refTeq => exact hM.refTeq
+  | llTeq Q => exact hM.llTeq Q
+  | ax h => exact hAx _ h
+  | mp _ _ ih1 ih2 => intro w ρ env; exact (F.holdsAt_imp _ _ ρ env w).mp (ih2 w ρ env) (ih1 w ρ env)
+  | genAll σ _ ih => intro w ρ env; exact (F.holdsAt_all σ _ ρ env w).mpr fun v => ih w ρ (env, v)
+  | genTAll _ ih => intro w ρ env a; exact ih w (scons a ρ) env
+  | ren ρr _ ih =>
+    intro w ρ' env'
+    exact cast (F.holdsAt_of_heq (F.eval_ren _ ρr ρ' env' _ (F.pullEnv _ ρr ρ' env') (fun _ => rfl)
+      (fun x => F.lookup_pull x ρr ρ' env')) w).symm (ih _ _ _)
+  | strengthen σ _ ih =>
+    intro w ρ env
+    have v := Classical.choice (Univ.CatVal_nonempty σ.1 ρ)
+    exact (F.holdsAt_of_heq (heq_of_eq (F.eval_wk σ _ ρ env v)) w).mp (ih w ρ (env, v))
+  | tstrengthen _ ih =>
+    intro w ρ env
+    exact cast (F.holdsAt_of_heq (F.eval_twk _ .e ρ env) w) (ih w (scons .e ρ) env)
+
+end Frame
+
 /-! ## Models with rigid or contingent identity -/
 
 abbrev univW (W : Type) (w0 : W) : Univ :=

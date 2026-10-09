@@ -68,3 +68,6 @@ lean_lib PIBarcan
 
 @[default_target]
 lean_lib PIBarcanModels
+
+@[default_target]
+lean_lib PIClass
