@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
-<link rel="stylesheet" href="style.css?v=20261016f">
+<link rel="stylesheet" href="style.css?v=20261016h">
 </head>
 <body>
 <header>
@@ -33,17 +33,19 @@
       <aside class="side">
         <div class="logic" role="group" aria-label="Base logic">
           <span>Base logic</span>
-          <button data-logic="PIC" aria-pressed="false" title="PI + Classicism">PIᶜ</button>
-          <button data-logic="PI" aria-pressed="true">PI</button>
-          <button data-logic="PI-" aria-pressed="false">PI⁻</button>
-          <button id="showlogic" class="showlogic" type="button">Axioms and rules common to all three</button>
-          <button id="togglethms" class="thmtoggle" type="button" aria-pressed="false">Show the theorems in the graph</button>
+          <div class="lbtns">
+            <button data-logic="PIC" aria-pressed="false" title="PI + Classicism">PIᶜ</button>
+            <button data-logic="PI" aria-pressed="true" title="PI⁻ + LL≡">PI</button>
+            <button data-logic="PI-" aria-pressed="false" title="The weakest of the three logics">PI⁻</button>
+          </div>
+          <button id="showlogic" class="showlogic" type="button" title="The axioms and rules common to PI⁻, PI and PIᶜ">Shared axioms and rules</button>
+          <button id="togglethms" class="thmtoggle" type="button" aria-pressed="false" title="Also show, in the graph, the principles that the base logic proves outright">Show theorems of PI</button>
         </div>
-        <label class="sortsel">Arrange by
+        <label class="sortsel" title="How to arrange the list of principles below">Group by
           <select id="sortmode">
-            <option value="subject">subject: propositions, items, types, functions</option>
-            <option value="topic">theme: Leibniz's law, congruence, haecceitism…</option>
-            <option value="dims">largely independent dimensions</option>
+            <option value="subject" title="Propositions; items, within and across types; types; functions">subject</option>
+            <option value="topic" title="Leibniz's law, congruence, haecceitism, and so on">theme</option>
+            <option value="dims" title="Grain of propositions and necessity; identity across types; identity of types; functions">independent dimensions</option>
           </select>
         </label>
         <div id="checklist"></div>
@@ -110,8 +112,8 @@
 
 <footer class="wrap">Isaac Wilhelm · Polymorphic identity: derivations, models, and Lean proofs.</footer>
 
-<script src="data.js?v=20261016f"></script>
-<script src="lean-index.js?v=20261016f"></script>
-<script defer src="app.js?v=20261016f"></script>
+<script src="data.js?v=20261016h"></script>
+<script src="lean-index.js?v=20261016h"></script>
+<script defer src="app.js?v=20261016h"></script>
 </body>
 </html>

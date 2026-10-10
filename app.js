@@ -493,7 +493,7 @@
     const lc = document.createElement("div");
     lc.className = "details logiccard";
     lc.innerHTML = (state.opened.length ? "" : `<div class="hint">Click any principle (in the list or the graph) to see its statement and <em>why</em> it has the status shown: the derivation, or the model that shows it does not follow. Each principle you click on gets its own box here.</div>`) +
-      `<div class="dhead"><h3>The axioms of ${logicName()}</h3><button class="linkbtn" type="button">Axioms and rules common to all three logics</button></div>` +
+      `<div class="dhead"><h3>The axioms of ${logicName()}</h3><button class="linkbtn" type="button">Shared axioms and rules</button></div>` +
       identityHTML(state.logic);
     lc.querySelector(".linkbtn").addEventListener("click", openCommon);
     box.appendChild(lc);
@@ -682,7 +682,12 @@
       <marker id="sarr-strict" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="sm strict"/></marker>
       <marker id="sarr-unk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="sm unk"/></marker></defs>${svgEdges}${svgNodes}</svg></div><div id="sdetails" class="details"></div>`;
     box.querySelectorAll(".sn").forEach(g => {
-      const go = () => { const k = g.dataset.k; strengthFocus = k === "base" ? null : cls[+k][0]; renderStrength(); };
+      const go = () => {
+        const k = g.dataset.k; strengthFocus = k === "base" ? null : cls[+k][0]; renderStrength();
+        // bring the statement below the graph into view
+        const d = $("#sdetails"), r = d.getBoundingClientRect();
+        if (strengthFocus && r.top > window.innerHeight - 120) d.scrollIntoView({ behavior: "smooth", block: "start" });
+      };
       g.addEventListener("click", go);
       g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
     });
@@ -732,8 +737,10 @@
       }
     });
     const sec = (t, l) => l.length ? `<h4>${t}</h4><ul class="clist">${l.join("")}</ul>` : "";
+    // the statement of each principle in the box
+    const fm = me.map(id => { const p = P[id]; return `<div class="sformula">${me.length > 1 ? `<div class="stag">${p.tag}</div>` : ""}<div class="formula">${tex(p.tex, true)}</div><p class="gloss">${p.gloss} ${p.lean ? leanBadge(p.lean, "Lean definition") : ""}</p></div>`; }).join("");
     box.innerHTML = `<div class="dhead"><h3>${me.map(tag).join(" ⟺ ")}</h3><span class="dgroup">given ${baseLabel()}</span></div>
-      ${me.length > 1 ? `<p>These are equivalent given the base.</p>` : ""}
+      ${fm}${me.length > 1 ? `<p>These are equivalent given the base.</p>` : ""}
       ${sec("Implied by", aboveL)}${sec("Implies", below)}${sec("Incomparable or inconsistent", incomp)}${sec("Partly unsettled", unknown)}`;
   }
 
@@ -791,7 +798,7 @@
   function syncThmToggle() {
     const b = $("#togglethms");
     b.setAttribute("aria-pressed", state.showThms);
-    b.textContent = (state.showThms ? "Hide" : "Show") + " the theorems of " + logicName() + " in the graph";
+    b.textContent = (state.showThms ? "Hide" : "Show") + " theorems of " + logicName();
   }
   function openCommon() { $("#logicbody").innerHTML = commonHTML(); $("#logicdlg").showModal(); }
 
