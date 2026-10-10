@@ -155,3 +155,9 @@ lean_lib PIOQ_DerBF
 
 @[default_target]
 lean_lib PIOQ_F3c
+
+@[default_target]
+lean_lib PIOQ_MtwNI
+
+@[default_target]
+lean_lib PIOQ_MSTc
