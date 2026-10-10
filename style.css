@@ -58,11 +58,11 @@ button:focus-visible, .node:focus-visible { outline: 2px solid var(--accent); ou
 code { font-size: 0.92em; background: var(--accent-soft); padding: 1px 4px; border-radius: 4px; }
 
 header { border-bottom: 1px solid var(--line); background: var(--panel); }
-header h1 { font: 600 26px/1.2 var(--serif); margin: 20px 0 6px; letter-spacing: -0.01em; }
+header h1 { font: 400 36px/1.2 Times, "Times New Roman", serif; margin: 18px 0 6px; }
 header .sub { margin: 0 0 12px; color: var(--muted); max-width: 80ch; }
 /* the top menu, as on isaacwilhelm.com: orange text; the current page and the one under the pointer get an orange block */
 .tabs { display: flex; gap: 0; }
-.tabs button { background: none; border: 0; border-radius: 0; padding: 10px; color: var(--menu); font: 16px/1.2 var(--serif); cursor: pointer; }
+.tabs button { background: none; border: 0; border-radius: 0; padding: 10px; color: var(--menu); font: 16px/1.2 Times, "Times New Roman", serif; cursor: pointer; }
 .tabs button:hover, .tabs button[aria-selected="true"] { background: var(--menu-on); color: #fff; }
 
 main { padding-top: 18px; padding-bottom: 30px; }
@@ -247,7 +247,7 @@ a.mv { text-decoration: none; }
   #checklist { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0 10px; }
   .group { grid-column: 1 / -1; display: contents; }
   .gname { grid-column: 1 / -1; margin-top: 10px; }
-  header h1 { font-size: 21px; }
+  header h1 { font-size: 28px; }
 }
 
 /* ---------- "show only ◆" filter ---------- */
