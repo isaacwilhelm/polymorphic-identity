@@ -913,4 +913,248 @@ theorem MclH_not_PropExt : ¬ MclHF.Valid PropExt := fun h => by
 
 end Al
 
+/-! ## Roots up to a relation
+
+A variant of roots for frames in which some distinct items are identified: given a relation `Er`
+on rooted items, the haecceity of `z` is the property of being `Er`-related to the root of `z`. -/
+
+section ERoot
+open Classical
+variable {B : Type} (El : Code B → Type) (Er : (Σ b : Code B, El b) → (Σ b : Code B, El b) → Prop)
+  (mkH : ∀ a, (El a → Prop) → El (.arr a .t))
+
+noncomputable def eroot : (a : Code B) → El a → (Σ b : Code B, El b)
+  | .arr a .t, f =>
+    if h : ∃ z, f = mkH a (fun y => Er (eroot a y) (eroot a z)) then eroot a (Classical.choose h) else ⟨.arr a .t, f⟩
+  | a, x => ⟨a, x⟩
+
+theorem eroot_t (a : Code B) (f : El (.arr a .t)) :
+    eroot El Er mkH (.arr a .t) f =
+      if h : ∃ z, f = mkH a (fun y => Er (eroot El Er mkH a y) (eroot El Er mkH a z))
+      then eroot El Er mkH a (Classical.choose h) else ⟨.arr a .t, f⟩ := by
+  rw [eroot]
+
+/-- Each item is related to the root of its haecceity. -/
+theorem eroot_hae (hr : ∀ r, Er r r) (hs : ∀ r s, Er r s → Er s r)
+    (hmk : ∀ a (P Q : El a → Prop), mkH a P = mkH a Q → ∀ y, Q y → P y) (a : Code B) (x : El a) :
+    Er (eroot El Er mkH a x) (eroot El Er mkH (.arr a .t) (mkH a (fun y => Er (eroot El Er mkH a y) (eroot El Er mkH a x)))) := by
+  rw [eroot_t]
+  split
+  · next h =>
+    have hc := Classical.choose_spec h
+    exact hs _ _ (hmk a _ _ hc (Classical.choose h) (hr _))
+  · next h => exact absurd ⟨x, rfl⟩ h
+
+end ERoot
+
+/-! ## `𝔐_T,hae` and `𝔐_⊤⊥,hae`: three propositions, in PI⁻ + Haecceitism
+
+There are three propositions `0`, `1`, `2`: `0` is true, `2` is false, and the connectives, the
+quantifiers, and `≡` and `≈`, take only these two values. Items are identified just in case they
+have the same root, except that two propositions related by `sim` are identified. In `𝔐_T,hae`,
+`1` is true and identified with `2`, so T holds and Truth fails; in `𝔐_⊤⊥,hae`, `1` is false and
+identified with `0`, so `⊤ ≢ ⊥` holds and T fails. -/
+
+namespace Al
+
+open Classical in
+noncomputable def mk3 (c : Prop) : Fin 3 := if c then 0 else 2
+
+section Three
+variable (V : Fin 3 → Prop) (hV0 : V 0) (hV2 : ¬ V 2) (sim : Fin 3 → Fin 3 → Prop)
+
+def univ3 : Univ where
+  P := Fin 3
+  V := V
+  p0 := 0
+  E := Unit
+  Base := Empty
+  B := Empty.elim
+  neE := ⟨()⟩
+  neB := fun b => b.elim
+
+include hV0 hV2 in
+theorem mk3_V (c : Prop) : V (mk3 c) ↔ c := by
+  unfold mk3
+  split
+  · next h => exact ⟨fun _ => h, fun _ => hV0⟩
+  · next h => exact ⟨fun e => absurd e hV2, fun e => absurd e h⟩
+
+theorem mk3_eq0 {c : Prop} (h : c) : mk3 c = 0 := by
+  unfold mk3; split
+  · rfl
+  · next h' => exact absurd h h'
+theorem mk3_eq2 {c : Prop} (h : ¬ c) : mk3 c = 2 := by
+  unfold mk3; split
+  · next h' => exact absurd h' h
+  · rfl
+
+/-- Rooted items are related when they are the same, or are propositions related by `sim`. -/
+def Er3 (r s : Σ b : Code Empty, (univ3 V).El b) : Prop :=
+  r = s ∨ ∃ p q : Fin 3, r = ⟨.t, p⟩ ∧ s = ⟨.t, q⟩ ∧ sim p q
+
+noncomputable def mkH3 (a : Code Empty) (P : (univ3 V).El a → Prop) : (univ3 V).El (.arr a .t) := fun y => mk3 (P y)
+
+noncomputable abbrev root3 := eroot (univ3 V).El (Er3 V sim) (mkH3 V)
+
+noncomputable def F3 : Frame where
+  U := univ3 V
+  eqv := fun a b x y => mk3 (Er3 V sim (root3 V sim a x) (root3 V sim b y))
+  teq := fun a b => mk3 (a = b)
+  neg := fun p => mk3 (¬ V p)
+  imp := fun p q => mk3 (V p → V q)
+  cnj := fun p q => mk3 (V p ∧ V q)
+  dsj := fun p q => mk3 (V p ∨ V q)
+  bic := fun p q => mk3 (V p ↔ V q)
+  all := fun _ f => mk3 (∀ x, V (f x))
+  ex := fun _ f => mk3 (∃ x, V (f x))
+  tall := fun Q => mk3 (∀ a, V (Q a))
+  tex := fun Q => mk3 (∃ a, V (Q a))
+  hneg := fun _ => mk3_V V hV0 hV2 _
+  himp := fun _ _ => mk3_V V hV0 hV2 _
+  hcnj := fun _ _ => mk3_V V hV0 hV2 _
+  hdsj := fun _ _ => mk3_V V hV0 hV2 _
+  hbic := fun _ _ => mk3_V V hV0 hV2 _
+  hall := fun _ _ => mk3_V V hV0 hV2 _
+  hex := fun _ _ => mk3_V V hV0 hV2 _
+  htall := fun _ => mk3_V V hV0 hV2 _
+  htex := fun _ => mk3_V V hV0 hV2 _
+
+variable (hsr : ∀ p, sim p p) (hss : ∀ p q, sim p q → sim q p) (hst : ∀ p q r, sim p q → sim q r → sim p r)
+
+theorem Er3_refl (r : Σ b : Code Empty, (univ3 V).El b) : Er3 V sim r r := Or.inl rfl
+
+include hss in
+theorem Er3_symm (r s : Σ b : Code Empty, (univ3 V).El b) (h : Er3 V sim r s) : Er3 V sim s r :=
+  h.elim (fun h => Or.inl h.symm) (fun ⟨p, q, h1, h2, h3⟩ => Or.inr ⟨q, p, h2, h1, hss p q h3⟩)
+
+include hst in
+theorem Er3_trans (r s u : Σ b : Code Empty, (univ3 V).El b) (h1 : Er3 V sim r s) (h2 : Er3 V sim s u) :
+    Er3 V sim r u := by
+  rcases h1 with h1 | ⟨p, q, e1, e2, hpq⟩
+  · subst h1; exact h2
+  · rcases h2 with h2 | ⟨q', u', e3, e4, hqu⟩
+    · subst h2; exact Or.inr ⟨p, q, e1, e2, hpq⟩
+    · rw [e2] at e3
+      have : q = q' := eq_of_heq (Sigma.mk.inj e3).2
+      subst this
+      exact Or.inr ⟨p, u', e1, e4, hst _ _ _ hpq hqu⟩
+
+include hss hst in
+theorem F3_model : (F3 V hV0 hV2 sim).IsModelPIm :=
+  (F3 V hV0 hV2 sim).model_of_equiv (fun _ _ => mk3_V V hV0 hV2 _)
+    (fun _ _ => (mk3_V V hV0 hV2 _).mpr (Er3_refl V sim _))
+    (fun _ _ _ _ h => (mk3_V V hV0 hV2 _).mpr (Er3_symm V sim hss _ _ ((mk3_V V hV0 hV2 _).mp h)))
+    (fun _ _ _ _ _ _ h1 h2 => (mk3_V V hV0 hV2 _).mpr
+      (Er3_trans V sim hst _ _ _ ((mk3_V V hV0 hV2 _).mp h1) ((mk3_V V hV0 hV2 _).mp h2)))
+
+include hss in
+theorem F3_Hae : (F3 V hV0 hV2 sim).Valid Hae := by
+  intro ρ env
+  refine ((F3 V hV0 hV2 sim).holds_tall _ _ _).mpr fun a => ((F3 V hV0 hV2 sim).holds_all _ _ _ _).mpr fun x => ?_
+  refine ((F3 V hV0 hV2 sim).holds_eqv _ _ _ _ _ _).mpr ((mk3_V V hV0 hV2 _).mpr ?_)
+  exact eroot_hae (univ3 V).El (Er3 V sim) (mkH3 V) (Er3_refl V sim) (Er3_symm V sim hss)
+    (fun a P Q h y hy => (mk3_V V hV0 hV2 _).mp
+      ((congrArg V (congrFun h y : mk3 (P y) = mk3 (Q y))).mpr ((mk3_V V hV0 hV2 _).mpr hy))) a x
+
+theorem F3_bot {n : Nat} {Γ : Ctx n} (ρ : (F3 V hV0 hV2 sim).U.TEnv n) (env : (F3 V hV0 hV2 sim).U.Env Γ ρ) :
+    @Eq (Fin 3) ((F3 V hV0 hV2 sim).eval (botF : Fm Γ) ρ env) 2 := by
+  have e := (F3 V hV0 hV2 sim).eval_all (Γ := Γ) tyT (.var .here) ρ env
+  rw [botF, e]
+  exact mk3_eq2 fun h => hV2 (h (2 : Fin 3))
+
+theorem F3_top {n : Nat} {Γ : Ctx n} (ρ : (F3 V hV0 hV2 sim).U.TEnv n) (env : (F3 V hV0 hV2 sim).U.Env Γ ρ) :
+    @Eq (Fin 3) ((F3 V hV0 hV2 sim).eval (topF : Fm Γ) ρ env) 0 := by
+  show mk3 (¬ V ((F3 V hV0 hV2 sim).eval (botF : Fm Γ) ρ env)) = 0
+  rw [F3_bot]
+  exact mk3_eq0 hV2
+
+/-- At type `t`, identity is `sim`. -/
+theorem F3_eqT (p q : Fin 3) (hsr : ∀ p, sim p p) :
+    (F3 V hV0 hV2 sim).U.V ((F3 V hV0 hV2 sim).eqv .t .t p q) ↔ sim p q := by
+  refine (mk3_V V hV0 hV2 _).trans ⟨fun h => ?_, fun h => Or.inr ⟨p, q, rfl, rfl, h⟩⟩
+  rcases h with h | ⟨p', q', e1, e2, h⟩
+  · have : p = q := eq_of_heq (Sigma.mk.inj h).2
+    subst this; exact hsr p
+  · have h1 : p = p' := eq_of_heq (Sigma.mk.inj e1).2
+    have h2 : q = q' := eq_of_heq (Sigma.mk.inj e2).2
+    subst h1; subst h2; exact h
+
+end Three
+
+/-- `1` is true, and identified with `2`. -/
+def VT (p : Fin 3) : Prop := p ≠ 2
+def simT (p q : Fin 3) : Prop := p = q ∨ (p ≠ 0 ∧ q ≠ 0)
+theorem VT0 : VT 0 := by unfold VT; decide
+theorem VT2 : ¬ VT 2 := by unfold VT; decide
+theorem simT_refl : ∀ p, simT p p := fun _ => Or.inl rfl
+theorem simT_symm : ∀ p q, simT p q → simT q p := fun _ _ h => h.elim (fun h => Or.inl h.symm) (fun h => Or.inr ⟨h.2, h.1⟩)
+theorem simT_trans : ∀ p q r, simT p q → simT q r → simT p r := by
+  intro p q r h1 h2
+  rcases h1 with rfl | ⟨a1, a2⟩
+  · exact h2
+  · rcases h2 with rfl | ⟨_, b2⟩
+    · exact Or.inr ⟨a1, a2⟩
+    · exact Or.inr ⟨a1, b2⟩
+
+noncomputable abbrev MTH : Frame := F3 VT VT0 VT2 simT
+theorem MTH_model : MTH.IsModelPIm := F3_model VT VT0 VT2 simT simT_symm simT_trans
+theorem MTH_Hae : MTH.Valid Hae := F3_Hae VT VT0 VT2 simT simT_symm
+
+theorem MTH_TAx : MTH.Valid TAx := by
+  intro ρ env
+  refine (MTH.holds_all _ _ _ _).mpr fun p => (MTH.holds_imp _ _ _ _).mpr fun h => ?_
+  have h1 := (F3_eqT VT VT0 VT2 simT _ _ simT_refl).mp ((MTH.holds_eqv_t _ _ _ _).mp h)
+  have et := F3_top VT VT0 VT2 simT (Γ := Ctx.nil.ext tyT) ρ (env, p)
+  rw [et] at h1
+  show VT p
+  rcases h1 with e | ⟨_, h0⟩
+  · exact (congrArg VT e).mpr VT0
+  · exact absurd rfl h0
+
+theorem MTH_not_Truth : ¬ MTH.Valid Truth := fun h => by
+  have h0 := (MTH.holds_all _ _ _ _).mp ((MTH.holds_all _ _ _ _).mp (h (fun i => i.elim0) ()) (1 : Fin 3)) (2 : Fin 3)
+  have h1 := (MTH.holds_imp _ _ _ _).mp h0 ((MTH.holds_eqv_t _ _ _ _).mpr
+    ((F3_eqT VT VT0 VT2 simT 1 2 simT_refl).mpr (Or.inr ⟨by decide, by decide⟩)))
+  exact VT2 ((MTH.holds_imp _ _ _ _).mp h1 (show VT 1 by unfold VT; decide))
+
+/-- `1` is false, and identified with `0`. -/
+def VB (p : Fin 3) : Prop := p = 0
+def simB (p q : Fin 3) : Prop := p = q ∨ (p ≠ 2 ∧ q ≠ 2)
+theorem VB0 : VB 0 := rfl
+theorem VB2 : ¬ VB 2 := by unfold VB; decide
+theorem simB_refl : ∀ p, simB p p := fun _ => Or.inl rfl
+theorem simB_symm : ∀ p q, simB p q → simB q p := fun _ _ h => h.elim (fun h => Or.inl h.symm) (fun h => Or.inr ⟨h.2, h.1⟩)
+theorem simB_trans : ∀ p q r, simB p q → simB q r → simB p r := by
+  intro p q r h1 h2
+  rcases h1 with rfl | ⟨a1, a2⟩
+  · exact h2
+  · rcases h2 with rfl | ⟨_, b2⟩
+    · exact Or.inr ⟨a1, a2⟩
+    · exact Or.inr ⟨a1, b2⟩
+
+noncomputable abbrev MBH : Frame := F3 VB VB0 VB2 simB
+theorem MBH_model : MBH.IsModelPIm := F3_model VB VB0 VB2 simB simB_symm simB_trans
+theorem MBH_Hae : MBH.Valid Hae := F3_Hae VB VB0 VB2 simB simB_symm
+
+theorem MBH_TopBot : MBH.Valid TopBot := by
+  intro ρ env
+  refine (MBH.holds_neg _ _ _).mpr fun h => ?_
+  have h1 := (F3_eqT VB VB0 VB2 simB _ _ simB_refl).mp ((MBH.holds_eqv_t _ _ _ _).mp h)
+  rw [F3_top VB VB0 VB2 simB (Γ := Ctx.nil) ρ env, F3_bot VB VB0 VB2 simB (Γ := Ctx.nil) ρ env] at h1
+  rcases h1 with e | ⟨_, h2⟩
+  · exact absurd e (by decide)
+  · exact h2 rfl
+
+theorem MBH_not_TAx : ¬ MBH.Valid TAx := fun h => by
+  have h0 := (MBH.holds_all _ _ _ _).mp (h (fun i => i.elim0) ()) (1 : Fin 3)
+  have h1 := (MBH.holds_imp _ _ _ _).mp h0 ((MBH.holds_eqv_t _ _ _ _).mpr
+    ((F3_eqT VB VB0 VB2 simB _ _ simB_refl).mpr (by
+      rw [F3_top VB VB0 VB2 simB (Γ := Ctx.nil.ext tyT) _ ((), (1 : Fin 3))]
+      exact Or.inr ⟨(by decide : (1 : Fin 3) ≠ 2), (by decide : (0 : Fin 3) ≠ 2)⟩)))
+  have h2 : VB 1 := h1
+  exact absurd h2 (by unfold VB; decide)
+
+end Al
+
 end PIF
