@@ -296,3 +296,42 @@ lean_lib PIOQ_P_MKW1
 
 @[default_target]
 lean_lib PIOQ_P_MhaeC
+
+@[default_target]
+lean_lib PIOQ_DerNDX
+
+@[default_target]
+lean_lib PIOQ_DerCh
+
+@[default_target]
+lean_lib PIOQ_XInjW
+
+@[default_target]
+lean_lib PIOQ_XInjK
+
+@[default_target]
+lean_lib PIOQ_XModK
+
+@[default_target]
+lean_lib PIOQ_XIntK
+
+@[default_target]
+lean_lib PIOQ_XInjT
+
+@[default_target]
+lean_lib PIOQ_XPcT
+
+@[default_target]
+lean_lib PIOQ_XChK
+
+@[default_target]
+lean_lib PIOQ_XCanT
+
+@[default_target]
+lean_lib PIOQ_XTbT
+
+@[default_target]
+lean_lib PIOQ_XPeCh
+
+@[default_target]
+lean_lib PIOQ_XChW

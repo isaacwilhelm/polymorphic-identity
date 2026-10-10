@@ -1860,6 +1860,450 @@ window.LEANINDEX = {
   "PIBarcanModels.lean",
   207
  ],
+ "Al.XCT_Choice": [
+  "PIOQ_XCanT.lean",
+  352
+ ],
+ "Al.XCT_ExtT": [
+  "PIOQ_XCanT.lean",
+  337
+ ],
+ "Al.XCT_Inj": [
+  "PIOQ_XCanT.lean",
+  289
+ ],
+ "Al.XCT_IntT": [
+  "PIOQ_XCanT.lean",
+  348
+ ],
+ "Al.XCT_Recovery": [
+  "PIOQ_XCanT.lean",
+  298
+ ],
+ "Al.XCT_Slogan": [
+  "PIOQ_XCanT.lean",
+  387
+ ],
+ "Al.XCT_TAx": [
+  "PIOQ_XCanT.lean",
+  284
+ ],
+ "Al.XCT_TopBot": [
+  "PIOQ_XCanT.lean",
+  278
+ ],
+ "Al.XCT_Truth": [
+  "PIOQ_XCanT.lean",
+  270
+ ],
+ "Al.XCT_model": [
+  "PIOQ_XCanT.lean",
+  119
+ ],
+ "Al.XCT_not_BF": [
+  "PIOQ_XCanT.lean",
+  219
+ ],
+ "Al.XCT_not_Bool": [
+  "PIOQ_XCanT.lean",
+  185
+ ],
+ "Al.XCT_not_Bridge": [
+  "PIOQ_XCanT.lean",
+  481
+ ],
+ "Al.XCT_not_CBF": [
+  "PIOQ_XCanT.lean",
+  227
+ ],
+ "Al.XCT_not_Cantor": [
+  "PIOQ_XCanT.lean",
+  146
+ ],
+ "Al.XCT_not_Class": [
+  "PIOQ_XCanT.lean",
+  369
+ ],
+ "Al.XCT_not_Collapse": [
+  "PIOQ_XCanT.lean",
+  152
+ ],
+ "Al.XCT_not_Cong": [
+  "PIOQ_XCanT.lean",
+  420
+ ],
+ "Al.XCT_not_Disjoint": [
+  "PIOQ_XCanT.lean",
+  379
+ ],
+ "Al.XCT_not_Hae": [
+  "PIOQ_XCanT.lean",
+  374
+ ],
+ "Al.XCT_not_IdId": [
+  "PIOQ_XCanT.lean",
+  365
+ ],
+ "Al.XCT_not_LLEqv": [
+  "PIOQ_XCanT.lean",
+  357
+ ],
+ "Al.XCT_not_LLPoly": [
+  "PIOQ_XCanT.lean",
+  487
+ ],
+ "Al.XCT_not_NDTeq": [
+  "PIOQ_XCanT.lean",
+  169
+ ],
+ "Al.XCT_not_NDX": [
+  "PIOQ_XCanT.lean",
+  210
+ ],
+ "Al.XCT_not_NIEqv": [
+  "PIOQ_XCanT.lean",
+  187
+ ],
+ "Al.XCT_not_NITeq": [
+  "PIOQ_XCanT.lean",
+  164
+ ],
+ "Al.XCT_not_NIX": [
+  "PIOQ_XCanT.lean",
+  193
+ ],
+ "Al.XCT_not_Nec": [
+  "PIOQ_XCanT.lean",
+  199
+ ],
+ "Al.XCT_not_PCong": [
+  "PIOQ_XCanT.lean",
+  429
+ ],
+ "Al.XCT_not_PExt": [
+  "PIOQ_XCanT.lean",
+  439
+ ],
+ "Al.XCT_not_PropExt": [
+  "PIOQ_XCanT.lean",
+  157
+ ],
+ "Al.XCT_not_TBF": [
+  "PIOQ_XCanT.lean",
+  240
+ ],
+ "Al.XCT_not_TCBF": [
+  "PIOQ_XCanT.lean",
+  255
+ ],
+ "Al.XCT_not_TNec": [
+  "PIOQ_XCanT.lean",
+  204
+ ],
+ "Al.XCT_not_Twin": [
+  "PIOQ_XCanT.lean",
+  397
+ ],
+ "Al.XCT_not_WCong": [
+  "PIOQ_XCanT.lean",
+  410
+ ],
+ "Al.XIT_Bridge": [
+  "PIOQ_XInjT.lean",
+  790
+ ],
+ "Al.XIT_Cantor": [
+  "PIOQ_XInjT.lean",
+  878
+ ],
+ "Al.XIT_Choice": [
+  "PIOQ_XInjT.lean",
+  880
+ ],
+ "Al.XIT_Cong": [
+  "PIOQ_XInjT.lean",
+  795
+ ],
+ "Al.XIT_LLEqv": [
+  "PIOQ_XInjT.lean",
+  546
+ ],
+ "Al.XIT_PCong": [
+  "PIOQ_XInjT.lean",
+  808
+ ],
+ "Al.XIT_PExt": [
+  "PIOQ_XInjT.lean",
+  824
+ ],
+ "Al.XIT_Slogan": [
+  "PIOQ_XInjT.lean",
+  755
+ ],
+ "Al.XIT_TAx": [
+  "PIOQ_XInjT.lean",
+  724
+ ],
+ "Al.XIT_TopBot": [
+  "PIOQ_XInjT.lean",
+  877
+ ],
+ "Al.XIT_Truth": [
+  "PIOQ_XInjT.lean",
+  876
+ ],
+ "Al.XIT_WCong": [
+  "PIOQ_XInjT.lean",
+  879
+ ],
+ "Al.XIT_model": [
+  "PIOQ_XInjT.lean",
+  517
+ ],
+ "Al.XIT_not_BF": [
+  "PIOQ_XInjT.lean",
+  692
+ ],
+ "Al.XIT_not_Bool": [
+  "PIOQ_XInjT.lean",
+  651
+ ],
+ "Al.XIT_not_CBF": [
+  "PIOQ_XInjT.lean",
+  702
+ ],
+ "Al.XIT_not_Class": [
+  "PIOQ_XInjT.lean",
+  660
+ ],
+ "Al.XIT_not_Collapse": [
+  "PIOQ_XInjT.lean",
+  732
+ ],
+ "Al.XIT_not_Disjoint": [
+  "PIOQ_XInjT.lean",
+  747
+ ],
+ "Al.XIT_not_ExtT": [
+  "PIOQ_XInjT.lean",
+  840
+ ],
+ "Al.XIT_not_Hae": [
+  "PIOQ_XInjT.lean",
+  772
+ ],
+ "Al.XIT_not_IdId": [
+  "PIOQ_XInjT.lean",
+  653
+ ],
+ "Al.XIT_not_Inj": [
+  "PIOQ_XInjT.lean",
+  589
+ ],
+ "Al.XIT_not_IntT": [
+  "PIOQ_XInjT.lean",
+  848
+ ],
+ "Al.XIT_not_LLPoly": [
+  "PIOQ_XInjT.lean",
+  781
+ ],
+ "Al.XIT_not_NDTeq": [
+  "PIOQ_XInjT.lean",
+  625
+ ],
+ "Al.XIT_not_NDX": [
+  "PIOQ_XInjT.lean",
+  635
+ ],
+ "Al.XIT_not_NIEqv": [
+  "PIOQ_XInjT.lean",
+  606
+ ],
+ "Al.XIT_not_NITeq": [
+  "PIOQ_XInjT.lean",
+  620
+ ],
+ "Al.XIT_not_NIX": [
+  "PIOQ_XInjT.lean",
+  613
+ ],
+ "Al.XIT_not_Nec": [
+  "PIOQ_XInjT.lean",
+  717
+ ],
+ "Al.XIT_not_PropExt": [
+  "PIOQ_XInjT.lean",
+  737
+ ],
+ "Al.XIT_not_Recovery": [
+  "PIOQ_XInjT.lean",
+  596
+ ],
+ "Al.XIT_not_TBF": [
+  "PIOQ_XInjT.lean",
+  665
+ ],
+ "Al.XIT_not_TCBF": [
+  "PIOQ_XInjT.lean",
+  675
+ ],
+ "Al.XIT_not_TNec": [
+  "PIOQ_XInjT.lean",
+  687
+ ],
+ "Al.XIT_not_Twin": [
+  "PIOQ_XInjT.lean",
+  762
+ ],
+ "Al.XPT_Bridge": [
+  "PIOQ_XPcT.lean",
+  280
+ ],
+ "Al.XPT_Cantor": [
+  "PIOQ_XPcT.lean",
+  270
+ ],
+ "Al.XPT_Choice": [
+  "PIOQ_XPcT.lean",
+  276
+ ],
+ "Al.XPT_Inj": [
+  "PIOQ_XPcT.lean",
+  376
+ ],
+ "Al.XPT_LLEqv": [
+  "PIOQ_XPcT.lean",
+  163
+ ],
+ "Al.XPT_Recovery": [
+  "PIOQ_XPcT.lean",
+  385
+ ],
+ "Al.XPT_Slogan": [
+  "PIOQ_XPcT.lean",
+  294
+ ],
+ "Al.XPT_TAx": [
+  "PIOQ_XPcT.lean",
+  273
+ ],
+ "Al.XPT_TopBot": [
+  "PIOQ_XPcT.lean",
+  269
+ ],
+ "Al.XPT_Truth": [
+  "PIOQ_XPcT.lean",
+  268
+ ],
+ "Al.XPT_WCong": [
+  "PIOQ_XPcT.lean",
+  271
+ ],
+ "Al.XPT_model": [
+  "PIOQ_XPcT.lean",
+  118
+ ],
+ "Al.XPT_not_BF": [
+  "PIOQ_XPcT.lean",
+  505
+ ],
+ "Al.XPT_not_Bool": [
+  "PIOQ_XPcT.lean",
+  465
+ ],
+ "Al.XPT_not_CBF": [
+  "PIOQ_XPcT.lean",
+  512
+ ],
+ "Al.XPT_not_Class": [
+  "PIOQ_XPcT.lean",
+  467
+ ],
+ "Al.XPT_not_Collapse": [
+  "PIOQ_XPcT.lean",
+  414
+ ],
+ "Al.XPT_not_Cong": [
+  "PIOQ_XPcT.lean",
+  351
+ ],
+ "Al.XPT_not_Disjoint": [
+  "PIOQ_XPcT.lean",
+  303
+ ],
+ "Al.XPT_not_ExtT": [
+  "PIOQ_XPcT.lean",
+  394
+ ],
+ "Al.XPT_not_Hae": [
+  "PIOQ_XPcT.lean",
+  331
+ ],
+ "Al.XPT_not_IdId": [
+  "PIOQ_XPcT.lean",
+  471
+ ],
+ "Al.XPT_not_IntT": [
+  "PIOQ_XPcT.lean",
+  403
+ ],
+ "Al.XPT_not_LLPoly": [
+  "PIOQ_XPcT.lean",
+  311
+ ],
+ "Al.XPT_not_NDTeq": [
+  "PIOQ_XPcT.lean",
+  451
+ ],
+ "Al.XPT_not_NDX": [
+  "PIOQ_XPcT.lean",
+  437
+ ],
+ "Al.XPT_not_NIEqv": [
+  "PIOQ_XPcT.lean",
+  425
+ ],
+ "Al.XPT_not_NITeq": [
+  "PIOQ_XPcT.lean",
+  446
+ ],
+ "Al.XPT_not_NIX": [
+  "PIOQ_XPcT.lean",
+  431
+ ],
+ "Al.XPT_not_Nec": [
+  "PIOQ_XPcT.lean",
+  520
+ ],
+ "Al.XPT_not_PCong": [
+  "PIOQ_XPcT.lean",
+  341
+ ],
+ "Al.XPT_not_PExt": [
+  "PIOQ_XPcT.lean",
+  364
+ ],
+ "Al.XPT_not_PropExt": [
+  "PIOQ_XPcT.lean",
+  418
+ ],
+ "Al.XPT_not_TBF": [
+  "PIOQ_XPcT.lean",
+  480
+ ],
+ "Al.XPT_not_TCBF": [
+  "PIOQ_XPcT.lean",
+  488
+ ],
+ "Al.XPT_not_TNec": [
+  "PIOQ_XPcT.lean",
+  501
+ ],
+ "Al.XPT_not_Twin": [
+  "PIOQ_XPcT.lean",
+  319
+ ],
  "AlI.Frame.Choice_valid": [
   "PIModalX.lean",
   112
@@ -2919,6 +3363,894 @@ window.LEANINDEX = {
  "Kr.Mnd_not_NDTeq": [
   "PIWorlds.lean",
   1045
+ ],
+ "Kr.XCK_Bool": [
+  "PIOQ_XChK.lean",
+  1376
+ ],
+ "Kr.XCK_Bridge": [
+  "PIOQ_XChK.lean",
+  1308
+ ],
+ "Kr.XCK_CBF": [
+  "PIOQ_XChK.lean",
+  1390
+ ],
+ "Kr.XCK_Cantor": [
+  "PIOQ_XChK.lean",
+  870
+ ],
+ "Kr.XCK_LLEqv": [
+  "PIOQ_XChK.lean",
+  833
+ ],
+ "Kr.XCK_NDTeq": [
+  "PIOQ_XChK.lean",
+  1339
+ ],
+ "Kr.XCK_Slogan": [
+  "PIOQ_XChK.lean",
+  1227
+ ],
+ "Kr.XCK_TAx": [
+  "PIOQ_XChK.lean",
+  1335
+ ],
+ "Kr.XCK_TCBF": [
+  "PIOQ_XChK.lean",
+  1384
+ ],
+ "Kr.XCK_TopBot": [
+  "PIOQ_XChK.lean",
+  869
+ ],
+ "Kr.XCK_Truth": [
+  "PIOQ_XChK.lean",
+  868
+ ],
+ "Kr.XCK_WCong": [
+  "PIOQ_XChK.lean",
+  871
+ ],
+ "Kr.XCK_model": [
+  "PIOQ_XChK.lean",
+  841
+ ],
+ "Kr.XCK_not_BF": [
+  "PIOQ_XChK.lean",
+  1013
+ ],
+ "Kr.XCK_not_Choice": [
+  "PIOQ_XChK.lean",
+  955
+ ],
+ "Kr.XCK_not_Class": [
+  "PIOQ_XChK.lean",
+  930
+ ],
+ "Kr.XCK_not_Collapse": [
+  "PIOQ_XChK.lean",
+  1329
+ ],
+ "Kr.XCK_not_Cong": [
+  "PIOQ_XChK.lean",
+  1173
+ ],
+ "Kr.XCK_not_Disjoint": [
+  "PIOQ_XChK.lean",
+  1129
+ ],
+ "Kr.XCK_not_ExtT": [
+  "PIOQ_XChK.lean",
+  1113
+ ],
+ "Kr.XCK_not_Hae": [
+  "PIOQ_XChK.lean",
+  1219
+ ],
+ "Kr.XCK_not_IdId": [
+  "PIOQ_XChK.lean",
+  903
+ ],
+ "Kr.XCK_not_Inj": [
+  "PIOQ_XChK.lean",
+  1351
+ ],
+ "Kr.XCK_not_IntT": [
+  "PIOQ_XChK.lean",
+  1121
+ ],
+ "Kr.XCK_not_LLPoly": [
+  "PIOQ_XChK.lean",
+  1251
+ ],
+ "Kr.XCK_not_NDX": [
+  "PIOQ_XChK.lean",
+  1027
+ ],
+ "Kr.XCK_not_NIEqv": [
+  "PIOQ_XChK.lean",
+  875
+ ],
+ "Kr.XCK_not_NITeq": [
+  "PIOQ_XChK.lean",
+  916
+ ],
+ "Kr.XCK_not_NIX": [
+  "PIOQ_XChK.lean",
+  885
+ ],
+ "Kr.XCK_not_Nec": [
+  "PIOQ_XChK.lean",
+  895
+ ],
+ "Kr.XCK_not_PCong": [
+  "PIOQ_XChK.lean",
+  1164
+ ],
+ "Kr.XCK_not_PExt": [
+  "PIOQ_XChK.lean",
+  1194
+ ],
+ "Kr.XCK_not_PropExt": [
+  "PIOQ_XChK.lean",
+  1321
+ ],
+ "Kr.XCK_not_Recovery": [
+  "PIOQ_XChK.lean",
+  1359
+ ],
+ "Kr.XCK_not_TBF": [
+  "PIOQ_XChK.lean",
+  1090
+ ],
+ "Kr.XCK_not_TNec": [
+  "PIOQ_XChK.lean",
+  923
+ ],
+ "Kr.XCK_not_Twin": [
+  "PIOQ_XChK.lean",
+  1208
+ ],
+ "Kr.XCW_Bool": [
+  "PIOQ_XChW.lean",
+  1094
+ ],
+ "Kr.XCW_NITeq": [
+  "PIOQ_XChW.lean",
+  1051
+ ],
+ "Kr.XCW_Nec": [
+  "PIOQ_XChW.lean",
+  1152
+ ],
+ "Kr.XCW_Slogan": [
+  "PIOQ_XChW.lean",
+  949
+ ],
+ "Kr.XCW_TBF": [
+  "PIOQ_XChW.lean",
+  1106
+ ],
+ "Kr.XCW_TNec": [
+  "PIOQ_XChW.lean",
+  1148
+ ],
+ "Kr.XCW_isModelAt": [
+  "PIOQ_XChW.lean",
+  544
+ ],
+ "Kr.XCW_not_BF": [
+  "PIOQ_XChW.lean",
+  1170
+ ],
+ "Kr.XCW_not_Bridge": [
+  "PIOQ_XChW.lean",
+  886
+ ],
+ "Kr.XCW_not_CBF": [
+  "PIOQ_XChW.lean",
+  1185
+ ],
+ "Kr.XCW_not_Cantor": [
+  "PIOQ_XChW.lean",
+  708
+ ],
+ "Kr.XCW_not_Choice": [
+  "PIOQ_XChW.lean",
+  832
+ ],
+ "Kr.XCW_not_Class": [
+  "PIOQ_XChW.lean",
+  916
+ ],
+ "Kr.XCW_not_Collapse": [
+  "PIOQ_XChW.lean",
+  1022
+ ],
+ "Kr.XCW_not_Cong": [
+  "PIOQ_XChW.lean",
+  665
+ ],
+ "Kr.XCW_not_Disjoint": [
+  "PIOQ_XChW.lean",
+  938
+ ],
+ "Kr.XCW_not_ExtT": [
+  "PIOQ_XChW.lean",
+  978
+ ],
+ "Kr.XCW_not_Hae": [
+  "PIOQ_XChW.lean",
+  969
+ ],
+ "Kr.XCW_not_IdId": [
+  "PIOQ_XChW.lean",
+  1072
+ ],
+ "Kr.XCW_not_Inj": [
+  "PIOQ_XChW.lean",
+  750
+ ],
+ "Kr.XCW_not_IntT": [
+  "PIOQ_XChW.lean",
+  1002
+ ],
+ "Kr.XCW_not_LLEqv": [
+  "PIOQ_XChW.lean",
+  733
+ ],
+ "Kr.XCW_not_LLPoly": [
+  "PIOQ_XChW.lean",
+  896
+ ],
+ "Kr.XCW_not_NDTeq": [
+  "PIOQ_XChW.lean",
+  766
+ ],
+ "Kr.XCW_not_NDX": [
+  "PIOQ_XChW.lean",
+  779
+ ],
+ "Kr.XCW_not_NIEqv": [
+  "PIOQ_XChW.lean",
+  1030
+ ],
+ "Kr.XCW_not_NIX": [
+  "PIOQ_XChW.lean",
+  1040
+ ],
+ "Kr.XCW_not_PCong": [
+  "PIOQ_XChW.lean",
+  677
+ ],
+ "Kr.XCW_not_PExt": [
+  "PIOQ_XChW.lean",
+  689
+ ],
+ "Kr.XCW_not_PropExt": [
+  "PIOQ_XChW.lean",
+  1059
+ ],
+ "Kr.XCW_not_Recovery": [
+  "PIOQ_XChW.lean",
+  757
+ ],
+ "Kr.XCW_not_TAx": [
+  "PIOQ_XChW.lean",
+  728
+ ],
+ "Kr.XCW_not_TCBF": [
+  "PIOQ_XChW.lean",
+  1127
+ ],
+ "Kr.XCW_not_TopBot": [
+  "PIOQ_XChW.lean",
+  715
+ ],
+ "Kr.XCW_not_Truth": [
+  "PIOQ_XChW.lean",
+  720
+ ],
+ "Kr.XCW_not_Twin": [
+  "PIOQ_XChW.lean",
+  958
+ ],
+ "Kr.XCW_not_WCong": [
+  "PIOQ_XChW.lean",
+  650
+ ],
+ "Kr.XIE_Bool": [
+  "PIOQ_XIntK.lean",
+  588
+ ],
+ "Kr.XIE_Bridge": [
+  "PIOQ_XIntK.lean",
+  1125
+ ],
+ "Kr.XIE_CBF": [
+  "PIOQ_XIntK.lean",
+  595
+ ],
+ "Kr.XIE_Cantor": [
+  "PIOQ_XIntK.lean",
+  598
+ ],
+ "Kr.XIE_Class": [
+  "PIOQ_XIntK.lean",
+  573
+ ],
+ "Kr.XIE_Cong": [
+  "PIOQ_XIntK.lean",
+  1042
+ ],
+ "Kr.XIE_IdId": [
+  "PIOQ_XIntK.lean",
+  589
+ ],
+ "Kr.XIE_LLEqv": [
+  "PIOQ_XIntK.lean",
+  572
+ ],
+ "Kr.XIE_NIEqv": [
+  "PIOQ_XIntK.lean",
+  590
+ ],
+ "Kr.XIE_NITeq": [
+  "PIOQ_XIntK.lean",
+  591
+ ],
+ "Kr.XIE_Nec": [
+  "PIOQ_XIntK.lean",
+  594
+ ],
+ "Kr.XIE_PCong": [
+  "PIOQ_XIntK.lean",
+  1054
+ ],
+ "Kr.XIE_Slogan": [
+  "PIOQ_XIntK.lean",
+  937
+ ],
+ "Kr.XIE_TAx": [
+  "PIOQ_XIntK.lean",
+  601
+ ],
+ "Kr.XIE_TCBF": [
+  "PIOQ_XIntK.lean",
+  593
+ ],
+ "Kr.XIE_TNec": [
+  "PIOQ_XIntK.lean",
+  592
+ ],
+ "Kr.XIE_TopBot": [
+  "PIOQ_XIntK.lean",
+  597
+ ],
+ "Kr.XIE_Truth": [
+  "PIOQ_XIntK.lean",
+  596
+ ],
+ "Kr.XIE_WCong": [
+  "PIOQ_XIntK.lean",
+  599
+ ],
+ "Kr.XIE_isModelAt": [
+  "PIOQ_XIntK.lean",
+  560
+ ],
+ "Kr.XIE_not_BF": [
+  "PIOQ_XIntK.lean",
+  808
+ ],
+ "Kr.XIE_not_Choice": [
+  "PIOQ_XIntK.lean",
+  832
+ ],
+ "Kr.XIE_not_Collapse": [
+  "PIOQ_XIntK.lean",
+  707
+ ],
+ "Kr.XIE_not_Disjoint": [
+  "PIOQ_XIntK.lean",
+  695
+ ],
+ "Kr.XIE_not_ExtT": [
+  "PIOQ_XIntK.lean",
+  660
+ ],
+ "Kr.XIE_not_Hae": [
+  "PIOQ_XIntK.lean",
+  964
+ ],
+ "Kr.XIE_not_Inj": [
+  "PIOQ_XIntK.lean",
+  910
+ ],
+ "Kr.XIE_not_IntT": [
+  "PIOQ_XIntK.lean",
+  649
+ ],
+ "Kr.XIE_not_LLPoly": [
+  "PIOQ_XIntK.lean",
+  1078
+ ],
+ "Kr.XIE_not_NDTeq": [
+  "PIOQ_XIntK.lean",
+  670
+ ],
+ "Kr.XIE_not_NDX": [
+  "PIOQ_XIntK.lean",
+  715
+ ],
+ "Kr.XIE_not_NIX": [
+  "PIOQ_XIntK.lean",
+  680
+ ],
+ "Kr.XIE_not_PExt": [
+  "PIOQ_XIntK.lean",
+  977
+ ],
+ "Kr.XIE_not_PropExt": [
+  "PIOQ_XIntK.lean",
+  731
+ ],
+ "Kr.XIE_not_Recovery": [
+  "PIOQ_XIntK.lean",
+  900
+ ],
+ "Kr.XIE_not_TBFSch": [
+  "PIOQ_XIntK.lean",
+  890
+ ],
+ "Kr.XIE_not_Twin": [
+  "PIOQ_XIntK.lean",
+  948
+ ],
+ "Kr.XIK_Bool": [
+  "PIOQ_XInjK.lean",
+  649
+ ],
+ "Kr.XIK_Bridge": [
+  "PIOQ_XInjK.lean",
+  930
+ ],
+ "Kr.XIK_CBF": [
+  "PIOQ_XInjK.lean",
+  656
+ ],
+ "Kr.XIK_Cantor": [
+  "PIOQ_XInjK.lean",
+  659
+ ],
+ "Kr.XIK_Class": [
+  "PIOQ_XInjK.lean",
+  634
+ ],
+ "Kr.XIK_IdId": [
+  "PIOQ_XInjK.lean",
+  650
+ ],
+ "Kr.XIK_IntT": [
+  "PIOQ_XInjK.lean",
+  763
+ ],
+ "Kr.XIK_LLEqv": [
+  "PIOQ_XInjK.lean",
+  633
+ ],
+ "Kr.XIK_NIEqv": [
+  "PIOQ_XInjK.lean",
+  651
+ ],
+ "Kr.XIK_NITeq": [
+  "PIOQ_XInjK.lean",
+  652
+ ],
+ "Kr.XIK_Nec": [
+  "PIOQ_XInjK.lean",
+  655
+ ],
+ "Kr.XIK_Slogan": [
+  "PIOQ_XInjK.lean",
+  738
+ ],
+ "Kr.XIK_TAx": [
+  "PIOQ_XInjK.lean",
+  948
+ ],
+ "Kr.XIK_TCBF": [
+  "PIOQ_XInjK.lean",
+  654
+ ],
+ "Kr.XIK_TNec": [
+  "PIOQ_XInjK.lean",
+  653
+ ],
+ "Kr.XIK_TopBot": [
+  "PIOQ_XInjK.lean",
+  658
+ ],
+ "Kr.XIK_Truth": [
+  "PIOQ_XInjK.lean",
+  657
+ ],
+ "Kr.XIK_WCong": [
+  "PIOQ_XInjK.lean",
+  660
+ ],
+ "Kr.XIK_isModelAt": [
+  "PIOQ_XInjK.lean",
+  621
+ ],
+ "Kr.XIK_not_BF": [
+  "PIOQ_XInjK.lean",
+  1074
+ ],
+ "Kr.XIK_not_Choice": [
+  "PIOQ_XInjK.lean",
+  1098
+ ],
+ "Kr.XIK_not_Collapse": [
+  "PIOQ_XInjK.lean",
+  954
+ ],
+ "Kr.XIK_not_Cong": [
+  "PIOQ_XInjK.lean",
+  817
+ ],
+ "Kr.XIK_not_Disjoint": [
+  "PIOQ_XInjK.lean",
+  728
+ ],
+ "Kr.XIK_not_ExtT": [
+  "PIOQ_XInjK.lean",
+  747
+ ],
+ "Kr.XIK_not_Hae": [
+  "PIOQ_XInjK.lean",
+  791
+ ],
+ "Kr.XIK_not_Inj": [
+  "PIOQ_XInjK.lean",
+  688
+ ],
+ "Kr.XIK_not_LLPoly": [
+  "PIOQ_XInjK.lean",
+  875
+ ],
+ "Kr.XIK_not_NDTeq": [
+  "PIOQ_XInjK.lean",
+  706
+ ],
+ "Kr.XIK_not_NDX": [
+  "PIOQ_XInjK.lean",
+  962
+ ],
+ "Kr.XIK_not_NIX": [
+  "PIOQ_XInjK.lean",
+  719
+ ],
+ "Kr.XIK_not_PCong": [
+  "PIOQ_XInjK.lean",
+  829
+ ],
+ "Kr.XIK_not_PExt": [
+  "PIOQ_XInjK.lean",
+  849
+ ],
+ "Kr.XIK_not_PropExt": [
+  "PIOQ_XInjK.lean",
+  979
+ ],
+ "Kr.XIK_not_Recovery": [
+  "PIOQ_XInjK.lean",
+  696
+ ],
+ "Kr.XIK_not_TBFSch": [
+  "PIOQ_XInjK.lean",
+  1029
+ ],
+ "Kr.XIK_not_Twin": [
+  "PIOQ_XInjK.lean",
+  780
+ ],
+ "Kr.XIW_BF": [
+  "PIOQ_XInjW.lean",
+  521
+ ],
+ "Kr.XIW_Bool": [
+  "PIOQ_XInjW.lean",
+  292
+ ],
+ "Kr.XIW_Bridge": [
+  "PIOQ_XInjW.lean",
+  587
+ ],
+ "Kr.XIW_CBF": [
+  "PIOQ_XInjW.lean",
+  299
+ ],
+ "Kr.XIW_Cantor": [
+  "PIOQ_XInjW.lean",
+  302
+ ],
+ "Kr.XIW_Choice": [
+  "PIOQ_XInjW.lean",
+  529
+ ],
+ "Kr.XIW_Class": [
+  "PIOQ_XInjW.lean",
+  231
+ ],
+ "Kr.XIW_Cong": [
+  "PIOQ_XInjW.lean",
+  477
+ ],
+ "Kr.XIW_IdId": [
+  "PIOQ_XInjW.lean",
+  293
+ ],
+ "Kr.XIW_LLEqv": [
+  "PIOQ_XInjW.lean",
+  229
+ ],
+ "Kr.XIW_NDTeq": [
+  "PIOQ_XInjW.lean",
+  328
+ ],
+ "Kr.XIW_NIEqv": [
+  "PIOQ_XInjW.lean",
+  294
+ ],
+ "Kr.XIW_NITeq": [
+  "PIOQ_XInjW.lean",
+  295
+ ],
+ "Kr.XIW_Nec": [
+  "PIOQ_XInjW.lean",
+  298
+ ],
+ "Kr.XIW_PCong": [
+  "PIOQ_XInjW.lean",
+  490
+ ],
+ "Kr.XIW_PExt": [
+  "PIOQ_XInjW.lean",
+  501
+ ],
+ "Kr.XIW_Slogan": [
+  "PIOQ_XInjW.lean",
+  435
+ ],
+ "Kr.XIW_TAx": [
+  "PIOQ_XInjW.lean",
+  346
+ ],
+ "Kr.XIW_TBF": [
+  "PIOQ_XInjW.lean",
+  337
+ ],
+ "Kr.XIW_TCBF": [
+  "PIOQ_XInjW.lean",
+  297
+ ],
+ "Kr.XIW_TNec": [
+  "PIOQ_XInjW.lean",
+  296
+ ],
+ "Kr.XIW_TopBot": [
+  "PIOQ_XInjW.lean",
+  301
+ ],
+ "Kr.XIW_Truth": [
+  "PIOQ_XInjW.lean",
+  300
+ ],
+ "Kr.XIW_WCong": [
+  "PIOQ_XInjW.lean",
+  303
+ ],
+ "Kr.XIW_isModelAt": [
+  "PIOQ_XInjW.lean",
+  218
+ ],
+ "Kr.XIW_not_Collapse": [
+  "PIOQ_XInjW.lean",
+  352
+ ],
+ "Kr.XIW_not_Disjoint": [
+  "PIOQ_XInjW.lean",
+  424
+ ],
+ "Kr.XIW_not_ExtT": [
+  "PIOQ_XInjW.lean",
+  405
+ ],
+ "Kr.XIW_not_Hae": [
+  "PIOQ_XInjW.lean",
+  463
+ ],
+ "Kr.XIW_not_Inj": [
+  "PIOQ_XInjW.lean",
+  308
+ ],
+ "Kr.XIW_not_IntT": [
+  "PIOQ_XInjW.lean",
+  412
+ ],
+ "Kr.XIW_not_LLPoly": [
+  "PIOQ_XInjW.lean",
+  605
+ ],
+ "Kr.XIW_not_NDX": [
+  "PIOQ_XInjW.lean",
+  383
+ ],
+ "Kr.XIW_not_NIX": [
+  "PIOQ_XInjW.lean",
+  373
+ ],
+ "Kr.XIW_not_PropExt": [
+  "PIOQ_XInjW.lean",
+  360
+ ],
+ "Kr.XIW_not_Recovery": [
+  "PIOQ_XInjW.lean",
+  317
+ ],
+ "Kr.XIW_not_Twin": [
+  "PIOQ_XInjW.lean",
+  451
+ ],
+ "Kr.XMK_Bool": [
+  "PIOQ_XModK.lean",
+  631
+ ],
+ "Kr.XMK_Bridge": [
+  "PIOQ_XModK.lean",
+  697
+ ],
+ "Kr.XMK_CBF": [
+  "PIOQ_XModK.lean",
+  638
+ ],
+ "Kr.XMK_Cantor": [
+  "PIOQ_XModK.lean",
+  641
+ ],
+ "Kr.XMK_Class": [
+  "PIOQ_XModK.lean",
+  622
+ ],
+ "Kr.XMK_IdId": [
+  "PIOQ_XModK.lean",
+  632
+ ],
+ "Kr.XMK_Inj": [
+  "PIOQ_XModK.lean",
+  1062
+ ],
+ "Kr.XMK_LLEqv": [
+  "PIOQ_XModK.lean",
+  620
+ ],
+ "Kr.XMK_NIEqv": [
+  "PIOQ_XModK.lean",
+  633
+ ],
+ "Kr.XMK_NITeq": [
+  "PIOQ_XModK.lean",
+  634
+ ],
+ "Kr.XMK_Nec": [
+  "PIOQ_XModK.lean",
+  637
+ ],
+ "Kr.XMK_Recovery": [
+  "PIOQ_XModK.lean",
+  1073
+ ],
+ "Kr.XMK_Slogan": [
+  "PIOQ_XModK.lean",
+  998
+ ],
+ "Kr.XMK_TAx": [
+  "PIOQ_XModK.lean",
+  963
+ ],
+ "Kr.XMK_TCBF": [
+  "PIOQ_XModK.lean",
+  636
+ ],
+ "Kr.XMK_TNec": [
+  "PIOQ_XModK.lean",
+  635
+ ],
+ "Kr.XMK_TopBot": [
+  "PIOQ_XModK.lean",
+  640
+ ],
+ "Kr.XMK_Truth": [
+  "PIOQ_XModK.lean",
+  639
+ ],
+ "Kr.XMK_WCong": [
+  "PIOQ_XModK.lean",
+  642
+ ],
+ "Kr.XMK_isModelAt": [
+  "PIOQ_XModK.lean",
+  609
+ ],
+ "Kr.XMK_not_BF": [
+  "PIOQ_XModK.lean",
+  903
+ ],
+ "Kr.XMK_not_Choice": [
+  "PIOQ_XModK.lean",
+  945
+ ],
+ "Kr.XMK_not_Collapse": [
+  "PIOQ_XModK.lean",
+  969
+ ],
+ "Kr.XMK_not_Cong": [
+  "PIOQ_XModK.lean",
+  1028
+ ],
+ "Kr.XMK_not_Disjoint": [
+  "PIOQ_XModK.lean",
+  988
+ ],
+ "Kr.XMK_not_ExtT": [
+  "PIOQ_XModK.lean",
+  747
+ ],
+ "Kr.XMK_not_Hae": [
+  "PIOQ_XModK.lean",
+  1019
+ ],
+ "Kr.XMK_not_IntT": [
+  "PIOQ_XModK.lean",
+  754
+ ],
+ "Kr.XMK_not_LLPoly": [
+  "PIOQ_XModK.lean",
+  715
+ ],
+ "Kr.XMK_not_NDTeq": [
+  "PIOQ_XModK.lean",
+  729
+ ],
+ "Kr.XMK_not_NDX": [
+  "PIOQ_XModK.lean",
+  917
+ ],
+ "Kr.XMK_not_NIX": [
+  "PIOQ_XModK.lean",
+  778
+ ],
+ "Kr.XMK_not_PCong": [
+  "PIOQ_XModK.lean",
+  793
+ ],
+ "Kr.XMK_not_PExt": [
+  "PIOQ_XModK.lean",
+  1045
+ ],
+ "Kr.XMK_not_PropExt": [
+  "PIOQ_XModK.lean",
+  977
+ ],
+ "Kr.XMK_not_TBFSch": [
+  "PIOQ_XModK.lean",
+  841
+ ],
+ "Kr.XMK_not_Twin": [
+  "PIOQ_XModK.lean",
+  1007
  ],
  "LLEqv": [
   "PIFoundation.lean",
@@ -7640,6 +8972,302 @@ window.LEANINDEX = {
   "PIWorlds.lean",
   1022
  ],
+ "Wd.XTB_BF": [
+  "PIOQ_XTbT.lean",
+  796
+ ],
+ "Wd.XTB_Bool": [
+  "PIOQ_XTbT.lean",
+  744
+ ],
+ "Wd.XTB_Cantor": [
+  "PIOQ_XTbT.lean",
+  675
+ ],
+ "Wd.XTB_Choice": [
+  "PIOQ_XTbT.lean",
+  820
+ ],
+ "Wd.XTB_Disjoint": [
+  "PIOQ_XTbT.lean",
+  649
+ ],
+ "Wd.XTB_ExtT": [
+  "PIOQ_XTbT.lean",
+  679
+ ],
+ "Wd.XTB_IntT": [
+  "PIOQ_XTbT.lean",
+  687
+ ],
+ "Wd.XTB_Slogan": [
+  "PIOQ_XTbT.lean",
+  653
+ ],
+ "Wd.XTB_TBF": [
+  "PIOQ_XTbT.lean",
+  761
+ ],
+ "Wd.XTB_TNec": [
+  "PIOQ_XTbT.lean",
+  785
+ ],
+ "Wd.XTB_model": [
+  "PIOQ_XTbT.lean",
+  476
+ ],
+ "Wd.XTB_not_Bridge": [
+  "PIOQ_XTbT.lean",
+  857
+ ],
+ "Wd.XTB_not_CBF": [
+  "PIOQ_XTbT.lean",
+  808
+ ],
+ "Wd.XTB_not_Class": [
+  "PIOQ_XTbT.lean",
+  825
+ ],
+ "Wd.XTB_not_Collapse": [
+  "PIOQ_XTbT.lean",
+  733
+ ],
+ "Wd.XTB_not_Cong": [
+  "PIOQ_XTbT.lean",
+  606
+ ],
+ "Wd.XTB_not_Hae": [
+  "PIOQ_XTbT.lean",
+  669
+ ],
+ "Wd.XTB_not_IdId": [
+  "PIOQ_XTbT.lean",
+  752
+ ],
+ "Wd.XTB_not_Inj": [
+  "PIOQ_XTbT.lean",
+  635
+ ],
+ "Wd.XTB_not_LLEqv": [
+  "PIOQ_XTbT.lean",
+  584
+ ],
+ "Wd.XTB_not_LLPoly": [
+  "PIOQ_XTbT.lean",
+  867
+ ],
+ "Wd.XTB_not_NDTeq": [
+  "PIOQ_XTbT.lean",
+  721
+ ],
+ "Wd.XTB_not_NDX": [
+  "PIOQ_XTbT.lean",
+  726
+ ],
+ "Wd.XTB_not_NIEqv": [
+  "PIOQ_XTbT.lean",
+  707
+ ],
+ "Wd.XTB_not_NITeq": [
+  "PIOQ_XTbT.lean",
+  716
+ ],
+ "Wd.XTB_not_NIX": [
+  "PIOQ_XTbT.lean",
+  711
+ ],
+ "Wd.XTB_not_Nec": [
+  "PIOQ_XTbT.lean",
+  814
+ ],
+ "Wd.XTB_not_PCong": [
+  "PIOQ_XTbT.lean",
+  619
+ ],
+ "Wd.XTB_not_PExt": [
+  "PIOQ_XTbT.lean",
+  625
+ ],
+ "Wd.XTB_not_PropExt": [
+  "PIOQ_XTbT.lean",
+  740
+ ],
+ "Wd.XTB_not_Recovery": [
+  "PIOQ_XTbT.lean",
+  642
+ ],
+ "Wd.XTB_not_TAx": [
+  "PIOQ_XTbT.lean",
+  579
+ ],
+ "Wd.XTB_not_TCBF": [
+  "PIOQ_XTbT.lean",
+  773
+ ],
+ "Wd.XTB_not_TopBot": [
+  "PIOQ_XTbT.lean",
+  570
+ ],
+ "Wd.XTB_not_Truth": [
+  "PIOQ_XTbT.lean",
+  574
+ ],
+ "Wd.XTB_not_Twin": [
+  "PIOQ_XTbT.lean",
+  662
+ ],
+ "Wd.XTB_not_WCong": [
+  "PIOQ_XTbT.lean",
+  598
+ ],
+ "XPC_M_BF": [
+  "PIOQ_XPeCh.lean",
+  1001
+ ],
+ "XPC_M_Bool": [
+  "PIOQ_XPeCh.lean",
+  988
+ ],
+ "XPC_M_Bridge": [
+  "PIOQ_XPeCh.lean",
+  979
+ ],
+ "XPC_M_CBF": [
+  "PIOQ_XPeCh.lean",
+  1002
+ ],
+ "XPC_M_Cantor": [
+  "PIOQ_XPeCh.lean",
+  998
+ ],
+ "XPC_M_Class": [
+  "PIOQ_XPeCh.lean",
+  969
+ ],
+ "XPC_M_Collapse": [
+  "PIOQ_XPeCh.lean",
+  982
+ ],
+ "XPC_M_Cong": [
+  "PIOQ_XPeCh.lean",
+  976
+ ],
+ "XPC_M_Disjoint": [
+  "PIOQ_XPeCh.lean",
+  971
+ ],
+ "XPC_M_ExtT": [
+  "PIOQ_XPeCh.lean",
+  1005
+ ],
+ "XPC_M_IdId": [
+  "PIOQ_XPeCh.lean",
+  990
+ ],
+ "XPC_M_Inj": [
+  "PIOQ_XPeCh.lean",
+  973
+ ],
+ "XPC_M_IntT": [
+  "PIOQ_XPeCh.lean",
+  1006
+ ],
+ "XPC_M_LLEqv": [
+  "PIOQ_XPeCh.lean",
+  968
+ ],
+ "XPC_M_LLPoly": [
+  "PIOQ_XPeCh.lean",
+  977
+ ],
+ "XPC_M_NDTeq": [
+  "PIOQ_XPeCh.lean",
+  987
+ ],
+ "XPC_M_NDX": [
+  "PIOQ_XPeCh.lean",
+  984
+ ],
+ "XPC_M_NIEqv": [
+  "PIOQ_XPeCh.lean",
+  985
+ ],
+ "XPC_M_NITeq": [
+  "PIOQ_XPeCh.lean",
+  986
+ ],
+ "XPC_M_NIX": [
+  "PIOQ_XPeCh.lean",
+  983
+ ],
+ "XPC_M_Nec": [
+  "PIOQ_XPeCh.lean",
+  1003
+ ],
+ "XPC_M_PCong": [
+  "PIOQ_XPeCh.lean",
+  974
+ ],
+ "XPC_M_PExt": [
+  "PIOQ_XPeCh.lean",
+  975
+ ],
+ "XPC_M_PropExt": [
+  "PIOQ_XPeCh.lean",
+  970
+ ],
+ "XPC_M_Recovery": [
+  "PIOQ_XPeCh.lean",
+  1004
+ ],
+ "XPC_M_Slogan": [
+  "PIOQ_XPeCh.lean",
+  972
+ ],
+ "XPC_M_TAx": [
+  "PIOQ_XPeCh.lean",
+  1000
+ ],
+ "XPC_M_TBF": [
+  "PIOQ_XPeCh.lean",
+  991
+ ],
+ "XPC_M_TCBF": [
+  "PIOQ_XPeCh.lean",
+  993
+ ],
+ "XPC_M_TNec": [
+  "PIOQ_XPeCh.lean",
+  995
+ ],
+ "XPC_M_TopBot": [
+  "PIOQ_XPeCh.lean",
+  997
+ ],
+ "XPC_M_Truth": [
+  "PIOQ_XPeCh.lean",
+  996
+ ],
+ "XPC_M_WCong": [
+  "PIOQ_XPeCh.lean",
+  999
+ ],
+ "XPC_M_model": [
+  "PIOQ_XPeCh.lean",
+  959
+ ],
+ "XPC_M_not_Choice": [
+  "PIOQ_XPeCh.lean",
+  939
+ ],
+ "XPC_M_not_Hae": [
+  "PIOQ_XPeCh.lean",
+  1013
+ ],
+ "XPC_M_not_Twin": [
+  "PIOQ_XPeCh.lean",
+  1009
+ ],
  "d_BF_of_Collapse": [
   "PIBF.lean",
   183
@@ -7735,6 +9363,14 @@ window.LEANINDEX = {
  "d_LLPoly_of_Disjoint": [
   "PISchemas.lean",
   208
+ ],
+ "d_NDTeq_of_ClassChoice": [
+  "PIOQ_DerCh.lean",
+  242
+ ],
+ "d_NDTeq_of_ClassNDX": [
+  "PIOQ_DerNDX.lean",
+  181
  ],
  "d_NDTeq_of_Collapse": [
   "PIModal.lean",
