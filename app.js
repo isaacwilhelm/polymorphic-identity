@@ -560,9 +560,9 @@
   function renderStrength() {
     const box = $("#strength");
     const S = strengthData();
-    const head = `<div class="shead"><p>Each box is a principle, or a group of principles that are equivalent. A line from a higher box down to a lower one means the higher one implies the lower one, given <b>${baseLabel()}</b> (the bottom box, which also contains every principle that follows from it outright). Change the base logic or the assumptions in the Explorer tab and this diagram updates.</p>
-      <p class="skey"><span><svg width="34" height="10"><line x1="1" y1="5" x2="33" y2="5" class="se strict"/></svg> strictly stronger: the converse is known to fail</span>
-      <span><svg width="34" height="10"><line x1="1" y1="5" x2="33" y2="5" class="se unk"/></svg> stronger; whether the converse holds is open</span></p></div>`;
+    const head = `<div class="shead"><p>Each box is a principle, or a group of principles that are equivalent. An arrow from one box to another means that the first implies the second, given <b>${baseLabel()}</b> (the bottom box, which also contains every principle that follows from it outright). Change the base logic or the assumptions in the Explorer tab and this diagram updates.</p>
+      <p class="skey"><span><svg width="34" height="10"><line x1="1" y1="5" x2="31" y2="5" class="se strict" marker-end="url(#sarr-strict)"/></svg> strictly stronger: the converse is known to fail</span>
+      <span><svg width="34" height="10"><line x1="1" y1="5" x2="31" y2="5" class="se unk" marker-end="url(#sarr-unk)"/></svg> stronger; whether the converse holds is open</span></p></div>`;
     if (S.inconsistent) { box.innerHTML = head + `<div class="bad">The current assumptions are inconsistent.</div>`; return; }
     const { cls, covers, layer, given, base } = S;
     // geometry
@@ -590,7 +590,7 @@
     const ypos = l => H - padY - 15 - l * rowH;
     let svgEdges = "", svgNodes = "";
     const edge = (x1, y1, x2, y2, strict, key) => {
-      svgEdges += `<line class="se ${strict ? "strict" : "unk"}" data-k="${key}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+      svgEdges += `<line class="se ${strict ? "strict" : "unk"}" data-k="${key}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" marker-end="url(#sarr-${strict ? "strict" : "unk"})"/>`;
       if (!strict) svgEdges += `<text class="sq" x="${(x1 + x2) / 2 + 6}" y="${(y1 + y2) / 2 + 4}">?</text>`;
     };
     // base-level status of a principle: is it known not to follow from the base?
@@ -608,7 +608,9 @@
     };
     node(xpos[BASE], ypos(0), baseText, "base", "basenode" + (strengthFocus === "base" ? " focus" : ""));
     cls.forEach((c, i) => node(xpos[i], ypos(layer[i]), label(c), i, strengthFocus === c[0] ? "focus" : ""));
-    box.innerHTML = head + `<div class="sbox"><svg viewBox="0 0 ${W} ${H}" style="min-width:${Math.min(W, 900)}px">${svgEdges}${svgNodes}</svg></div><div id="sdetails" class="details"></div>`;
+    box.innerHTML = head + `<div class="sbox"><svg viewBox="0 0 ${W} ${H}" style="min-width:${Math.min(W, 900)}px"><defs>
+      <marker id="sarr-strict" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="sm strict"/></marker>
+      <marker id="sarr-unk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="sm unk"/></marker></defs>${svgEdges}${svgNodes}</svg></div><div id="sdetails" class="details"></div>`;
     box.querySelectorAll(".sn").forEach(g => {
       const go = () => { const k = g.dataset.k; strengthFocus = k === "base" ? null : cls[+k][0]; renderStrength(); };
       g.addEventListener("click", go);

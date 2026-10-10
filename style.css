@@ -247,3 +247,5 @@ a.mv { text-decoration: none; }
 .logicdlg .ltabs { display: flex; gap: 4px; }
 .logicdlg .ltabs button { font: inherit; padding: 4px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); cursor: pointer; }
 .logicdlg .ltabs button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--panel); }
+.sm.strict { fill: var(--ink); opacity: .75; }
+.sm.unk { fill: var(--c-notder); }
