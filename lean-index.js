@@ -4,6 +4,14 @@ window.LEANINDEX = {
   "PIModalX.lean",
   112
  ],
+ "Al.MBH_CBF": [
+  "PIOQ_Small.lean",
+  104
+ ],
+ "Al.MBH_Collapse": [
+  "PIOQ_Small.lean",
+  97
+ ],
  "Al.MBH_Hae": [
   "PIHaeQs.lean",
   1138
@@ -19,6 +27,150 @@ window.LEANINDEX = {
  "Al.MBH_not_TAx": [
   "PIHaeQs.lean",
   1149
+ ],
+ "Al.MIdT_CBF": [
+  "PIOQ_MId.lean",
+  415
+ ],
+ "Al.MIdT_Cantor": [
+  "PIOQ_MId.lean",
+  275
+ ],
+ "Al.MIdT_Choice": [
+  "PIOQ_MId.lean",
+  424
+ ],
+ "Al.MIdT_Disjoint": [
+  "PIOQ_MId.lean",
+  192
+ ],
+ "Al.MIdT_ExtT": [
+  "PIOQ_MId.lean",
+  257
+ ],
+ "Al.MIdT_IdId": [
+  "PIOQ_MId.lean",
+  155
+ ],
+ "Al.MIdT_Inj": [
+  "PIOQ_MId.lean",
+  207
+ ],
+ "Al.MIdT_IntT": [
+  "PIOQ_MId.lean",
+  266
+ ],
+ "Al.MIdT_NDTeq": [
+  "PIOQ_MId.lean",
+  230
+ ],
+ "Al.MIdT_NDX": [
+  "PIOQ_MId.lean",
+  367
+ ],
+ "Al.MIdT_PCong": [
+  "PIOQ_MId.lean",
+  286
+ ],
+ "Al.MIdT_Recovery": [
+  "PIOQ_MId.lean",
+  216
+ ],
+ "Al.MIdT_Slogan": [
+  "PIOQ_MId.lean",
+  200
+ ],
+ "Al.MIdT_TAx": [
+  "PIOQ_MId.lean",
+  161
+ ],
+ "Al.MIdT_TCBF": [
+  "PIOQ_MId.lean",
+  389
+ ],
+ "Al.MIdT_TopBot": [
+  "PIOQ_MId.lean",
+  166
+ ],
+ "Al.MIdT_model": [
+  "PIOQ_MId.lean",
+  91
+ ],
+ "Al.MIdT_not_BF": [
+  "PIOQ_MId.lean",
+  408
+ ],
+ "Al.MIdT_not_Bool": [
+  "PIOQ_MId.lean",
+  383
+ ],
+ "Al.MIdT_not_Class": [
+  "PIOQ_MId.lean",
+  385
+ ],
+ "Al.MIdT_not_Collapse": [
+  "PIOQ_MId.lean",
+  349
+ ],
+ "Al.MIdT_not_Cong": [
+  "PIOQ_MId.lean",
+  301
+ ],
+ "Al.MIdT_not_Hae": [
+  "PIOQ_MId.lean",
+  327
+ ],
+ "Al.MIdT_not_LLEqv": [
+  "PIOQ_MId.lean",
+  176
+ ],
+ "Al.MIdT_not_LLPoly": [
+  "PIOQ_MId.lean",
+  438
+ ],
+ "Al.MIdT_not_NIEqv": [
+  "PIOQ_MId.lean",
+  355
+ ],
+ "Al.MIdT_not_NITeq": [
+  "PIOQ_MId.lean",
+  225
+ ],
+ "Al.MIdT_not_NIX": [
+  "PIOQ_MId.lean",
+  361
+ ],
+ "Al.MIdT_not_Nec": [
+  "PIOQ_MId.lean",
+  420
+ ],
+ "Al.MIdT_not_PExt": [
+  "PIOQ_MId.lean",
+  319
+ ],
+ "Al.MIdT_not_PropExt": [
+  "PIOQ_MId.lean",
+  339
+ ],
+ "Al.MIdT_not_TBF": [
+  "PIOQ_MId.lean",
+  396
+ ],
+ "Al.MIdT_not_TNec": [
+  "PIOQ_MId.lean",
+  403
+ ],
+ "Al.MIdT_not_Truth": [
+  "PIOQ_MId.lean",
+  185
+ ],
+ "Al.MIdT_not_Twin": [
+  "PIOQ_MId.lean",
+  331
+ ],
+ "Al.MIdT_not_WCong": [
+  "PIOQ_MId.lean",
+  310
  ],
  "Al.MTH_Hae": [
   "PIHaeQs.lean",
@@ -76,6 +228,146 @@ window.LEANINDEX = {
   "PIHaeQs.lean",
   904
  ],
+ "Al.MclI_BF": [
+  "PIOQ_Mcl.lean",
+  399
+ ],
+ "Al.MclI_CBF": [
+  "PIOQ_Mcl.lean",
+  405
+ ],
+ "Al.MclI_Cantor": [
+  "PIOQ_Mcl.lean",
+  344
+ ],
+ "Al.MclI_Choice": [
+  "PIOQ_Mcl.lean",
+  417
+ ],
+ "Al.MclI_Collapse": [
+  "PIOQ_Mcl.lean",
+  151
+ ],
+ "Al.MclI_Cong": [
+  "PIOQ_Mcl.lean",
+  264
+ ],
+ "Al.MclI_Disjoint": [
+  "PIOQ_Mcl.lean",
+  197
+ ],
+ "Al.MclI_ExtT": [
+  "PIOQ_Mcl.lean",
+  233
+ ],
+ "Al.MclI_IdId": [
+  "PIOQ_Mcl.lean",
+  166
+ ],
+ "Al.MclI_Inj": [
+  "PIOQ_Mcl.lean",
+  213
+ ],
+ "Al.MclI_IntT": [
+  "PIOQ_Mcl.lean",
+  242
+ ],
+ "Al.MclI_LLEqv": [
+  "PIOQ_Mcl.lean",
+  140
+ ],
+ "Al.MclI_NDTeq": [
+  "PIOQ_Mcl.lean",
+  367
+ ],
+ "Al.MclI_NDX": [
+  "PIOQ_Mcl.lean",
+  378
+ ],
+ "Al.MclI_NIEqv": [
+  "PIOQ_Mcl.lean",
+  251
+ ],
+ "Al.MclI_NITeq": [
+  "PIOQ_Mcl.lean",
+  257
+ ],
+ "Al.MclI_NIX": [
+  "PIOQ_Mcl.lean",
+  372
+ ],
+ "Al.MclI_Nec": [
+  "PIOQ_Mcl.lean",
+  411
+ ],
+ "Al.MclI_PCong": [
+  "PIOQ_Mcl.lean",
+  300
+ ],
+ "Al.MclI_PExt": [
+  "PIOQ_Mcl.lean",
+  315
+ ],
+ "Al.MclI_Recovery": [
+  "PIOQ_Mcl.lean",
+  223
+ ],
+ "Al.MclI_Slogan": [
+  "PIOQ_Mcl.lean",
+  206
+ ],
+ "Al.MclI_TAx": [
+  "PIOQ_Mcl.lean",
+  363
+ ],
+ "Al.MclI_TBF": [
+  "PIOQ_Mcl.lean",
+  384
+ ],
+ "Al.MclI_TCBF": [
+  "PIOQ_Mcl.lean",
+  389
+ ],
+ "Al.MclI_TNec": [
+  "PIOQ_Mcl.lean",
+  394
+ ],
+ "Al.MclI_TopBot": [
+  "PIOQ_Mcl.lean",
+  337
+ ],
+ "Al.MclI_Truth": [
+  "PIOQ_Mcl.lean",
+  329
+ ],
+ "Al.MclI_WCong": [
+  "PIOQ_Mcl.lean",
+  282
+ ],
+ "Al.MclI_model": [
+  "PIOQ_Mcl.lean",
+  123
+ ],
+ "Al.MclI_not_Bool": [
+  "PIOQ_Mcl.lean",
+  195
+ ],
+ "Al.MclI_not_Class": [
+  "PIOQ_Mcl.lean",
+  419
+ ],
+ "Al.MclI_not_Hae": [
+  "PIOQ_Mcl.lean",
+  358
+ ],
+ "Al.MclI_not_PropExt": [
+  "PIOQ_Mcl.lean",
+  156
+ ],
+ "Al.MclI_not_Twin": [
+  "PIOQ_Mcl.lean",
+  350
+ ],
  "Al.Mcl_Collapse": [
   "PIAlgModels.lean",
   104
@@ -84,9 +376,33 @@ window.LEANINDEX = {
   "PICongQs.lean",
   416
  ],
+ "Al.Mcl_Disjoint": [
+  "PIOQ_Mcl.lean",
+  24
+ ],
+ "Al.Mcl_ExtT": [
+  "PIOQ_Mcl.lean",
+  60
+ ],
+ "Al.Mcl_Inj": [
+  "PIOQ_Mcl.lean",
+  40
+ ],
+ "Al.Mcl_IntT": [
+  "PIOQ_Mcl.lean",
+  76
+ ],
  "Al.Mcl_LLEqv": [
   "PIAlgModels.lean",
   93
+ ],
+ "Al.Mcl_NIEqv": [
+  "PIOQ_Mcl.lean",
+  85
+ ],
+ "Al.Mcl_NITeq": [
+  "PIOQ_Mcl.lean",
+  91
  ],
  "Al.Mcl_PCong": [
   "PICongQs.lean",
@@ -95,6 +411,14 @@ window.LEANINDEX = {
  "Al.Mcl_PExt": [
   "PICongQs.lean",
   449
+ ],
+ "Al.Mcl_Recovery": [
+  "PIOQ_Mcl.lean",
+  50
+ ],
+ "Al.Mcl_Slogan": [
+  "PIOQ_Mcl.lean",
+  33
  ],
  "Al.Mcl_model": [
   "PIAlgModels.lean",
@@ -644,6 +968,14 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   1737
  ],
+ "Kr.KC_BF": [
+  "PIOQ_Small.lean",
+  70
+ ],
+ "Kr.KC_CBF": [
+  "PIOQ_Small.lean",
+  76
+ ],
  "Kr.KC_Cong": [
   "PIKripkeCong.lean",
   193
@@ -767,6 +1099,90 @@ window.LEANINDEX = {
  "Kr.Mbf_not_TBFSch": [
   "PIKripkeModels.lean",
   104
+ ],
+ "Kr.MbkH_Class": [
+  "PIOQ_KBF.lean",
+  195
+ ],
+ "Kr.MbkH_Hae": [
+  "PIOQ_KBF.lean",
+  197
+ ],
+ "Kr.MbkH_LLEqv": [
+  "PIOQ_KBF.lean",
+  194
+ ],
+ "Kr.MbkH_isModelAt": [
+  "PIOQ_KBF.lean",
+  188
+ ],
+ "Kr.MbkH_not_BF": [
+  "PIOQ_KBF.lean",
+  199
+ ],
+ "Kr.MbkH_not_NDX": [
+  "PIOQ_KBF.lean",
+  211
+ ],
+ "Kr.Mbk_Class": [
+  "PIOQ_KBF.lean",
+  153
+ ],
+ "Kr.Mbk_Cong": [
+  "PIOQ_KBF.lean",
+  157
+ ],
+ "Kr.Mbk_Disjoint": [
+  "PIOQ_KBF.lean",
+  155
+ ],
+ "Kr.Mbk_ExtT": [
+  "PIOQ_KBF.lean",
+  160
+ ],
+ "Kr.Mbk_Inj": [
+  "PIOQ_KBF.lean",
+  158
+ ],
+ "Kr.Mbk_IntT": [
+  "PIOQ_KBF.lean",
+  161
+ ],
+ "Kr.Mbk_LLEqv": [
+  "PIOQ_KBF.lean",
+  154
+ ],
+ "Kr.Mbk_NDTeq": [
+  "PIOQ_KBF.lean",
+  164
+ ],
+ "Kr.Mbk_NIX": [
+  "PIOQ_KBF.lean",
+  162
+ ],
+ "Kr.Mbk_Recovery": [
+  "PIOQ_KBF.lean",
+  159
+ ],
+ "Kr.Mbk_Slogan": [
+  "PIOQ_KBF.lean",
+  156
+ ],
+ "Kr.Mbk_TBF": [
+  "PIOQ_KBF.lean",
+  172
+ ],
+ "Kr.Mbk_isModelAt": [
+  "PIOQ_KBF.lean",
+  152
+ ],
+ "Kr.Mbk_not_BF": [
+  "PIOQ_KBF.lean",
+  124
+ ],
+ "Kr.Mbk_not_NDX": [
+  "PIOQ_KBF.lean",
+  136
  ],
  "Kr.MchH_Class": [
   "PIModalX.lean",
@@ -1300,9 +1716,17 @@ window.LEANINDEX = {
   "PIBridge.lean",
   100
  ],
+ "Mall_BF": [
+  "PIOQ_Small.lean",
+  55
+ ],
  "Mall_Bridge": [
   "PIExplore.lean",
   201
+ ],
+ "Mall_CBF": [
+  "PIOQ_Small.lean",
+  60
  ],
  "Mall_Cong": [
   "PIExplore.lean",
@@ -1515,6 +1939,90 @@ window.LEANINDEX = {
  "Mcard_not_Inj": [
   "PIFoundation.lean",
   2216
+ ],
+ "Mco_Cantor": [
+  "PIOQ_Mco.lean",
+  120
+ ],
+ "Mco_Choice": [
+  "PIOQ_Mco.lean",
+  135
+ ],
+ "Mco_Class": [
+  "PIOQ_Mco.lean",
+  50
+ ],
+ "Mco_Collapse": [
+  "PIOQ_Mco.lean",
+  134
+ ],
+ "Mco_ExtT": [
+  "PIOQ_Mco.lean",
+  103
+ ],
+ "Mco_Inj": [
+  "PIOQ_Mco.lean",
+  52
+ ],
+ "Mco_IntT": [
+  "PIOQ_Mco.lean",
+  109
+ ],
+ "Mco_LLEqv": [
+  "PIOQ_Mco.lean",
+  48
+ ],
+ "Mco_PCong": [
+  "PIOQ_Mco.lean",
+  226
+ ],
+ "Mco_PropExt": [
+  "PIOQ_Mco.lean",
+  133
+ ],
+ "Mco_Recovery": [
+  "PIOQ_Mco.lean",
+  129
+ ],
+ "Mco_TopBot": [
+  "PIOQ_Mco.lean",
+  114
+ ],
+ "Mco_Truth": [
+  "PIOQ_Mco.lean",
+  111
+ ],
+ "Mco_Twin": [
+  "PIOQ_Mco.lean",
+  55
+ ],
+ "Mco_WCong": [
+  "PIOQ_Mco.lean",
+  138
+ ],
+ "Mco_model": [
+  "PIOQ_Mco.lean",
+  46
+ ],
+ "Mco_not_Cong": [
+  "PIOQ_Mco.lean",
+  153
+ ],
+ "Mco_not_Disjoint": [
+  "PIOQ_Mco.lean",
+  73
+ ],
+ "Mco_not_Hae": [
+  "PIOQ_Mco.lean",
+  60
+ ],
+ "Mco_not_PExt": [
+  "PIOQ_Mco.lean",
+  164
+ ],
+ "Mco_not_Slogan": [
+  "PIOQ_Mco.lean",
+  70
  ],
  "Mct_ExtT": [
   "PIExplore.lean",
@@ -1968,6 +2476,150 @@ window.LEANINDEX = {
   "PINF.lean",
   212
  ],
+ "Mr2_BF": [
+  "PIOQ_Mr2.lean",
+  226
+ ],
+ "Mr2_Bool": [
+  "PIOQ_Mr2.lean",
+  212
+ ],
+ "Mr2_CBF": [
+  "PIOQ_Mr2.lean",
+  231
+ ],
+ "Mr2_Cantor": [
+  "PIOQ_Mr2.lean",
+  160
+ ],
+ "Mr2_Choice": [
+  "PIOQ_Mr2.lean",
+  178
+ ],
+ "Mr2_Class": [
+  "PIOQ_Mr2.lean",
+  82
+ ],
+ "Mr2_Collapse": [
+  "PIOQ_Mr2.lean",
+  180
+ ],
+ "Mr2_Cong": [
+  "PIOQ_Mr2.lean",
+  99
+ ],
+ "Mr2_IdId": [
+  "PIOQ_Mr2.lean",
+  221
+ ],
+ "Mr2_LLEqv": [
+  "PIOQ_Mr2.lean",
+  79
+ ],
+ "Mr2_NDTeq": [
+  "PIOQ_Mr2.lean",
+  197
+ ],
+ "Mr2_NDX": [
+  "PIOQ_Mr2.lean",
+  203
+ ],
+ "Mr2_NIEqv": [
+  "PIOQ_Mr2.lean",
+  191
+ ],
+ "Mr2_NITeq": [
+  "PIOQ_Mr2.lean",
+  194
+ ],
+ "Mr2_NIX": [
+  "PIOQ_Mr2.lean",
+  200
+ ],
+ "Mr2_Nec": [
+  "PIOQ_Mr2.lean",
+  209
+ ],
+ "Mr2_PCong": [
+  "PIOQ_Mr2.lean",
+  110
+ ],
+ "Mr2_PExt": [
+  "PIOQ_Mr2.lean",
+  114
+ ],
+ "Mr2_PropExt": [
+  "PIOQ_Mr2.lean",
+  176
+ ],
+ "Mr2_Recovery": [
+  "PIOQ_Mr2.lean",
+  84
+ ],
+ "Mr2_Slogan": [
+  "PIOQ_Mr2.lean",
+  94
+ ],
+ "Mr2_TAx": [
+  "PIOQ_Mr2.lean",
+  188
+ ],
+ "Mr2_TBF": [
+  "PIOQ_Mr2.lean",
+  215
+ ],
+ "Mr2_TCBF": [
+  "PIOQ_Mr2.lean",
+  218
+ ],
+ "Mr2_TNec": [
+  "PIOQ_Mr2.lean",
+  206
+ ],
+ "Mr2_TopBot": [
+  "PIOQ_Mr2.lean",
+  149
+ ],
+ "Mr2_Truth": [
+  "PIOQ_Mr2.lean",
+  146
+ ],
+ "Mr2_WCong": [
+  "PIOQ_Mr2.lean",
+  106
+ ],
+ "Mr2_model": [
+  "PIOQ_Mr2.lean",
+  72
+ ],
+ "Mr2_not_Disjoint": [
+  "PIOQ_Mr2.lean",
+  122
+ ],
+ "Mr2_not_ExtT": [
+  "PIOQ_Mr2.lean",
+  127
+ ],
+ "Mr2_not_Hae": [
+  "PIOQ_Mr2.lean",
+  165
+ ],
+ "Mr2_not_Inj": [
+  "PIOQ_Mr2.lean",
+  88
+ ],
+ "Mr2_not_IntT": [
+  "PIOQ_Mr2.lean",
+  136
+ ],
+ "Mr2_not_LLPoly": [
+  "PIOQ_Mr2.lean",
+  141
+ ],
+ "Mr2_not_Twin": [
+  "PIOQ_Mr2.lean",
+  170
+ ],
  "Mr_Class": [
   "PIClass.lean",
   221
@@ -2076,6 +2728,14 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   3027
  ],
+ "Mtot_BF": [
+  "PIOQ_Small.lean",
+  44
+ ],
+ "Mtot_CBF": [
+  "PIOQ_Small.lean",
+  49
+ ],
  "Mtot_Cantor": [
   "PIExplore.lean",
   144
@@ -2167,6 +2827,10 @@ window.LEANINDEX = {
  "Mtow2_PExt": [
   "PICongQs.lean",
   984
+ ],
+ "Mtow2_Slogan": [
+  "PIOQ_Tow2.lean",
+  8
  ],
  "Mtow2_model": [
   "PICongQs.lean",
@@ -2403,6 +3067,10 @@ window.LEANINDEX = {
  "Tg.Mi_NITeq": [
   "PIWorlds.lean",
   1242
+ ],
+ "Tg.Mi_NIX": [
+  "PIOQ_Small.lean",
+  35
  ],
  "Tg.Mi_PExt": [
   "PINew.lean",
@@ -2727,6 +3395,14 @@ window.LEANINDEX = {
  "Wd.MhT_NIX": [
   "PIModalX2.lean",
   200
+ ],
+ "Wd.MhaeC_BF": [
+  "PIOQ_Small.lean",
+  26
+ ],
+ "Wd.MhaeC_CBF": [
+  "PIOQ_Small.lean",
+  27
  ],
  "Wd.MhaeC_Class": [
   "PIClassModels.lean",
@@ -3144,13 +3820,229 @@ window.LEANINDEX = {
   "PIBarcanModels.lean",
   52
  ],
+ "Wd.MttT_BF": [
+  "PIOQ_MttT.lean",
+  175
+ ],
+ "Wd.MttT_Bool": [
+  "PIOQ_MttT.lean",
+  97
+ ],
+ "Wd.MttT_CBF": [
+  "PIOQ_MttT.lean",
+  181
+ ],
+ "Wd.MttT_Cantor": [
+  "PIOQ_MttT.lean",
+  127
+ ],
+ "Wd.MttT_Choice": [
+  "PIOQ_MttT.lean",
+  192
+ ],
+ "Wd.MttT_Disjoint": [
+  "PIOQ_MttT.lean",
+  118
+ ],
+ "Wd.MttT_ExtT": [
+  "PIOQ_MttT.lean",
+  141
+ ],
+ "Wd.MttT_Inj": [
+  "PIOQ_MttT.lean",
+  131
+ ],
+ "Wd.MttT_IntT": [
+  "PIOQ_MttT.lean",
+  147
+ ],
+ "Wd.MttT_NDTeq": [
+  "PIOQ_MttT.lean",
+  114
+ ],
+ "Wd.MttT_NDX": [
+  "PIOQ_MttT.lean",
+  103
+ ],
+ "Wd.MttT_NIEqv": [
+  "PIOQ_MttT.lean",
+  106
+ ],
+ "Wd.MttT_NITeq": [
+  "PIOQ_MttT.lean",
+  110
+ ],
+ "Wd.MttT_NIX": [
+  "PIOQ_MttT.lean",
+  101
+ ],
+ "Wd.MttT_Nec": [
+  "PIOQ_MttT.lean",
+  187
+ ],
+ "Wd.MttT_PCong": [
+  "PIOQ_MttT.lean",
+  262
+ ],
+ "Wd.MttT_Recovery": [
+  "PIOQ_MttT.lean",
+  136
+ ],
+ "Wd.MttT_Slogan": [
+  "PIOQ_MttT.lean",
+  121
+ ],
+ "Wd.MttT_TAx": [
+  "PIOQ_MttT.lean",
+  74
+ ],
+ "Wd.MttT_TBF": [
+  "PIOQ_MttT.lean",
+  158
+ ],
+ "Wd.MttT_TCBF": [
+  "PIOQ_MttT.lean",
+  164
+ ],
+ "Wd.MttT_TNec": [
+  "PIOQ_MttT.lean",
+  170
+ ],
+ "Wd.MttT_TopBot": [
+  "PIOQ_MttT.lean",
+  88
+ ],
+ "Wd.MttT_model": [
+  "PIOQ_MttT.lean",
+  30
+ ],
+ "Wd.MttT_not_Class": [
+  "PIOQ_MttT.lean",
+  230
+ ],
+ "Wd.MttT_not_Collapse": [
+  "PIOQ_MttT.lean",
+  196
+ ],
+ "Wd.MttT_not_Cong": [
+  "PIOQ_MttT.lean",
+  235
+ ],
+ "Wd.MttT_not_Hae": [
+  "PIOQ_MttT.lean",
+  281
+ ],
+ "Wd.MttT_not_IdId": [
+  "PIOQ_MttT.lean",
+  214
+ ],
+ "Wd.MttT_not_LLEqv": [
+  "PIOQ_MttT.lean",
+  210
+ ],
+ "Wd.MttT_not_LLPoly": [
+  "PIOQ_MttT.lean",
+  310
+ ],
+ "Wd.MttT_not_PExt": [
+  "PIOQ_MttT.lean",
+  272
+ ],
+ "Wd.MttT_not_PropExt": [
+  "PIOQ_MttT.lean",
+  201
+ ],
+ "Wd.MttT_not_Truth": [
+  "PIOQ_MttT.lean",
+  81
+ ],
+ "Wd.MttT_not_Twin": [
+  "PIOQ_MttT.lean",
+  285
+ ],
+ "Wd.MttT_not_WCong": [
+  "PIOQ_MttT.lean",
+  249
+ ],
+ "Wd.Mtt_BF": [
+  "PIOQ_Mtt.lean",
+  150
+ ],
+ "Wd.Mtt_Bool": [
+  "PIOQ_Mtt.lean",
+  67
+ ],
+ "Wd.Mtt_CBF": [
+  "PIOQ_Mtt.lean",
+  156
+ ],
+ "Wd.Mtt_Cantor": [
+  "PIOQ_Mtt.lean",
+  80
+ ],
+ "Wd.Mtt_Disjoint": [
+  "PIOQ_Mtt.lean",
+  71
+ ],
+ "Wd.Mtt_ExtT": [
+  "PIOQ_Mtt.lean",
+  94
+ ],
+ "Wd.Mtt_Inj": [
+  "PIOQ_Mtt.lean",
+  84
+ ],
+ "Wd.Mtt_IntT": [
+  "PIOQ_Mtt.lean",
+  100
+ ],
+ "Wd.Mtt_NDTeq": [
+  "PIOQ_Mtt.lean",
+  124
+ ],
  "Wd.Mtt_NDX": [
   "PIModalX.lean",
   180
  ],
+ "Wd.Mtt_NIEqv": [
+  "PIOQ_Mtt.lean",
+  111
+ ],
+ "Wd.Mtt_NITeq": [
+  "PIOQ_Mtt.lean",
+  118
+ ],
  "Wd.Mtt_NIX": [
   "PIModalX.lean",
   178
+ ],
+ "Wd.Mtt_Nec": [
+  "PIOQ_Mtt.lean",
+  162
+ ],
+ "Wd.Mtt_PCong": [
+  "PIOQ_Mtt.lean",
+  222
+ ],
+ "Wd.Mtt_Recovery": [
+  "PIOQ_Mtt.lean",
+  89
+ ],
+ "Wd.Mtt_Slogan": [
+  "PIOQ_Mtt.lean",
+  74
+ ],
+ "Wd.Mtt_TBF": [
+  "PIOQ_Mtt.lean",
+  133
+ ],
+ "Wd.Mtt_TCBF": [
+  "PIOQ_Mtt.lean",
+  139
+ ],
+ "Wd.Mtt_TNec": [
+  "PIOQ_Mtt.lean",
+  145
  ],
  "Wd.Mtt_TopBot": [
   "PIWorlds.lean",
@@ -3160,9 +4052,61 @@ window.LEANINDEX = {
   "PIWorlds.lean",
   1162
  ],
+ "Wd.Mtt_not_Bridge": [
+  "PIOQ_Mtt.lean",
+  291
+ ],
+ "Wd.Mtt_not_Class": [
+  "PIOQ_Mtt.lean",
+  329
+ ],
+ "Wd.Mtt_not_Collapse": [
+  "PIOQ_Mtt.lean",
+  185
+ ],
+ "Wd.Mtt_not_Cong": [
+  "PIOQ_Mtt.lean",
+  212
+ ],
+ "Wd.Mtt_not_Hae": [
+  "PIOQ_Mtt.lean",
+  244
+ ],
+ "Wd.Mtt_not_IdId": [
+  "PIOQ_Mtt.lean",
+  257
+ ],
+ "Wd.Mtt_not_LLEqv": [
+  "PIOQ_Mtt.lean",
+  181
+ ],
+ "Wd.Mtt_not_LLPoly": [
+  "PIOQ_Mtt.lean",
+  277
+ ],
+ "Wd.Mtt_not_PExt": [
+  "PIOQ_Mtt.lean",
+  233
+ ],
+ "Wd.Mtt_not_PropExt": [
+  "PIOQ_Mtt.lean",
+  193
+ ],
  "Wd.Mtt_not_TAx": [
   "PIWorlds.lean",
   1187
+ ],
+ "Wd.Mtt_not_Truth": [
+  "PIOQ_Mtt.lean",
+  174
+ ],
+ "Wd.Mtt_not_Twin": [
+  "PIOQ_Mtt.lean",
+  250
+ ],
+ "Wd.Mtt_not_WCong": [
+  "PIOQ_Mtt.lean",
+  217
  ],
  "Wd.MtwC_Class": [
   "PIClassModels.lean",
@@ -3316,6 +4260,10 @@ window.LEANINDEX = {
   "PIModal.lean",
   98
  ],
+ "d_Cong_of_DisjPCong": [
+  "PIOQ_Der.lean",
+  127
+ ],
  "d_ExtT_of_Collapse": [
   "PIModal.lean",
   132
@@ -3347,6 +4295,10 @@ window.LEANINDEX = {
  "d_LLEqv_of_IdId": [
   "PIModal.lean",
   163
+ ],
+ "d_LLEqv_of_WCongTruth": [
+  "PIOQ_Der.lean",
+  45
  ],
  "d_LLPoly_of_Disjoint": [
   "PISchemas.lean",
@@ -3447,6 +4399,10 @@ window.LEANINDEX = {
  "d_TopBot_of_Truth": [
   "PIExplore.lean",
   289
+ ],
+ "d_Truth_of_CollapseT": [
+  "PIOQ_Der.lean",
+  29
  ],
  "d_Truth_of_PropExt": [
   "PINew.lean",

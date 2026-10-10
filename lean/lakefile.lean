@@ -107,3 +107,33 @@ lean_lib PIModalX2
 
 @[default_target]
 lean_lib PIBF
+
+@[default_target]
+lean_lib PIOQ_KBF
+
+@[default_target]
+lean_lib PIOQ_Mr2
+
+@[default_target]
+lean_lib PIOQ_Mco
+
+@[default_target]
+lean_lib PIOQ_Der
+
+@[default_target]
+lean_lib PIOQ_Mcl
+
+@[default_target]
+lean_lib PIOQ_Mtt
+
+@[default_target]
+lean_lib PIOQ_MttT
+
+@[default_target]
+lean_lib PIOQ_MId
+
+@[default_target]
+lean_lib PIOQ_Small
+
+@[default_target]
+lean_lib PIOQ_Tow2
