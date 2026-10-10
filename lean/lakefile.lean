@@ -74,3 +74,6 @@ lean_lib PIClass
 
 @[default_target]
 lean_lib PIClassModels
+
+@[default_target]
+lean_lib PIKripke
