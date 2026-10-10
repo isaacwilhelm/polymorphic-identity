@@ -98,3 +98,6 @@ lean_lib PICongQs
 
 @[default_target]
 lean_lib PIHaeQs
+
+@[default_target]
+lean_lib PIModalX
