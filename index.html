@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
-<link rel="stylesheet" href="style.css?v=20261011f">
+<link rel="stylesheet" href="style.css?v=20261011g">
 </head>
 <body>
 <header>
@@ -78,7 +78,7 @@
         <li><b>A broader semantics:</b> in standard models, the items of type <i>t</i> are the two truth values, and in every such model of PI, Int≈ and Ext≈ agree. The file <code>lean/PITagged.lean</code> repeats the semantics and the soundness proof for models in which propositions are more fine-grained than truth values (a truth value with a tag). One such model, 𝔐_int, shows that PI + Int≈ does not prove Ext≈.</li>
         <li><b>A semantics with worlds:</b> the file <code>lean/PIWorlds.lean</code> repeats the semantics and the soundness proof once more, for models in which propositions are sets of worlds, a sentence is true when it is true at the actual world, and identity may hold at some worlds and not others. These models separate the principles of necessity and grain (T, Collapse, NI≡, NI≈, ND≈, Booleanism, the Identity Identity, and the Barcan formulas for types).</li>
         <li><b>The most general semantics with full function spaces:</b> <code>lean/PIAlg.lean</code> repeats the soundness proof for models in which propositions form any set with a truth predicate, and each model supplies the operations for the connectives and quantifiers, subject only to their truth conditions; the standard, tagged, and world semantics are special cases. <code>lean/PIAlgI.lean</code> does the same for models in which, in addition, items of a function type are more fine-grained than their graphs (PI has neither η-conversion nor extensionality).</li>
-        <li><b>Kripke models:</b> <code>lean/PIKripke.lean</code> repeats the semantics and the soundness proof for models in which worlds come with an accessibility relation, two propositions are identical at a world just in case they agree at every world it can see, functions must respect identity at every world, the item quantifier ranges over the items that respect identity at the world in question, and the type quantifier ranges over a domain of types that can grow from world to world. Soundness holds at every world, by a Kripke version of the invariance lemma, so every such model of PI is a model of PIᶜ. The models 𝔐_k,bf and 𝔐_k,nd (<code>lean/PIKripkeModels.lean</code>, <code>lean/PIKripkeND.lean</code>) show that PIᶜ proves neither the Barcan formula for types nor ND≈.</li>
+        <li><b>Kripke models:</b> <code>lean/PIKripke.lean</code> repeats the semantics and the soundness proof for models in which worlds come with an accessibility relation, two propositions are identical at a world just in case they agree at every world it can see, functions must respect identity at every world, the item quantifier ranges over the items that respect identity at the world in question, and the type quantifier ranges over a domain of types that can grow from world to world. Soundness holds at every world, by a Kripke version of the invariance lemma, so every such model of PI is a model of PIᶜ. The models 𝔐_k,bf and 𝔐_k,nd (<code>lean/PIKripkeModels.lean</code>, <code>lean/PIKripkeND.lean</code>) show that PIᶜ proves neither the Barcan formula for types nor ND≈, and <code>lean/PIKripkeHae.lean</code> adds haecceities to them.</li>
         <li><b>Soundness and completeness:</b> for <em>general models</em>, a broader class of models in which function types need not contain every function, propositions need only have truth values, and types need not be freely generated. A formula is provable in PI⁻ together with any set of further sentences just in case it is true in every general model in which those sentences are true. Since PI is PI⁻ with LL≡ added, this covers PI too. Files <code>lean/PIGeneral.lean</code> (the definition, and soundness) and <code>lean/PISyntax.lean</code>, <code>lean/PIEnum.lean</code>, <code>lean/PICompleteness.lean</code>, <code>lean/PICanonical.lean</code> (completeness, by a Henkin construction); the final theorem is <code>sound_complete</code>.</li>
       </ul>
       <p>For a few models (𝔐_κ, 𝔐_card, and 𝔐_ρ), the Lean model is a simpler construction than the one described, with the same pattern of true and false principles. Each model's Lean note says how it is built.</p>
@@ -101,8 +101,8 @@
 
 <footer class="wrap">Isaac Wilhelm · Polymorphic identity: derivations, models, and Lean proofs.</footer>
 
-<script src="data.js?v=20261011f"></script>
-<script src="lean-index.js?v=20261011f"></script>
-<script defer src="app.js?v=20261011f"></script>
+<script src="data.js?v=20261011g"></script>
+<script src="lean-index.js?v=20261011g"></script>
+<script defer src="app.js?v=20261011g"></script>
 </body>
 </html>

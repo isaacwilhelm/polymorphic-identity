@@ -360,6 +360,26 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   1737
  ],
+ "Kr.MbfH_Class": [
+  "PIKripkeHae.lean",
+  320
+ ],
+ "Kr.MbfH_Hae": [
+  "PIKripkeHae.lean",
+  321
+ ],
+ "Kr.MbfH_LLEqv": [
+  "PIKripkeHae.lean",
+  319
+ ],
+ "Kr.MbfH_isModelAt": [
+  "PIKripkeHae.lean",
+  313
+ ],
+ "Kr.MbfH_not_TBF": [
+  "PIKripkeHae.lean",
+  331
+ ],
  "Kr.Mbf_Class": [
   "PIKripkeModels.lean",
   106
@@ -392,6 +412,10 @@ window.LEANINDEX = {
   "PIKripkeND.lean",
   451
  ],
+ "Kr.Mbf_PExt": [
+  "PIKripkeND.lean",
+  466
+ ],
  "Kr.Mbf_Recovery": [
   "PIKripkeModels.lean",
   113
@@ -407,6 +431,26 @@ window.LEANINDEX = {
  "Kr.Mbf_not_TBFSch": [
   "PIKripkeModels.lean",
   104
+ ],
+ "Kr.MndH_Class": [
+  "PIKripkeHae.lean",
+  393
+ ],
+ "Kr.MndH_Hae": [
+  "PIKripkeHae.lean",
+  394
+ ],
+ "Kr.MndH_LLEqv": [
+  "PIKripkeHae.lean",
+  392
+ ],
+ "Kr.MndH_isModelAt": [
+  "PIKripkeHae.lean",
+  380
+ ],
+ "Kr.MndH_not_NDTeq": [
+  "PIKripkeHae.lean",
+  396
  ],
  "Kr.MndK_isModelAt": [
   "PIKripkeND.lean",
@@ -439,6 +483,10 @@ window.LEANINDEX = {
  "Kr.Mnd_LLEqv": [
   "PIWorlds.lean",
   1039
+ ],
+ "Kr.Mnd_PExt": [
+  "PIWorlds.lean",
+  1036
  ],
  "Kr.Mnd_Recovery": [
   "PIKripkeND.lean",
