@@ -549,14 +549,14 @@ theorem MkIE_not_PExt : ¬ MkIEF.Valid PExt := fun hv => by
 /-! ### The Barcan formula and Functional Choice fail -/
 
 /-- Identity at a world, at `A`, implies equality. -/
-theorem relA_eq {v : UIE.W} {x y : GIE} (h : UIE.rel ieA v x y) : x = y :=
+theorem relA_eqIE {v : UIE.W} {x y : GIE} (h : UIE.rel ieA v x y) : x = y :=
   funext fun p => h v (UIE.Rrefl v) p p (fun _ _ => Iff.rfl)
 
 /-- The proposition true at `1` where `p` is, and elsewhere where `q` is. -/
 def mixIE (p q : Fin 3 → Prop) : Fin 3 → Prop := fun w => (w = 1 ∧ p w) ∨ (w ≠ 1 ∧ q w)
 
 /-- An item of `A` at the actual world is constant. -/
-theorem const_of_adm0 {x : GIE} (h : UIE.rel ieA UIE.w0 x x) (p q : Fin 3 → Prop) : x p = x q := by
+theorem constIE_of_adm0 {x : GIE} (h : UIE.rel ieA UIE.w0 x x) (p q : Fin 3 → Prop) : x p = x q := by
   have h1 : x p = x (mixIE p q) := h (1 : Fin 3) (Or.inr rfl) p (mixIE p q) (fun u hu => by
     rcases hu with rfl | hu
     · exact ⟨fun hp => Or.inl ⟨rfl, hp⟩, fun h' => h'.elim (fun h'' => h''.2) (fun h'' => absurd rfl h''.1)⟩
@@ -573,7 +573,7 @@ def FIE : UIE.El (.arr ieA .t) := fun (x : GIE) (_ : Fin 3) => ∀ p q, x p = x 
 
 theorem FIE_adm : UIE.rel (.arr ieA .t) UIE.w0 FIE FIE := by
   intro v _ x y hxy
-  have e : x = y := relA_eq hxy
+  have e : x = y := relA_eqIE hxy
   subst e
   exact fun _ _ => Iff.rfl
 
@@ -583,7 +583,7 @@ theorem MkIE_not_BF : ¬ MkIEF.Valid BF := fun hv => by
   have h := hv (fun i => i.elim0) (fun i => i.elim0) () trivial
   have h1 := (MkIEF.holdsAt_all _ _ _ _ _).mp ((MkIEF.holdsAt_tall _ _ _ _).mp h ieA trivial) FIE FIE_adm
   have h2 := (MkIEF.holdsAt_imp _ _ _ _ _).mp h1 ((MkIEF.holdsAt_all _ _ _ _ _).mpr fun _ hx =>
-    (MkIEF.box_of MkIE_heq _ _ _ _).mpr fun _ _ => const_of_adm0 hx)
+    (MkIEF.box_of MkIE_heq _ _ _ _).mpr fun _ _ => constIE_of_adm0 hx)
   have h3 := (MkIEF.box_of MkIE_heq _ _ _ _).mp h2 (1 : Fin 3) (Or.inr rfl)
   have h4 := (MkIEF.holdsAt_all _ _ _ _ _).mp h3 f1IE f1IE_adm
   have h5 : ∀ p q : Fin 3 → Prop, f1IE p = f1IE q := h4
@@ -612,7 +612,7 @@ theorem MkIE_not_Choice : ¬ MkIEF.Valid Choice := fun hv => by
     · exact ⟨true, rfl, show (true = true ↔ p (0 : Fin 3)) from ⟨fun _ => hp, fun _ => rfl⟩⟩
     · exact ⟨false, rfl, show (false = true ↔ p (0 : Fin 3)) from ⟨fun e => Bool.noConfusion e, fun h => absurd h hp⟩⟩)
   obtain ⟨f, hf, h3⟩ := (MkIEF.holdsAt_ex _ _ _ _ _).mp h2
-  have hc := const_of_adm0 hf
+  have hc := constIE_of_adm0 hf
   have h4 : f (fun _ => True) = true ↔ True := (MkIEF.holdsAt_all _ _ _ _ _).mp h3 (fun _ => True) (fun _ _ => Iff.rfl)
   have h5 : f (fun _ => False) = true ↔ False :=
     (MkIEF.holdsAt_all _ _ _ _ _).mp h3 (fun _ => False) (fun _ _ => Iff.rfl)
@@ -622,13 +622,13 @@ theorem MkIE_not_Choice : ¬ MkIEF.Valid Choice := fun hv => by
 
 open Derive in
 set_option maxHeartbeats 4000000 in
-theorem PredA_iff1 (x y : GIE) :
+theorem PredA_iff1IE (x y : GIE) :
     MkIEF.HoldsAt (.app (.tapp ((PredA.twk.twk.wk tv1).wk tv0) tv1) (.var (.there .here)))
       (scons ieB (scons ieA (scons ieA (fun i => i.elim0)))) (((), x), y) UIE.w0 ↔ ieA = ieA := Iff.rfl
 
 open Derive in
 set_option maxHeartbeats 4000000 in
-theorem PredA_iff0 (x y : GIE) :
+theorem PredA_iff0IE (x y : GIE) :
     MkIEF.HoldsAt (.app (.tapp ((PredA.twk.twk.wk tv1).wk tv0) tv0) (.var .here))
       (scons ieB (scons ieA (scons ieA (fun i => i.elim0)))) (((), x), y) UIE.w0 ↔ ieB = ieA := Iff.rfl
 
@@ -641,8 +641,8 @@ theorem MkIE_not_LLPoly : ¬ MkIEF.Valid (Tm.tall (LLPoly PredA)) := fun hv => b
     ((MkIEF.holdsAt_tall _ _ _ _).mp h ieA trivial) ieA trivial) ieB trivial
   have h2 := (MkIEF.holdsAt_all _ _ _ _ _).mp ((MkIEF.holdsAt_all _ _ _ _ _).mp h1 kIE (kIE_adm _)) kIE (kIE_adm _)
   have h3 := (MkIEF.holdsAt_imp _ _ _ _ _).mp h2 ((MkIEF.holdsAt_eqv _ _ _ _ _ _ _).mpr (MkIE_AB kIE (kIE_adm _)))
-  have h4 := (MkIEF.holdsAt_imp _ _ _ _ _).mp h3 ((PredA_iff1 kIE kIE).mpr rfl)
-  exact absurd ((PredA_iff0 kIE kIE).mp h4) (by decide)
+  have h4 := (MkIEF.holdsAt_imp _ _ _ _ _).mp h3 ((PredA_iff1IE kIE kIE).mpr rfl)
+  exact absurd ((PredA_iff0IE kIE kIE).mp h4) (by decide)
 
 end Kr
 end PIF

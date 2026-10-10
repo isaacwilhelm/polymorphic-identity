@@ -137,3 +137,15 @@ lean_lib PIOQ_Small
 
 @[default_target]
 lean_lib PIOQ_Tow2
+
+@[default_target]
+lean_lib PIOQ_KIE
+
+@[default_target]
+lean_lib PIOQ_LLP
+
+@[default_target]
+lean_lib PIOQ_Swap
+
+@[default_target]
+lean_lib PIOQ_MIdB
