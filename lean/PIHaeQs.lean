@@ -592,4 +592,237 @@ theorem MhieC_IntT : MhieF.Valid IntT := by
 
 end Wd
 
+/-! ## Roots in general
+
+For any family of sets indexed by codes, and any injective way `hcy` of sending an item `z` of `α`
+to an item of `α→t` (its haecceity), the root of an item is got by stripping off haecceities. -/
+
+section GRoot
+open Classical
+variable {B : Type} (El : Code B → Type) (hcy : ∀ a, El a → El (.arr a .t))
+
+noncomputable def groot : (a : Code B) → El a → (Σ b : Code B, El b)
+  | .arr a .t, f => if h : ∃ z, f = hcy a z then groot a (Classical.choose h) else ⟨.arr a .t, f⟩
+  | a, x => ⟨a, x⟩
+
+theorem groot_t (a : Code B) (f : El (.arr a .t)) :
+    groot El hcy (.arr a .t) f = if h : ∃ z, f = hcy a z then groot El hcy a (Classical.choose h) else ⟨.arr a .t, f⟩ := by
+  rw [groot]
+
+theorem groot_lt : ∀ (a : Code B) (x : El a), groot El hcy a x = ⟨a, x⟩ ∨ csz (groot El hcy a x).1 < csz a
+  | .e, _ => Or.inl rfl
+  | .t, _ => Or.inl rfl
+  | .base _, _ => Or.inl rfl
+  | .arr _ .e, _ => Or.inl rfl
+  | .arr _ (.base _), _ => Or.inl rfl
+  | .arr _ (.arr _ _), _ => Or.inl rfl
+  | .arr a .t, f => by
+    rw [groot_t]
+    split
+    · next h =>
+      refine Or.inr ?_
+      rcases groot_lt a (Classical.choose h) with e | e
+      · rw [e]; show csz a < csz a + 1 + 1; omega
+      · show _ < csz a + 1 + 1; omega
+    · exact Or.inl rfl
+
+theorem groot_le (a : Code B) (x : El a) : csz (groot El hcy a x).1 ≤ csz a := by
+  rcases groot_lt El hcy a x with e | e
+  · rw [e]; exact Nat.le_refl _
+  · exact Nat.le_of_lt e
+
+theorem groot_not (a : Code B) (f : El (.arr a .t)) (hf : ¬ ∃ z, f = hcy a z) :
+    groot El hcy (.arr a .t) f = ⟨.arr a .t, f⟩ := by
+  rw [groot_t]
+  split
+  · exact absurd ‹_› hf
+  · rfl
+
+variable {El hcy}
+variable (hinj : ∀ a (z z' : El a), hcy a z = hcy a z' → z = z')
+include hinj
+
+theorem groot_hcy (a : Code B) (z : El a) : groot El hcy (.arr a .t) (hcy a z) = groot El hcy a z := by
+  have h : ∃ z', hcy a z = hcy a z' := ⟨z, rfl⟩
+  rw [groot_t]
+  split
+  · rename_i h'; rw [← hinj a _ _ (Classical.choose_spec h')]
+  · exact absurd h ‹_›
+
+theorem groot_inj : ∀ (a : Code B) (x y : El a), groot El hcy a x = groot El hcy a y → x = y
+  | .e, _, _, h => eq_of_heq (Sigma.mk.inj h).2
+  | .t, _, _, h => eq_of_heq (Sigma.mk.inj h).2
+  | .base _, _, _, h => eq_of_heq (Sigma.mk.inj h).2
+  | .arr _ .e, _, _, h => eq_of_heq (Sigma.mk.inj h).2
+  | .arr _ (.base _), _, _, h => eq_of_heq (Sigma.mk.inj h).2
+  | .arr _ (.arr _ _), _, _, h => eq_of_heq (Sigma.mk.inj h).2
+  | .arr a .t, f, g, h => by
+    by_cases hf : ∃ z, f = hcy a z <;> by_cases hg : ∃ z, g = hcy a z
+    · obtain ⟨z, rfl⟩ := hf; obtain ⟨z', rfl⟩ := hg
+      rw [groot_hcy hinj, groot_hcy hinj] at h
+      rw [groot_inj a z z' h]
+    · obtain ⟨z, rfl⟩ := hf
+      rw [groot_hcy hinj, groot_not El hcy a g hg] at h
+      have := groot_le El hcy a z; rw [congrArg Sigma.fst h] at this; simp only [csz] at this; omega
+    · obtain ⟨z', rfl⟩ := hg
+      rw [groot_hcy hinj, groot_not El hcy a f hf] at h
+      have := groot_le El hcy a z'; rw [← congrArg Sigma.fst h] at this; simp only [csz] at this; omega
+    · rw [groot_not El hcy a f hf, groot_not El hcy a g hg] at h
+      exact eq_of_heq (Sigma.mk.inj h).2
+
+/-- The haecceity of `x`, given by sameness of root, is `hcy x`. -/
+theorem groot_hae (a : Code B) (x : El a) (f : El (.arr a .t)) (hf : f = hcy a x) :
+    groot El hcy a x = groot El hcy (.arr a .t) f := by
+  rw [hf, groot_hcy hinj]
+
+end GRoot
+
+/-! ## `𝔐_q,hae`: Booleanism, the Identity Identity, NI≡, NI≈ and TCBF without Classicism, in PI + Haecceitism
+
+As `𝔐_q,A`, except that items are identified, rigidly, just in case they have the same root. -/
+
+namespace Al
+
+def hcyQ (a : Code Empty) (z : univQ.El a) : univQ.El (.arr a .t) := fun y _ => y = z
+
+theorem hcyQ_inj (a : Code Empty) (z z' : univQ.El a) (h : hcyQ a z = hcyQ a z') : z = z' :=
+  cast (congrFun (congrFun h z) true) rfl
+
+noncomputable abbrev rootQ := groot univQ.El hcyQ
+
+noncomputable def MqHF : Frame where
+  U := univQ
+  eqv := fun a b x y _ => rootQ a x = rootQ b y
+  teq := fun a b _ => a = b
+  neg := fun p w => ¬ p w
+  imp := fun p q w => p w → q w
+  cnj := fun p q w => p w ∧ q w
+  dsj := fun p q w => p w ∨ q w
+  bic := fun p q w => p w ↔ q w
+  all := fun _ f w => ∀ x, f x w
+  ex := fun _ f w => ∃ x, f x w
+  tall := fun Q w => cond w (∀ a, Q a true) False
+  tex := fun Q w => cond w (∃ a, Q a true) True
+  hneg := fun _ => Iff.rfl
+  himp := fun _ _ => Iff.rfl
+  hcnj := fun _ _ => Iff.rfl
+  hdsj := fun _ _ => Iff.rfl
+  hbic := fun _ _ => Iff.rfl
+  hall := fun _ _ => Iff.rfl
+  hex := fun _ _ => Iff.rfl
+  htall := fun _ => Iff.rfl
+  htex := fun _ => Iff.rfl
+
+theorem MqH_eqT (p q : univQ.P) : MqHF.U.V (MqHF.eqv .t .t p q) ↔ p = q :=
+  ⟨fun h => eq_of_heq (Sigma.mk.inj h).2, fun h => h ▸ rfl⟩
+
+theorem MqH_eq {a : Code Empty} {x y : univQ.El a} (h : MqHF.U.V (MqHF.eqv a a x y)) : x = y :=
+  groot_inj hcyQ_inj a x y h
+
+theorem MqH_model : MqHF.IsModelPIm :=
+  MqHF.model_of_equiv (fun _ _ => Iff.rfl) (fun _ _ => rfl) (fun _ _ _ _ h => h.symm)
+    (fun _ _ _ _ _ _ h1 h2 => (h1 : rootQ _ _ = _).trans h2)
+
+theorem MqH_top {n : Nat} {Γ : Ctx n} (ρ : MqHF.U.TEnv n) (env : MqHF.U.Env Γ ρ) :
+    MqHF.eval (topF : Fm Γ) ρ env = fun _ => True := by
+  funext w
+  have e := MqHF.eval_all (Γ := Γ) tyT (.var .here) ρ env
+  refine propext ⟨fun _ => trivial, fun _ => ?_⟩
+  show ¬ MqHF.eval (botF : Fm Γ) ρ env w
+  rw [botF, e]
+  exact fun h => h (fun _ => False)
+
+theorem MqH_LLEqv : MqHF.Valid LLEqv := by
+  intro ρ env
+  refine (MqHF.holds_tall _ _ _).mpr fun a => ?_
+  refine (MqHF.holds_all _ _ _ _).mpr fun x => (MqHF.holds_all _ _ _ _).mpr fun y => ?_
+  refine (MqHF.holds_imp _ _ _ _).mpr fun hxy => ?_
+  refine (MqHF.holds_all _ _ _ _).mpr fun G => (MqHF.holds_imp _ _ _ _).mpr fun hGx => ?_
+  have h := MqH_eq ((MqHF.holds_eqv _ _ _ _ _ _).mp hxy)
+  have e : x = y := eq_of_heq ((cast_heq _ _).symm.trans ((heq_of_eq h).trans (cast_heq _ _)))
+  subst e
+  exact hGx
+
+theorem MqH_Hae : MqHF.Valid Hae := by
+  intro ρ env
+  refine (MqHF.holds_tall _ _ _).mpr fun a => (MqHF.holds_all _ _ _ _).mpr fun x => ?_
+  refine (MqHF.holds_eqv _ _ _ _ _ _).mpr (groot_hae hcyQ_inj a x _ ?_)
+  funext y w
+  exact propext ⟨fun h => groot_inj hcyQ_inj a y x h, fun h => h ▸ rfl⟩
+
+theorem MqH_evalInst {n : Nat} {Γ : Ctx n} {k : Nat} (P : PF k) (as : Fin k → Fm Γ) (ρ : MqHF.U.TEnv n)
+    (env : MqHF.U.Env Γ ρ) (w : Bool) :
+    MqHF.eval (P.inst as) ρ env w ↔ P.evalP (fun i => MqHF.eval (as i) ρ env w) := by
+  induction P with
+  | atom i => exact Iff.rfl
+  | neg P ih => exact not_congr ih
+  | imp P Q ihP ihQ => exact imp_congr ihP ihQ
+  | conj P Q ihP ihQ => exact and_congr ihP ihQ
+  | disj P Q ihP ihQ => exact or_congr ihP ihQ
+  | iff P Q ihP ihQ => exact iff_congr ihP ihQ
+
+theorem MqH_Bool : ∀ φ, BoolSch φ → MqHF.Valid φ := by
+  rintro _ ⟨k, P, Q, hT, rfl⟩ ρ env0
+  refine MqHF.holds_closeAll k _ ρ (fun env => ?_) env0
+  have e : MqHF.eval (P.inst (varsT k)) ρ env = MqHF.eval (Q.inst (varsT k)) ρ env :=
+    funext fun w => propext ((MqH_evalInst P _ ρ env w).trans ((hT _).trans (MqH_evalInst Q _ ρ env w).symm))
+  exact (MqHF.holds_eqv_t _ _ _ _).mpr ((MqH_eqT _ _).mpr e)
+
+theorem MqH_IdId : MqHF.Valid IdId := by
+  intro ρ env
+  refine (MqHF.holds_tall _ _ _).mpr fun a => ?_
+  refine (MqHF.holds_all _ _ _ _).mpr fun x => (MqHF.holds_all _ _ _ _).mpr fun y => ?_
+  refine (MqHF.holds_eqv_t _ _ _ _).mpr ((MqH_eqT _ _).mpr ?_)
+  refine (MqHF.eval_eqv _ _ _ _ _ _).trans (Eq.trans ?_ (MqHF.eval_all
+    (Γ := ((Ctx.nil.text).ext tv0).ext tv0) tv0.pred
+    (Tm.imp (.app (.var .here) (.var (.there (.there .here)))) (.app (.var .here) (.var (.there .here))))
+    (scons a ρ) ((env, x), y)).symm)
+  funext w
+  refine propext ⟨fun h => ?_, fun h => ?_⟩
+  · have e : x = y := eq_of_heq ((cast_heq _ _).symm.trans ((heq_of_eq (MqH_eq h)).trans (cast_heq _ _)))
+    subst e; intro G hG; exact hG
+  · have hy : HEq y x := h (fun z _ => HEq z x) (by exact HEq.rfl)
+    have e : y = x := eq_of_heq hy
+    subst e
+    exact rfl
+
+theorem MqH_NIEqv : MqHF.Valid NIEqv := by
+  intro ρ env
+  refine (MqHF.holds_tall _ _ _).mpr fun a => ?_
+  refine (MqHF.holds_all _ _ _ _).mpr fun x => (MqHF.holds_all _ _ _ _).mpr fun y => ?_
+  refine (MqHF.holds_imp _ _ _ _).mpr fun hxy => ?_
+  refine (MqHF.holds_eqv_t _ _ _ _).mpr ((MqH_eqT _ _).mpr ?_)
+  exact ((MqHF.eval_eqv _ _ _ _ _ _).trans (funext fun _ => propext ⟨fun _ => trivial, fun _ => hxy⟩)).trans
+    (MqH_top (Γ := ((Ctx.nil.text).ext tv0).ext tv0) _ _).symm
+
+theorem MqH_NITeq : MqHF.Valid NITeq := by
+  intro ρ env
+  refine (MqHF.holds_tall _ _ _).mpr fun a => (MqHF.holds_tall _ _ _).mpr fun b => ?_
+  refine (MqHF.holds_imp _ _ _ _).mpr fun h => ?_
+  refine (MqHF.holds_eqv_t _ _ _ _).mpr ((MqH_eqT _ _).mpr ?_)
+  exact ((MqHF.eval_teq _ _ _ _).trans (funext fun _ => propext ⟨fun _ => trivial, fun _ => h⟩)).trans
+    (MqH_top (Γ := Ctx.nil.text.text) _ _).symm
+
+theorem MqH_TCBF : ∀ χ, TCBFSch χ → MqHF.Valid χ := by
+  rintro _ ⟨φ, rfl⟩ ρ env
+  refine (MqHF.holds_imp _ _ _ _).mpr fun h => ?_
+  have e := ((MqH_eqT _ _).mp ((MqHF.holds_eqv_t _ _ _ _).mp h)).trans (MqH_top (Γ := Ctx.nil) _ _)
+  exact (cast (congrFun e false).symm trivial : False).elim
+
+open Derive in
+/-- `𝔸α(α ≈ α) ≡ ⊤` is an instance of Classicism. -/
+theorem TallRef_class : ClassSch (Tm.eqv tyT tyT (Tm.tall (Tm.teq tv0 tv0)) topF : Fm Ctx.nil) := by
+  refine Or.inl ⟨0, Ctx.nil, Tm.tall (Tm.teq tv0 tv0), topF, ?_, rfl⟩
+  have hr : Ent (fun χ => χ = LLEqv) Δ1 [] (Tm.teq tv0 tv0) := (Ent.closed (Γ := Δ1) Prov.refTeq).tinst tv0
+  have ha : Ent (fun χ => χ = LLEqv) Ctx.nil [] (Tm.tall (Tm.teq tv0 tv0)) := Ent.tgen hr
+  exact Ent.toProv (Ent.mp2 (Ent.taut (.imp (.atom 0) (.imp (.atom 1) (.iff (.atom 0) (.atom 1))))
+    (v2 _ topF) (fun _ a b => ⟨fun _ => b, fun _ => a⟩)) ha Ent.top)
+
+theorem MqH_not_Class : ¬ ∀ χ, ClassSch χ → MqHF.Valid χ := fun h => by
+  have h0 := h _ TallRef_class (fun i => i.elim0) ()
+  have e := ((MqH_eqT _ _).mp ((MqHF.holds_eqv_t _ _ _ _).mp h0)).trans (MqH_top (Γ := Ctx.nil) _ _)
+  exact (cast (congrFun e false).symm trivial : False)
+
+end Al
+
 end PIF
