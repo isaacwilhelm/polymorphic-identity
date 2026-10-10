@@ -266,4 +266,400 @@ theorem Mtow_ExtT : Mtow.Valid ExtT := by
 
 end Tow
 
+/-! ## `𝔐_k,w1`: identity is identity at the other world (PI⁻)
+
+Two worlds; the actual world sees both, the other only itself. Items of one type are identified,
+at either world, just in case they are identical at the other world. So Cong and PExt hold; `⊤ ≢ ⊥`;
+but the proposition true only at the other world is identified with `⊤` without being true, so T
+fails. -/
+
+namespace Kr
+open Tm
+
+def UW1 : Univ where
+  W := Bool
+  w0 := true
+  R := fun w v => w = true ∨ v = false
+  Rrefl := fun w => by cases w <;> simp
+  Rtrans := by
+    intro u v w h1 h2
+    rcases h1 with h1 | h1
+    · exact Or.inl h1
+    · rcases h2 with h2 | h2
+      · exact absurd (h1.symm.trans h2) Bool.false_ne_true
+      · exact Or.inr h2
+  E := Bool
+  Base := Empty
+  B := Empty.elim
+  neE := ⟨true⟩
+  neB := fun b => b.elim
+  re := fun _ x y => x = y
+  rb := fun _ b => b.elim
+  re_refl := fun _ _ => rfl
+  re_symm := fun _ _ _ h => h.symm
+  re_trans := fun _ _ _ _ h1 h2 => h1.trans h2
+  re_mono := fun _ _ _ _ _ h => h
+  rb_refl := fun _ b => b.elim
+  rb_symm := fun _ b => b.elim
+  rb_trans := fun _ b => b.elim
+  rb_mono := fun _ _ b => b.elim
+  D := fun _ _ => True
+  D_e := fun _ => trivial
+  D_t := fun _ => trivial
+  D_arr := fun _ _ _ _ _ => trivial
+  D_mono := fun _ _ _ _ _ => trivial
+
+theorem UW1_toF : ∀ w, UW1.R w false := fun _ => Or.inr rfl
+
+def KW1 : Frame where
+  U := UW1
+  eqv := fun a b x y _ => ∃ h : a = b, UW1.rel b false (cast (congrArg UW1.El h) x) y
+  teq := fun a b _ => a = b
+  eqv_resp := by
+    intro u a b x x' y y' hx hy
+    have hx' := UW1.rel_mono a u false x x' (UW1_toF u) hx
+    have hy' := UW1.rel_mono b u false y y' (UW1_toF u) hy
+    constructor
+    · rintro ⟨h, r⟩; subst h
+      exact ⟨rfl, UW1.rel_trans _ _ _ _ _ (UW1.rel_trans _ _ _ _ _ (UW1.rel_symm _ _ _ _ hx') r) hy'⟩
+    · rintro ⟨h, r⟩; subst h
+      exact ⟨rfl, UW1.rel_trans _ _ _ _ _ (UW1.rel_trans _ _ _ _ _ hx' r) (UW1.rel_symm _ _ _ _ hy')⟩
+
+theorem KW1_same (a : Code Empty) (x y : UW1.El a) (w : Bool) : KW1.eqv a a x y w ↔ UW1.rel a false x y :=
+  ⟨fun ⟨_, r⟩ => by rwa [cast_eq] at r, fun r => ⟨rfl, r⟩⟩
+
+theorem KW1_isModelAt : KW1.IsModelAt := by
+  obtain ⟨h1, h2, h3⟩ := KW1.idAx_of
+    (fun a x w hx => (KW1_same a x x w).mpr (UW1.rel_mono a w false x x (UW1_toF w) hx))
+    (fun a b x y w h => by obtain ⟨e, r⟩ := h; subst e; exact ⟨rfl, UW1.rel_symm _ _ _ _ r⟩)
+    (fun a b c x y z w h1 h2 => by
+      obtain ⟨e1, r1⟩ := h1; obtain ⟨e2, r2⟩ := h2; subst e1; subst e2
+      exact ⟨rfl, UW1.rel_trans _ _ _ _ _ r1 r2⟩)
+  exact ⟨h1, h2, h3, KW1.refTeq_of fun _ _ => rfl, fun Q => KW1.llTeq_of_eq (fun _ _ _ h => h) Q⟩
+
+theorem KW1_cong {a b c d : Code Empty} {f : UW1.El (.arr a c)} {g : UW1.El (.arr b d)} {x : UW1.El a}
+    {y : UW1.El b} {w : Bool} (h1 : KW1.eqv (.arr a c) (.arr b d) f g w) (h2 : KW1.eqv a b x y w) :
+    KW1.eqv c d (f x) (g y) w := by
+  obtain ⟨e1, r1⟩ := h1; obtain ⟨e2, r2⟩ := h2
+  injection e1 with ea ec
+  subst ea; subst ec
+  have r1' : UW1.rel (.arr a c) false f g := (KW1_same _ f g w).mp ⟨e1, r1⟩
+  have r2' : UW1.rel a false x y := (KW1_same _ x y w).mp ⟨e2, r2⟩
+  exact ⟨rfl, r1' false (UW1.Rrefl false) x y r2'⟩
+
+theorem KW1_Cong : KW1.Valid Cong := by
+  intro ρ _ env _
+  refine (KW1.holdsAt_tall _ _ _ _).mpr fun a _ => (KW1.holdsAt_tall _ _ _ _).mpr fun b _ =>
+    (KW1.holdsAt_tall _ _ _ _).mpr fun c _ => (KW1.holdsAt_tall _ _ _ _).mpr fun d _ => ?_
+  refine (KW1.holdsAt_all _ _ _ _ _).mpr fun f _ => (KW1.holdsAt_all _ _ _ _ _).mpr fun g _ =>
+    (KW1.holdsAt_all _ _ _ _ _).mpr fun x _ => (KW1.holdsAt_all _ _ _ _ _).mpr fun y _ => ?_
+  refine (KW1.holdsAt_imp _ _ _ _ _).mpr fun h => ?_
+  have hc := (KW1.holdsAt_conj _ _ _ _ _).mp h
+  have h1 := (KW1.holdsAt_eqv _ _ _ _ _ _ _).mp hc.1
+  have h2 := (KW1.holdsAt_eqv _ _ _ _ _ _ _).mp hc.2
+  have h3 := KW1_cong h1 h2
+  exact (KW1.holdsAt_eqv _ _ _ _ _ _ _).mpr h3
+
+theorem KW1_PExt : KW1.Valid PExt := by
+  intro ρ _ env _
+  refine (KW1.holdsAt_tall _ _ _ _).mpr fun a _ => (KW1.holdsAt_tall _ _ _ _).mpr fun c _ =>
+    (KW1.holdsAt_tall _ _ _ _).mpr fun d _ => ?_
+  refine (KW1.holdsAt_all _ _ _ _ _).mpr fun f hf => (KW1.holdsAt_all _ _ _ _ _).mpr fun g hg => ?_
+  refine (KW1.holdsAt_imp _ _ _ _ _).mpr fun h => ?_
+  have hpt : ∀ x : UW1.El a, UW1.rel a true x x → KW1.eqv c d (f x) (g x) true := fun x hx =>
+    (KW1.holdsAt_eqv _ _ _ _ _ _ _).mp ((KW1.holdsAt_all _ _ _ _ _).mp h x hx)
+  obtain ⟨x0, hx0⟩ := UW1.adm_nonempty a
+  obtain ⟨ecd, _⟩ := hpt x0 (hx0 _)
+  subst ecd
+  have hf' : UW1.rel (.arr a c) true f f := hf
+  have hg' : UW1.rel (.arr a c) true g g := hg
+  refine (KW1.holdsAt_eqv _ _ _ _ _ _ _).mpr ((KW1_same _ _ _ _).mpr ?_)
+  intro v hv x x' hxx'
+  have hvf : v = false := hv.resolve_left Bool.false_ne_true
+  subst hvf
+  obtain ⟨z, hz, hzx⟩ := UW1.dense true false (fun _ _ => Or.inr rfl) (fun _ _ => Or.inr rfl) a x' (UW1.rel_refl_right a false _ _ hxx')
+  have hxz := UW1.rel_trans a false _ _ _ hxx' (UW1.rel_symm a false _ _ hzx)
+  have e1 := hf' false (Or.inl rfl) x z hxz
+  have e2 := (KW1_same c _ _ true).mp (hpt z hz)
+  have e3 := hg' false (Or.inl rfl) z x' hzx
+  exact UW1.rel_trans c false _ _ _ e1 (UW1.rel_trans c false _ _ _ e2 e3)
+
+theorem KW1_TopBot : KW1.Valid TopBot := by
+  intro ρ _ env _
+  refine (KW1.holdsAt_neg _ _ _ _).mpr fun h => ?_
+  have h' := (KW1_same .t _ _ _).mp ((KW1.holdsAt_eqv _ _ _ _ _ _ _).mp h)
+  have this : KW1.eval (topF : Fm Ctx.nil) ρ env false → KW1.eval (botF : Fm Ctx.nil) ρ env false :=
+    (h' false (UW1.Rrefl false)).mp
+  rw [KW1.eval_topF, KW1.eval_botF] at this
+  exact this trivial
+
+theorem KW1_not_TAx : ¬ KW1.Valid TAx := fun h => by
+  have h0 := h (fun i => i.elim0) (fun i => i.elim0) () trivial
+  have h1 := (KW1.holdsAt_all _ _ _ _ _).mp h0 (fun w => w = false) (fun _ _ => Iff.rfl)
+  have hb : KW1.HoldsAt (Γ := Ctx.nil.ext tyT) (boxF (Tm.var .here)) (fun i => i.elim0) ((), fun (w : Bool) => w = false) true := by
+    refine (KW1.holdsAt_eqv _ _ _ _ _ _ _).mpr ((KW1_same .t _ _ _).mpr ?_)
+    intro v hv
+    have hvf : v = false := hv.resolve_left Bool.false_ne_true
+    subst hvf
+    have et := congrFun (KW1.eval_topF (Γ := Ctx.nil.ext tyT) (fun i => i.elim0) ((), fun (w : Bool) => w = false)) false
+    show (false = false) ↔ KW1.eval (topF : Fm (Ctx.nil.ext tyT)) (fun i => i.elim0) ((), fun (w : Bool) => w = false) false
+    rw [et]
+    exact ⟨fun _ => trivial, fun _ => rfl⟩
+  exact Bool.noConfusion ((KW1.holdsAt_imp _ _ _ _ _).mp h1 hb : true = false)
+
+end Kr
+
+/-! ## `𝔐_cl` satisfies Cong, PCong and PExt -/
+
+namespace Al
+
+theorem Mcl_Cong : MclF.Valid Cong := by
+  intro ρ env
+  refine (MclF.holds_tall _ _ _).mpr fun a => (MclF.holds_tall _ _ _).mpr fun b =>
+    (MclF.holds_tall _ _ _).mpr fun c => (MclF.holds_tall _ _ _).mpr fun d => ?_
+  refine (MclF.holds_all _ _ _ _).mpr fun f => (MclF.holds_all _ _ _ _).mpr fun g =>
+    (MclF.holds_all _ _ _ _).mpr fun x => (MclF.holds_all _ _ _ _).mpr fun y => ?_
+  refine (MclF.holds_imp _ _ _ _).mpr fun h => ?_
+  have hc := (MclF.holds_conj _ _ _ _).mp h
+  obtain ⟨e1, hfg⟩ := (mkA_V _).mp ((MclF.holds_eqv _ _ _ _ _ _).mp hc.1)
+  obtain ⟨_, hxy⟩ := (mkA_V _).mp ((MclF.holds_eqv _ _ _ _ _ _).mp hc.2)
+  have e1' : (Code.arr a c : Code Empty) = Code.arr b d := e1
+  injection e1' with ea ec
+  subst ea; subst ec
+  have ef : f = g := eq_of_heq ((cast_heq _ _).symm.trans (hfg.trans (cast_heq _ _)))
+  have ex : x = y := eq_of_heq ((cast_heq _ _).symm.trans (hxy.trans (cast_heq _ _)))
+  subst ef; subst ex
+  exact (MclF.holds_eqv _ _ _ _ _ _).mpr ((mkA_V _).mpr ⟨rfl, HEq.rfl⟩)
+
+theorem Mcl_PCong : MclF.Valid PCong := by
+  intro ρ env
+  refine (MclF.holds_tall _ _ _).mpr fun a => (MclF.holds_tall _ _ _).mpr fun c =>
+    (MclF.holds_tall _ _ _).mpr fun d => ?_
+  refine (MclF.holds_all _ _ _ _).mpr fun f => (MclF.holds_all _ _ _ _).mpr fun g =>
+    (MclF.holds_all _ _ _ _).mpr fun x => ?_
+  refine (MclF.holds_imp _ _ _ _).mpr fun h => ?_
+  obtain ⟨e1, hfg⟩ := (mkA_V _).mp ((MclF.holds_eqv _ _ _ _ _ _).mp h)
+  have e1' : (Code.arr a c : Code Empty) = Code.arr a d := e1
+  injection e1' with _ ec
+  subst ec
+  have ef : f = g := eq_of_heq ((cast_heq _ _).symm.trans (hfg.trans (cast_heq _ _)))
+  subst ef
+  exact (MclF.holds_eqv _ _ _ _ _ _).mpr ((mkA_V _).mpr ⟨rfl, HEq.rfl⟩)
+
+theorem Mcl_PExt : MclF.Valid PExt := by
+  intro ρ env
+  refine (MclF.holds_tall _ _ _).mpr fun a => (MclF.holds_tall _ _ _).mpr fun c =>
+    (MclF.holds_tall _ _ _).mpr fun d => ?_
+  refine (MclF.holds_all _ _ _ _).mpr fun f => (MclF.holds_all _ _ _ _).mpr fun g => ?_
+  refine (MclF.holds_imp _ _ _ _).mpr fun h => ?_
+  have hp : ∀ x, _ := fun x => (mkA_V _).mp ((MclF.holds_eqv _ _ _ _ _ _).mp ((MclF.holds_all _ _ _ _).mp h x))
+  have x0 := Classical.choice (Univ.El_nonempty (U := MclF.U) a)
+  have ecd : c = d := (hp x0).1
+  subst ecd
+  have ef : f = g := funext fun x => eq_of_heq ((cast_heq _ _).symm.trans ((hp x).2.trans (cast_heq _ _)))
+  subst ef
+  exact (MclF.holds_eqv _ _ _ _ _ _).mpr ((mkA_V _).mpr ⟨rfl, HEq.rfl⟩)
+
+end Al
+
+/-! ## `𝔐_tb,x`: `𝔐_tb` with identity of functions pointwise (PI⁻)
+
+As `𝔐_tb`, quantified propositions are identified with each other; in addition, functions of one
+type are identified when their values are identified at every argument. So PExt holds; T holds, as
+before, and Truth fails. -/
+
+namespace Tg
+
+def Etb : (c : Code univU.Base) → univU.El c → univU.El c → Prop
+  | .t => fun p q => p = q ∨ (Stb .t p ∧ Stb .t q)
+  | .arr _ c => fun f g => ∀ x, Etb c (f x) (g x)
+  | _ => fun x y => x = y
+
+theorem Etb_refl : ∀ (c : Code univU.Base) (x : univU.El c), Etb c x x
+  | .t, _ => Or.inl rfl
+  | .arr _ c, _ => fun _ => Etb_refl c _
+  | .e, _ => rfl
+  | .base b, _ => b.elim
+
+theorem Etb_symm : ∀ (c : Code univU.Base) (x y : univU.El c), Etb c x y → Etb c y x
+  | .t, _, _, h => h.elim (fun e => Or.inl e.symm) (fun ⟨p, q⟩ => Or.inr ⟨q, p⟩)
+  | .arr _ c, _, _, h => fun x => Etb_symm c _ _ (h x)
+  | .e, _, _, h => h.symm
+  | .base b, _, _, _ => b.elim
+
+theorem Etb_trans : ∀ (c : Code univU.Base) (x y z : univU.El c), Etb c x y → Etb c y z → Etb c x z
+  | .t, _, _, _, h1, h2 => by
+    rcases h1 with e1 | ⟨s1, s2⟩ <;> rcases h2 with e2 | ⟨s3, s4⟩
+    · exact Or.inl (e1.trans e2)
+    · exact Or.inr ⟨e1 ▸ s3, s4⟩
+    · exact Or.inr ⟨s1, e2 ▸ s2⟩
+    · exact Or.inr ⟨s1, s4⟩
+  | .arr _ c, _, _, _, h1, h2 => fun x => Etb_trans c _ _ _ (h1 x) (h2 x)
+  | .e, _, _, _, h1, h2 => h1.trans h2
+  | .base b, _, _, _, _, _ => b.elim
+
+def eqvX (a b : Code univU.Base) (x : univU.El a) (y : univU.El b) : Prop :=
+  ∃ h : a = b, Etb b (cast (congrArg univU.El h) x) y
+
+abbrev MtbxF : Frame where
+  U := univU
+  eqv := eqvX
+  teq := fun a b => a = b
+  qtag := fun _ => false
+
+theorem Mtbx_model : MtbxF.IsModelPIm :=
+  MtbxF.model_of_equiv (fun _ _ => Iff.rfl) (fun a x => ⟨rfl, Etb_refl a x⟩)
+    (fun a b x y h => by obtain ⟨e, r⟩ := h; subst e; exact ⟨rfl, Etb_symm _ _ _ r⟩)
+    (fun a b c x y z h1 h2 => by
+      obtain ⟨e1, r1⟩ := h1; obtain ⟨e2, r2⟩ := h2; subst e1; subst e2
+      exact ⟨rfl, Etb_trans _ _ _ _ r1 r2⟩)
+
+theorem Mtbx_PExt : MtbxF.Valid PExt := by
+  refine (MtbxF.valid_iff_tr _).mpr (MtbxF.tr_PExt.mpr ?_)
+  intro a c d f g h
+  have x0 := Classical.choice (Univ.El_nonempty (U := univU) a)
+  obtain ⟨ecd, _⟩ := h x0
+  subst ecd
+  refine ⟨rfl, fun x => ?_⟩
+  obtain ⟨e, r⟩ := h x
+  exact r
+
+theorem Mtbx_TAx : MtbxF.Valid TAx := by
+  intro ρ env
+  refine (MtbxF.holds_all _ _ _ _).mpr fun p => (MtbxF.holds_imp _ _ _ _).mpr fun hb => ?_
+  obtain ⟨_, r⟩ := (MtbxF.holds_eqv_t _ _ _ _).mp hb
+  rcases r with e | ⟨_, s⟩
+  · show p.1
+    rw [show p = MtbxF.eval (topF : Fm (Ctx.nil.ext tyT)) ρ (env, p) from e]
+    exact (MtbxF.holds_neg _ _ _).mpr fun hb' => (MtbxF.holds_all _ _ _ _).mp hb' (False, true)
+  · exact Bool.noConfusion (s : true = false)
+
+theorem Mtbx_not_Truth : ¬ MtbxF.Valid Truth := fun h => by
+  have h1 := (MtbxF.holds_all _ _ _ _).mp ((MtbxF.holds_all _ _ _ _).mp (h (fun i => i.elim0) ()) (True, false)) (False, false)
+  exact h1 ((MtbxF.holds_eqv_t _ _ _ _).mpr ⟨rfl, Or.inr ⟨rfl, rfl⟩⟩) trivial
+
+end Tg
+
+/-! ## `𝔐_ie,c,x`: `𝔐_ie,c` with towers (PIᶜ)
+
+As `𝔐_ie,c`, the entity is identified with the item of `d` at the actual world; in addition, the only
+item of each type `A → e` is identified there with the only item of each type `A' → d` with the same
+image (`d` put for `e`). So Cong and PExt hold, as well as Int≈, while Ext≈ fails. -/
+
+namespace Wd
+
+def finU : Code Unit → Prop
+  | .e => True
+  | .base _ => True
+  | .arr _ c => finU c
+  | .t => False
+
+def imgU : Code Unit → Code Unit
+  | .base _ => .e
+  | .arr a c => .arr (imgU a) (imgU c)
+  | .e => .e
+  | .t => .t
+
+theorem finU_img : ∀ c : Code Unit, finU (imgU c) ↔ finU c
+  | .e => Iff.rfl
+  | .t => Iff.rfl
+  | .base _ => Iff.rfl
+  | .arr _ c => finU_img c
+
+theorem finU_unique : ∀ (c : Code Unit), finU c → ∀ x y : univIE.El c, x = y
+  | .e, _, (), () => rfl
+  | .base _, _, (), () => rfl
+  | .arr _ c, h, f, g => funext fun z => finU_unique c h (f z) (g z)
+  | .t, h, _, _ => h.elim
+
+def crossX (a b : Code Unit) : Prop := a ≠ b ∧ imgU a = imgU b ∧ finU a
+
+theorem crossX_symm {a b : Code Unit} (h : crossX a b) : crossX b a :=
+  ⟨fun e => h.1 e.symm, h.2.1.symm, (finU_img b).mp (h.2.1 ▸ (finU_img a).mpr h.2.2)⟩
+
+def MieXF : Frame where
+  U := univIE
+  eqv := fun a b x y w => (a = b ∧ HEq x y) ∨ (w = true ∧ crossX a b)
+  teq := fun a b _ => a = b
+
+theorem MieX_trans : ∀ a b c x y z w, MieXF.eqv a b x y w → MieXF.eqv b c y z w → MieXF.eqv a c x z w := by
+  intro a b c x y z w h1 h2
+  rcases h1 with ⟨rfl, h1⟩ | ⟨hw, hx⟩
+  · rcases h2 with ⟨rfl, h2⟩ | ⟨hw, hx⟩
+    · exact Or.inl ⟨rfl, h1.trans h2⟩
+    · exact Or.inr ⟨hw, hx⟩
+  · rcases h2 with ⟨rfl, _⟩ | ⟨_, hy⟩
+    · exact Or.inr ⟨hw, hx⟩
+    · by_cases hac : a = c
+      · subst hac; exact Or.inl ⟨rfl, heq_of_eq (finU_unique a hx.2.2 x z)⟩
+      · exact Or.inr ⟨hw, hac, hx.2.1.trans hy.2.1, hx.2.2⟩
+
+theorem MieX_symm : ∀ a b x y w, MieXF.eqv a b x y w → MieXF.eqv b a y x w := fun _ _ _ _ _ h =>
+  h.elim (fun h => Or.inl ⟨h.1.symm, h.2.symm⟩) (fun h => Or.inr ⟨h.1, crossX_symm h.2⟩)
+
+theorem MieX_eq : ∀ a x y w, MieXF.eqv a a x y w → x = y := fun _ _ _ _ h =>
+  h.elim (fun h => eq_of_heq h.2) (fun h => (h.2.1 rfl).elim)
+
+theorem MieX_isModelAt : MieXF.IsModelAt :=
+  MieXF.isModelAt_of (fun _ _ _ => Or.inl ⟨rfl, HEq.rfl⟩) MieX_symm MieX_trans (fun _ _ _ => Iff.rfl)
+
+theorem MieX_model : MieXF.IsModelPIm :=
+  MieXF.model_of_equiv (fun _ _ => Iff.rfl) (fun _ _ => Or.inl ⟨rfl, HEq.rfl⟩)
+    (fun a b x y h => MieX_symm a b x y _ h) (fun a b c x y z h1 h2 => MieX_trans a b c x y z _ h1 h2)
+
+theorem MieX_LLEqv : MieXF.Valid LLEqv := fun ρ env => MieXF.LLEqv_validAt_of MieX_eq _ ρ env
+
+theorem MieX_Class : ∀ χ, ClassSch χ → MieXF.Valid χ :=
+  MieXF.Class_valid_of MieX_isModelAt (MieXF.LLEqv_validAt_of MieX_eq) fun _ _ => Or.inl ⟨rfl, HEq.rfl⟩
+
+theorem MieX_Cong : MieXF.Valid Cong :=
+  (MieXF.valid_iff_tr _).mpr <| MieXF.tr_Cong.mpr fun a b c d f g x y ⟨h1, h2⟩ => by
+    rcases h1 with ⟨e, hfg⟩ | ⟨hw, hx⟩
+    · injection e with ea ec
+      subst ea; subst ec
+      have ef : f = g := eq_of_heq hfg
+      subst ef
+      have exy : x = y := MieX_eq a x y _ h2
+      subst exy
+      exact Or.inl ⟨rfl, HEq.rfl⟩
+    · have hc : finU c := hx.2.2
+      have hi : imgU c = imgU d := by injection hx.2.1 with _ e2
+      by_cases hcd : c = d
+      · subst hcd; exact Or.inl ⟨rfl, heq_of_eq (finU_unique c hc _ _)⟩
+      · exact Or.inr ⟨hw, hcd, hi, hc⟩
+
+theorem MieX_PExt : MieXF.Valid PExt :=
+  (MieXF.valid_iff_tr _).mpr <| MieXF.tr_PExt.mpr fun a c d f g h => by
+    have x0 := Classical.choice (Univ.El_nonempty (U := univIE) a)
+    rcases h x0 with ⟨ecd, _⟩ | ⟨hw, hx⟩
+    · subst ecd
+      exact Or.inl ⟨rfl, heq_of_eq (funext fun x => MieX_eq c _ _ _ (h x))⟩
+    · refine Or.inr ⟨hw, fun e => hx.1 (by injection e), ?_, hx.2.2⟩
+      show Code.arr (imgU a) (imgU c) = Code.arr (imgU a) (imgU d)
+      rw [hx.2.1]
+
+theorem MieX_not_ExtT : ¬ MieXF.Valid ExtT := fun h => by
+  have h0 := (MieXF.holds_tall _ _ _).mp ((MieXF.holds_tall _ _ _).mp (h (fun i => i.elim0) ()) .e) (.base ())
+  have hc : crossX .e (.base ()) := ⟨(fun e => nomatch e), rfl, trivial⟩
+  have hT := (MieXF.holds_imp _ _ _ _).mp h0 ((MieXF.holds_conj _ _ _ _).mpr
+    ⟨(MieXF.holds_all _ _ _ _).mpr fun x => (MieXF.holds_ex _ _ _ _).mpr
+        ⟨(), (MieXF.holds_eqv _ _ _ _ _ _).mpr (Or.inr ⟨rfl, hc⟩)⟩,
+     (MieXF.holds_all _ _ _ _).mpr fun y => (MieXF.holds_ex _ _ _ _).mpr
+        ⟨(), (MieXF.holds_eqv _ _ _ _ _ _).mpr (Or.inr ⟨rfl, hc⟩)⟩⟩)
+  exact nomatch (show (Code.e : Code Unit) = .base () from (MieXF.holds_teq _ _ _ _).mp hT)
+
+theorem MieX_IntT : MieXF.Valid IntT := by
+  intro ρ env
+  refine (MieXF.holds_tall _ _ _).mpr fun a => (MieXF.holds_tall _ _ _).mpr fun b => ?_
+  refine (MieXF.holds_imp _ _ _ _).mpr fun h => (MieXF.holds_teq _ _ _ _).mpr ?_
+  have hb : ∀ p q, MieXF.eqv .t .t p q MieXF.U.w0 → p = q := fun p q h => MieX_eq _ _ _ _ h
+  have hs := MieXF.box_all hb _ _ _ ((MieXF.holds_conj _ _ _ _).mp h).1 false
+  have x0 := Classical.choice (Univ.El_nonempty (U := MieXF.U) a)
+  obtain ⟨y, hy⟩ := (MieXF.holdsAt_ex _ _ _ _ false).mp ((MieXF.holdsAt_all _ _ _ _ false).mp hs x0)
+  rcases (MieXF.holdsAt_eqv _ _ _ _ _ _ false).mp hy with ⟨e, _⟩ | ⟨hw, _⟩
+  · exact e
+  · exact (Bool.false_ne_true hw).elim
+
+end Wd
+
 end PIF

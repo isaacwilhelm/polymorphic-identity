@@ -24,9 +24,21 @@ window.LEANINDEX = {
   "PIAlgModels.lean",
   104
  ],
+ "Al.Mcl_Cong": [
+  "PICongQs.lean",
+  416
+ ],
  "Al.Mcl_LLEqv": [
   "PIAlgModels.lean",
   93
+ ],
+ "Al.Mcl_PCong": [
+  "PICongQs.lean",
+  434
+ ],
+ "Al.Mcl_PExt": [
+  "PICongQs.lean",
+  449
  ],
  "Al.Mcl_model": [
   "PIAlgModels.lean",
@@ -364,6 +376,14 @@ window.LEANINDEX = {
   "PIKripkeCong.lean",
   193
  ],
+ "Kr.KC_Disjoint": [
+  "PICongQs.lean",
+  18
+ ],
+ "Kr.KC_PExt": [
+  "PICongQs.lean",
+  26
+ ],
  "Kr.KC_isModelAt": [
   "PIKripkeCong.lean",
   75
@@ -371,6 +391,26 @@ window.LEANINDEX = {
  "Kr.KC_not_Bridge": [
   "PIKripkeCong.lean",
   184
+ ],
+ "Kr.KW1_Cong": [
+  "PICongQs.lean",
+  350
+ ],
+ "Kr.KW1_PExt": [
+  "PICongQs.lean",
+  363
+ ],
+ "Kr.KW1_TopBot": [
+  "PICongQs.lean",
+  387
+ ],
+ "Kr.KW1_isModelAt": [
+  "PICongQs.lean",
+  331
+ ],
+ "Kr.KW1_not_TAx": [
+  "PICongQs.lean",
+  396
  ],
  "Kr.MbfH_Class": [
   "PIKripkeHae.lean",
@@ -1676,6 +1716,34 @@ window.LEANINDEX = {
   "PIExplore.lean",
   147
  ],
+ "Mtow_Class": [
+  "PICongQs.lean",
+  186
+ ],
+ "Mtow_Cong": [
+  "PICongQs.lean",
+  197
+ ],
+ "Mtow_ExtT": [
+  "PICongQs.lean",
+  237
+ ],
+ "Mtow_LLEqv": [
+  "PICongQs.lean",
+  185
+ ],
+ "Mtow_PExt": [
+  "PICongQs.lean",
+  217
+ ],
+ "Mtow_model": [
+  "PICongQs.lean",
+  184
+ ],
+ "Mtow_not_Disjoint": [
+  "PICongQs.lean",
+  188
+ ],
  "Mtw_Class": [
   "PIClass.lean",
   223
@@ -1880,6 +1948,10 @@ window.LEANINDEX = {
   "PITagged.lean",
   800
  ],
+ "Tg.Mtb_PCong": [
+  "PICongQs.lean",
+  42
+ ],
  "Tg.Mtb_TAx": [
   "PIWorlds.lean",
   1227
@@ -1899,6 +1971,22 @@ window.LEANINDEX = {
  "Tg.Mtb_not_Truth": [
   "PITagged.lean",
   774
+ ],
+ "Tg.Mtbx_PExt": [
+  "PICongQs.lean",
+  517
+ ],
+ "Tg.Mtbx_TAx": [
+  "PICongQs.lean",
+  527
+ ],
+ "Tg.Mtbx_model": [
+  "PICongQs.lean",
+  510
+ ],
+ "Tg.Mtbx_not_Truth": [
+  "PICongQs.lean",
+  537
  ],
  "Tg.Mtc_Collapse": [
   "PIWorlds.lean",
@@ -2039,6 +2127,34 @@ window.LEANINDEX = {
  "Wd.MieC_not_ExtT": [
   "PIClassModels.lean",
   199
+ ],
+ "Wd.MieX_Class": [
+  "PICongQs.lean",
+  612
+ ],
+ "Wd.MieX_Cong": [
+  "PICongQs.lean",
+  615
+ ],
+ "Wd.MieX_IntT": [
+  "PICongQs.lean",
+  651
+ ],
+ "Wd.MieX_LLEqv": [
+  "PICongQs.lean",
+  610
+ ],
+ "Wd.MieX_PExt": [
+  "PICongQs.lean",
+  631
+ ],
+ "Wd.MieX_model": [
+  "PICongQs.lean",
+  606
+ ],
+ "Wd.MieX_not_ExtT": [
+  "PICongQs.lean",
+  641
  ],
  "Wd.Mie_Bool": [
   "PIWorlds.lean",
