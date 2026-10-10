@@ -1746,10 +1746,11 @@ const sortings = {
     { name: "Identity of types (≈)", ids: ["Inj", "Recovery", "Ext", "Int"] },
     { name: "Functions (cutting across)", ids: ["Cong", "WCong", "PCong", "PExt", "Choice"] },
   ],
+  // `ids` are listed first, then a divider, then the modal principles `modal`.
   subject: [
-    { name: "Propositions", ids: ["PropExt", "Collapse", "Bool", "IdId", "Truth", "TAx", "TopBot", "BF", "CBF", "Nec"] },
-    { name: "Items, within and across types", ids: ["Disjoint", "Slogan", "LLPoly", "Bridge", "Twin", "Hae", "Cantor", "NIEqv", "NIX", "NDX"] },
-    { name: "Types", ids: ["Inj", "Recovery", "Ext", "Int", "NITeq", "NDTeq", "TBF", "TCBF", "TNec"] },
+    { name: "Propositions", ids: ["PropExt", "Bool", "IdId", "Truth", "TopBot"], modal: ["Collapse", "TAx", "BF", "CBF", "Nec"] },
+    { name: "Items, within and across types", ids: ["Disjoint", "Slogan", "LLPoly", "Bridge", "Twin", "Hae", "Cantor"], modal: ["NIEqv", "NIX", "NDX"] },
+    { name: "Types", ids: ["Inj", "Recovery", "Ext"], modal: ["Int", "NITeq", "NDTeq", "TBF", "TCBF", "TNec"] },
     { name: "Functions", ids: ["Cong", "WCong", "PCong", "PExt", "Choice"] },
   ],
 };

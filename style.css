@@ -63,6 +63,9 @@ main { padding-top: 18px; padding-bottom: 30px; }
 .layout { display: grid; grid-template-columns: 290px minmax(0, 1fr) 270px; gap: 20px; align-items: start; }
 .sortsel { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin: 4px 0 2px; }
 .sortsel select { flex: 1; min-width: 0; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 3px 6px; }
+.msep { display: flex; align-items: center; gap: 6px; font-size: 11px; font-style: italic; color: var(--muted); margin: 3px 4px 1px 40px; }
+.msep::before, .msep::after { content: ""; flex: 1; border-top: 1px dashed var(--line); }
+.msep::before { flex: 0 0 6px; }
 .power { font-size: 11.5px; font-weight: 600; color: var(--c-follows); background: var(--c-follows-bg); border-radius: 10px; padding: 0 7px; flex: none; }
 .colh { font-size: 15px; margin: 0 0 4px; }
 .cgroup { margin-top: 12px; }

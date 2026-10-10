@@ -61,8 +61,8 @@
 
   // ------------------------------------------------------------------ state
   // sel: id -> true (assumed) | false (negation assumed)
-  const state = { logic: "PI", sel: {}, focus: null, opened: [], showThms: false, sortMode: "topic" };
-  try { const m = localStorage.getItem("pi-sortmode"); if (["topic", "dims", "subject", "power"].includes(m)) state.sortMode = m; } catch (e) {}
+  const state = { logic: "PI", sel: {}, focus: null, opened: [], showThms: false, sortMode: "subject" };
+  try { const m = localStorage.getItem("pi-sortmode2"); if (["topic", "dims", "subject", "power"].includes(m)) state.sortMode = m; } catch (e) {}
   try { state.showThms = localStorage.getItem("pi-showthms") === "1"; } catch (e) {}
 
   function readHash() {
@@ -256,7 +256,11 @@
     }
     const spec = D.sortings[state.sortMode === "subject" ? "subject" : "dims"];
     const used = new Set();
-    const groups = spec.map(g => ({ name: g.name, items: g.ids.filter(id => byId[id]).map(id => (used.add(id), byId[id])) }));
+    const groups = spec.map(g => {
+      const plain = g.ids.filter(id => byId[id]).map(id => (used.add(id), byId[id]));
+      const modal = (g.modal || []).filter(id => byId[id]).map(id => (used.add(id), byId[id]));
+      return { name: g.name, items: plain.concat(modal), sep: modal.length && state.sortMode === "subject" ? plain.length : -1 };
+    });
     const rest = shown.filter(p => !used.has(p.id));
     if (rest.length) groups.push({ name: "Other", items: rest });
     if (state.sortMode === "power") {
@@ -274,7 +278,7 @@
     const groups = checklistGroups();
     box.innerHTML = groups.map(g => `
       <div class="group"><div class="gname">${g.name}</div>
-      ${g.items.map(p => `
+      ${g.items.map((p, i) => `${i === g.sep ? `<div class="msep" title="Principles stated with □">modal principles</div>` : ""}
         <div class="item" data-id="${p.id}">
           <div class="tri" role="radiogroup" aria-label="${p.tag}">
             <button class="t-yes" data-v="yes" title="Assume ${p.tag}" aria-label="Assume ${p.tag}">✓</button>
@@ -843,7 +847,7 @@
       sortSel.value = state.sortMode;
       sortSel.addEventListener("change", () => {
         state.sortMode = sortSel.value;
-        try { localStorage.setItem("pi-sortmode", state.sortMode); } catch (e) {}
+        try { localStorage.setItem("pi-sortmode2", state.sortMode); } catch (e) {}
         renderChecklist();
         update();
       });
