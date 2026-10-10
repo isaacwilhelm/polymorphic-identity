@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
-<link rel="stylesheet" href="style.css?v=20261014k">
+<link rel="stylesheet" href="style.css?v=20261015a">
 </head>
 <body>
 <header>
@@ -39,6 +39,14 @@
           <button id="showlogic" class="showlogic" type="button">Axioms and rules common to all three</button>
           <button id="togglethms" class="thmtoggle" type="button" aria-pressed="false">Show the theorems in the graph</button>
         </div>
+        <label class="sortsel">Arrange by
+          <select id="sortmode">
+            <option value="topic">topic</option>
+            <option value="dims">the three dimensions</option>
+            <option value="subject">what they are about</option>
+            <option value="power">dimension, strongest first</option>
+          </select>
+        </label>
         <div id="checklist"></div>
         <button id="reset" class="reset">Clear selection</button>
       </aside>
@@ -48,6 +56,7 @@
         <div class="graphbox"><svg id="graph" role="img" aria-label="Graph of what follows from the selected principles"></svg></div>
         <div id="details" class="detailstack" aria-live="polite"></div>
       </section>
+      <aside class="side right" id="collections" aria-label="Collections of principles"></aside>
     </div>
   </div>
 
@@ -102,8 +111,8 @@
 
 <footer class="wrap">Isaac Wilhelm · Polymorphic identity: derivations, models, and Lean proofs.</footer>
 
-<script src="data.js?v=20261014k"></script>
-<script src="lean-index.js?v=20261014k"></script>
-<script defer src="app.js?v=20261014k"></script>
+<script src="data.js?v=20261015a"></script>
+<script src="lean-index.js?v=20261015a"></script>
+<script defer src="app.js?v=20261015a"></script>
 </body>
 </html>

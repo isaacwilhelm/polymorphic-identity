@@ -1699,4 +1699,59 @@ const otherResults = [
     text: "Models of PI with infinite types (over a set type universe) exist just in case there is a strongly inaccessible cardinal; given one, every result here holds with an axiom of infinity added." },
 ];
 
-window.PIDATA = { SOURCE, principles, logicSpec, baseAxioms, pimTheorems, rules, inconsistent, models, otherResults };
+// Collections of principles shown in the right-hand panel. `sel` lists the principles assumed;
+// `target` marks a principle that the collection proves, for the interactions.
+const collections = [
+  { group: "Settling (almost) everything",
+    note: "Each of these settles every other principle, except a few which nothing else on the list reaches.",
+    items: [
+      { logic: "PI", sel: ["PropExt", "Disjoint", "Inj"], note: "Leaves only Slogan, PCong← and Choice open; refutes Twin and Haecceitism." },
+      { logic: "PIC", sel: ["Disjoint", "PropExt", "Inj"], note: "Leaves only Slogan, PCong← and Choice open; refutes Twin and Haecceitism." },
+      { logic: "PI-", sel: ["PropExt", "LLPoly", "TopBot", "Cong"], note: "Leaves only Slogan, PCong←, Inj≈ and Choice open; refutes Twin and Haecceitism." },
+    ] },
+  { group: "Strongest pairs",
+    note: "A principle about the grain of propositions, together with one about identity across types.",
+    items: [
+      { logic: "PI", sel: ["PropExt", "Disjoint"] },
+      { logic: "PI", sel: ["PropExt", "LLPoly"] },
+      { logic: "PI", sel: ["PropExt", "Hae"] },
+      { logic: "PIC", sel: ["Disjoint", "Collapse"] },
+      { logic: "PIC", sel: ["Hae", "Collapse"] },
+      { logic: "PIC", sel: ["Disjoint", "Inj"] },
+      { logic: "PI-", sel: ["LLPoly", "PropExt"] },
+    ] },
+  { group: "Strongest single principles",
+    items: [
+      { logic: "PI", sel: ["PropExt"] },
+      { logic: "PI", sel: ["Collapse"] },
+      { logic: "PIC", sel: ["Disjoint"] },
+      { logic: "PIC", sel: ["Collapse"] },
+      { logic: "PI-", sel: ["PropExt"] },
+    ] },
+  { group: "Interactions across dimensions",
+    note: "Combinations which prove something that none of their parts proves alone.",
+    items: [
+      { logic: "PIC", sel: ["Disjoint", "Inj", "NDX"], target: "NDTeq", note: "The identity functions on α and β are necessarily distinct, so ¬(α ≈ β) is necessary." },
+      { logic: "PIC", sel: ["NIX", "PExt", "Int"], target: "Ext", note: "PCong← gives BF; with NI×, coextensive types are necessarily coextensive." },
+      { logic: "PIC", sel: ["PExt"], target: "BF", note: "PCong← makes F identical to λx.⊤ whenever each Fx is necessary." },
+      { logic: "PI", sel: ["Disjoint", "NIEqv"], target: "NIX", note: "LL≈ carries NI≡ over to ≈-identical types; Disjoint covers the rest." },
+    ] },
+];
+
+// Alternative groupings of the principles in the left-hand panel.
+const sortings = {
+  dims: [
+    { name: "Grain of propositions and necessity", ids: ["PropExt", "Collapse", "Bool", "IdId", "Truth", "TAx", "TopBot", "NIEqv", "NIX", "NDX", "NITeq", "NDTeq", "BF", "CBF", "Nec", "TBF", "TCBF", "TNec"] },
+    { name: "Identity across types", ids: ["Disjoint", "Slogan", "LLPoly", "Bridge", "Twin", "Hae", "Cantor"] },
+    { name: "Identity of types (≈)", ids: ["Inj", "Recovery", "Ext", "Int"] },
+    { name: "Functions (cutting across)", ids: ["Cong", "WCong", "PCong", "PExt", "Choice"] },
+  ],
+  subject: [
+    { name: "Propositions", ids: ["PropExt", "Collapse", "Bool", "IdId", "Truth", "TAx", "TopBot", "BF", "CBF", "Nec"] },
+    { name: "Items, within and across types", ids: ["Disjoint", "Slogan", "LLPoly", "Bridge", "Twin", "Hae", "Cantor", "NIEqv", "NIX", "NDX"] },
+    { name: "Types", ids: ["Inj", "Recovery", "Ext", "Int", "NITeq", "NDTeq", "TBF", "TCBF", "TNec"] },
+    { name: "Functions", ids: ["Cong", "WCong", "PCong", "PExt", "Choice"] },
+  ],
+};
+
+window.PIDATA = { collections, sortings, SOURCE, principles, logicSpec, baseAxioms, pimTheorems, rules, inconsistent, models, otherResults };

@@ -60,7 +60,27 @@ header .sub { margin: 0 0 12px; color: var(--muted); max-width: 80ch; }
 .tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
 
 main { padding-top: 18px; padding-bottom: 30px; }
-.layout { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 20px; align-items: start; }
+.layout { display: grid; grid-template-columns: 290px minmax(0, 1fr) 270px; gap: 20px; align-items: start; }
+.sortsel { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin: 4px 0 2px; }
+.sortsel select { flex: 1; min-width: 0; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 3px 6px; }
+.power { font-size: 11.5px; font-weight: 600; color: var(--c-follows); background: var(--c-follows-bg); border-radius: 10px; padding: 0 7px; flex: none; }
+.colh { font-size: 15px; margin: 0 0 4px; }
+.cgroup { margin-top: 12px; }
+.cnote { font-size: 12.5px; color: var(--muted); margin: 0 0 6px; line-height: 1.4; }
+.coll { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; width: 100%; text-align: left; border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 7px 9px; margin-bottom: 6px; color: var(--ink); }
+.coll:hover { border-color: var(--accent); }
+.coll.on { border-color: var(--accent); background: var(--accent-soft); }
+.clogic { font-size: 11.5px; font-weight: 700; color: #fff; background: var(--accent); border-radius: 4px; padding: 0 6px; }
+.cprins { font-weight: 600; font-size: 13.5px; }
+.ctarget { color: var(--c-follows); }
+.cscore { font-size: 12px; color: var(--c-follows); margin-left: auto; }
+.cdesc { flex-basis: 100%; font-size: 12.5px; color: var(--muted); line-height: 1.35; }
+@media (max-width: 1250px) {
+  .layout { grid-template-columns: 290px minmax(0, 1fr); }
+  .side.right { grid-column: 1 / -1; position: static; max-height: none; }
+  #collections { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0 16px; }
+  #collections .colh { grid-column: 1 / -1; }
+}
 
 /* ---------- side: checklist ---------- */
 .side { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow: auto; }

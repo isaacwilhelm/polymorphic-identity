@@ -61,7 +61,8 @@
 
   // ------------------------------------------------------------------ state
   // sel: id -> true (assumed) | false (negation assumed)
-  const state = { logic: "PI", sel: {}, focus: null, opened: [], showThms: false };
+  const state = { logic: "PI", sel: {}, focus: null, opened: [], showThms: false, sortMode: "topic" };
+  try { const m = localStorage.getItem("pi-sortmode"); if (["topic", "dims", "subject", "power"].includes(m)) state.sortMode = m; } catch (e) {}
   try { state.showThms = localStorage.getItem("pi-showthms") === "1"; } catch (e) {}
 
   function readHash() {
@@ -225,14 +226,52 @@
   }
   const MACROS = { "\\TA": "\\htmlClass{tq}{\\mathbb{A}}", "\\TE": "\\htmlClass{tq}{\\mathbb{E}}" };
 
+  // How many open principles a set of assumptions settles, in a given logic.
+  function settleScore(logic, ids) {
+    const saved = { logic: state.logic, sel: state.sel };
+    state.logic = logic; state.sel = {};
+    try {
+      const base = analyse();
+      const kind = (an, b) => an.status[b] ? an.status[b].kind : "";
+      const cand = D.principles.filter(p => p.group !== "The logic" && !p.theorem && !["follows", "refuted"].includes(kind(base, p.id))).map(p => p.id);
+      const an = analyseWith(base.A.concat(ids.map(id => ({ id, pos: true, why: { assumed: true } }))));
+      if (an.inconsistent) return null;
+      const rest = cand.filter(b => !ids.includes(b));
+      return { n: rest.filter(b => ["follows", "refuted"].includes(kind(an, b))).length, m: rest.length };
+    } finally { state.logic = saved.logic; state.sel = saved.sel; }
+  }
+
+  let checklistLogic = null;
+  function checklistGroups() {
+    const shown = D.principles.filter(p => p.group !== "The logic" && !p.theorem);
+    const byId = Object.fromEntries(shown.map(p => [p.id, p]));
+    if (state.sortMode === "topic") {
+      const groups = [];
+      shown.forEach(p => {
+        let g = groups.find(g => g.name === p.group);
+        if (!g) groups.push(g = { name: p.group, items: [] });
+        g.items.push(p);
+      });
+      return groups;
+    }
+    const spec = D.sortings[state.sortMode === "subject" ? "subject" : "dims"];
+    const used = new Set();
+    const groups = spec.map(g => ({ name: g.name, items: g.ids.filter(id => byId[id]).map(id => (used.add(id), byId[id])) }));
+    const rest = shown.filter(p => !used.has(p.id));
+    if (rest.length) groups.push({ name: "Other", items: rest });
+    if (state.sortMode === "power") {
+      groups.forEach(g => {
+        g.items.forEach(p => { const sc = settleScore(state.logic, [p.id]); p._power = sc ? sc.n : -1; });
+        g.items.sort((a, b) => b._power - a._power);
+      });
+    }
+    return groups;
+  }
+
   function renderChecklist() {
     const box = $("#checklist");
-    const groups = [];
-    D.principles.filter(p => p.group !== "The logic" && !p.theorem).forEach(p => {
-      let g = groups.find(g => g.name === p.group);
-      if (!g) groups.push(g = { name: p.group, items: [] });
-      g.items.push(p);
-    });
+    checklistLogic = state.logic;
+    const groups = checklistGroups();
     box.innerHTML = groups.map(g => `
       <div class="group"><div class="gname">${g.name}</div>
       ${g.items.map(p => `
@@ -242,6 +281,7 @@
             <button class="t-no" data-v="no" title="Assume the negation of ${p.tag}" aria-label="Assume not ${p.tag}">¬</button>
           </div>
           <button class="pname" title="Show details">${p.tag}</button>
+          ${state.sortMode === "power" && p._power > 0 ? `<span class="power" title="Open principles settled by adding ${p.tag} alone, in ${logicName()}">${p._power}</span>` : ""}
         </div>`).join("")}
       </div>`).join("");
     box.querySelectorAll(".item").forEach(el => {
@@ -743,10 +783,51 @@
   function openCommon() { $("#logicbody").innerHTML = commonHTML(); $("#logicdlg").showModal(); }
 
   // ------------------------------------------------------------------ main
+  // ------------------------------------------------------------------ rendering: collections
+  const LOGIC_NAMES = { PIC: "PIᶜ", PI: "PI", "PI-": "PI⁻" };
+  function renderCollections() {
+    const box = $("#collections");
+    if (!box || !D.collections) return;
+    box.innerHTML = `<h2 class="colh">Collections</h2>` + D.collections.map((g, gi) => `
+      <div class="cgroup"><div class="gname">${g.group}</div>
+        ${g.note ? `<p class="cnote">${g.note}</p>` : ""}
+        ${g.items.map((c, ci) => {
+          const sc = settleScore(c.logic, c.sel);
+          const score = sc ? `<span class="cscore" title="Open principles settled, of those left open by ${LOGIC_NAMES[c.logic]}">settles ${sc.n} of ${sc.m}</span>` : "";
+          return `<button class="coll" data-g="${gi}" data-c="${ci}" type="button">
+            <span class="clogic">${LOGIC_NAMES[c.logic]}</span>
+            <span class="cprins">${c.sel.map(tag).join(" + ")}${c.target ? ` <b class="ctarget">⇒ ${tag(c.target)}</b>` : ""}</span>
+            ${score}
+            ${c.note ? `<span class="cdesc">${c.note}</span>` : ""}
+          </button>`;
+        }).join("")}
+      </div>`).join("");
+    box.querySelectorAll(".coll").forEach(b => b.addEventListener("click", () => {
+      const c = D.collections[+b.dataset.g].items[+b.dataset.c];
+      state.logic = c.logic;
+      state.sel = Object.fromEntries(c.sel.map(id => [id, true]));
+      state.focus = c.target || null;
+      state.opened = c.target ? [c.target] : [];
+      update();
+    }));
+  }
+  function syncCollections() {
+    document.querySelectorAll("#collections .coll").forEach(b => {
+      const c = D.collections[+b.dataset.g].items[+b.dataset.c];
+      const ids = Object.entries(state.sel).filter(([id, v]) => v === true && !isLocked(id)).map(([id]) => id).sort();
+      const neg = Object.values(state.sel).some(v => v === false);
+      const on = state.logic === c.logic && !neg && ids.join() === c.sel.slice().sort().join();
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-pressed", on);
+    });
+  }
+
   function update() {
     writeHash();
     const an = analyse();
+    if (state.sortMode === "power" && checklistLogic !== state.logic) renderChecklist();
     syncChecklist();
+    syncCollections();
     syncThmToggle();
     renderGraph(an);
     renderDetails(an);
@@ -756,6 +837,17 @@
   function init() {
     readHash();
     renderChecklist();
+    renderCollections();
+    const sortSel = $("#sortmode");
+    if (sortSel) {
+      sortSel.value = state.sortMode;
+      sortSel.addEventListener("change", () => {
+        state.sortMode = sortSel.value;
+        try { localStorage.setItem("pi-sortmode", state.sortMode); } catch (e) {}
+        renderChecklist();
+        update();
+      });
+    }
     initGraph();
     document.querySelectorAll(".logic button[data-logic]").forEach(b => b.addEventListener("click", () => {
       state.logic = b.dataset.logic;
@@ -774,8 +866,9 @@
       document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", x === b));
       document.querySelectorAll(".tabpanel").forEach(x => x.hidden = x.id !== b.dataset.tab);
       const side = $("aside.side");
-      if (b.dataset.tab === "strength") { $("#strength .layout").prepend(side); renderStrength(); }
-      if (b.dataset.tab === "explorer") $("#explorer .layout").prepend(side);
+      const right = $("#collections");
+      if (b.dataset.tab === "strength") { $("#strength .layout").prepend(side); if (right) $("#strength .layout").append(right); renderStrength(); }
+      if (b.dataset.tab === "explorer") { $("#explorer .layout").prepend(side); if (right) $("#explorer .layout").append(right); }
     }));
     renderCatalogue();
     window.__pi = { analyse, analyseWith, state, update, models, strengthData };
