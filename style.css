@@ -4,9 +4,11 @@
   --ink: #1d2433;
   --muted: #5f6878;
   --line: #e3e0d8;
-  --accent: #be5100;
-  --accent-soft: #fbefe6;
-  --link: #982906;
+  --accent: #335c99;
+  --accent-soft: #e6edf7;
+  --link: #335c99;
+  --menu: #982906;
+  --menu-on: #be5100;
   --c-follows: #2f7d4f;
   --c-follows-bg: #e5f3ea;
   --c-indep: #5a6b85;
@@ -25,7 +27,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #14171d; --panel: #1b1f27; --ink: #e6e8ec; --muted: #9aa3b2; --line: #2c323d;
-    --accent: #f0954f; --accent-soft: #3a2719; --link: #f2a46c;
+    --accent: #8fb1e8; --accent-soft: #23304a; --link: #8fb1e8; --menu: #f2a46c; --menu-on: #be5100;
     --c-follows: #5cc185; --c-follows-bg: #1c3326;
     --c-indep: #a2b0c8; --c-indep-bg: #262c38;
     --c-cons: #7fa9e6; --c-cons-bg: #1f2c42;
@@ -36,7 +38,7 @@
 }
 :root[data-theme="dark"] {
   --bg: #14171d; --panel: #1b1f27; --ink: #e6e8ec; --muted: #9aa3b2; --line: #2c323d;
-  --accent: #f0954f; --accent-soft: #3a2719; --link: #f2a46c;
+  --accent: #8fb1e8; --accent-soft: #23304a; --link: #8fb1e8; --menu: #f2a46c; --menu-on: #be5100;
   --c-follows: #5cc185; --c-follows-bg: #1c3326;
   --c-indep: #a2b0c8; --c-indep-bg: #262c38;
   --c-cons: #7fa9e6; --c-cons-bg: #1f2c42;
@@ -58,9 +60,10 @@ code { font-size: 0.92em; background: var(--accent-soft); padding: 1px 4px; bord
 header { border-bottom: 1px solid var(--line); background: var(--panel); }
 header h1 { font: 600 26px/1.2 var(--serif); margin: 20px 0 6px; letter-spacing: -0.01em; }
 header .sub { margin: 0 0 12px; color: var(--muted); max-width: 80ch; }
-.tabs { display: flex; gap: 4px; }
-.tabs button { background: none; border: 0; border-bottom: 2px solid transparent; padding: 8px 12px; color: var(--muted); font-weight: 500; }
-.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+/* the top menu, as on isaacwilhelm.com: orange text; the current page and the one under the pointer get an orange block */
+.tabs { display: flex; gap: 0; }
+.tabs button { background: none; border: 0; border-radius: 0; padding: 10px; color: var(--menu); font: 16px/1.2 var(--serif); cursor: pointer; }
+.tabs button:hover, .tabs button[aria-selected="true"] { background: var(--menu-on); color: #fff; }
 
 main { padding-top: 18px; padding-bottom: 30px; }
 .layout { display: grid; grid-template-columns: 236px minmax(0, 1fr) 256px; gap: 20px; align-items: start; }
