@@ -24,9 +24,41 @@ window.LEANINDEX = {
   "PIHaeQs.lean",
   1137
  ],
+ "Al.MBH_not_BF": [
+  "PIOQ_F3c.lean",
+  41
+ ],
  "Al.MBH_not_TAx": [
   "PIHaeQs.lean",
   1149
+ ],
+ "Al.MCc_BF": [
+  "PIOQ_F3c.lean",
+  110
+ ],
+ "Al.MCc_Collapse": [
+  "PIOQ_F3c.lean",
+  84
+ ],
+ "Al.MCc_Hae": [
+  "PIOQ_F3c.lean",
+  81
+ ],
+ "Al.MCc_model": [
+  "PIOQ_F3c.lean",
+  80
+ ],
+ "Al.MCc_not_CBF": [
+  "PIOQ_F3c.lean",
+  121
+ ],
+ "Al.MCc_not_TAx": [
+  "PIOQ_F3c.lean",
+  100
+ ],
+ "Al.MCc_not_TopBot": [
+  "PIOQ_F3c.lean",
+  92
  ],
  "Al.MIdB_CBF": [
   "PIOQ_MIdB.lean",
@@ -4668,6 +4700,10 @@ window.LEANINDEX = {
   "PIBF.lean",
   86
  ],
+ "d_BF_of_PropExt": [
+  "PIOQ_DerBF.lean",
+  51
+ ],
  "d_Bool_of_Class": [
   "PIClass.lean",
   40
@@ -4691,6 +4727,10 @@ window.LEANINDEX = {
  "d_CBF_of_Collapse": [
   "PIBF.lean",
   194
+ ],
+ "d_CBF_of_PropExt": [
+  "PIOQ_DerBF.lean",
+  65
  ],
  "d_Cantor_of_Disjoint": [
   "PINoSelf.lean",
