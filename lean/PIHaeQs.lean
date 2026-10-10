@@ -825,4 +825,92 @@ theorem MqH_not_Class : ¬ ∀ χ, ClassSch χ → MqHF.Valid χ := fun h => by
 
 end Al
 
+/-! ## `𝔐_cl,hae`: Collapse without PropExt, in PI + Haecceitism
+
+As `𝔐_cl`, except that items are identified just in case they have the same root. -/
+
+namespace Al
+
+noncomputable def hcyA (a : Code Empty) (z : univA.El a) : univA.El (.arr a .t) := fun y => mkA (y = z)
+
+theorem hcyA_inj (a : Code Empty) (z z' : univA.El a) (h : hcyA a z = hcyA a z') : z = z' := by
+  have e : mkA (z = z) = mkA (z = z') := congrFun h z
+  exact (mkA_V _).mp (e ▸ (mkA_V _).mpr rfl)
+
+noncomputable abbrev rootA := groot univA.El hcyA
+
+noncomputable def MclHF : Frame where
+  U := univA
+  eqv := fun a b x y => mkA (rootA a x = rootA b y)
+  teq := fun a b => mkA (a = b)
+  neg := fun p => mkA (¬ p = none)
+  imp := fun p q => mkA (p = none → q = none)
+  cnj := fun p q => mkA (p = none ∧ q = none)
+  dsj := fun p q => mkA (p = none ∨ q = none)
+  bic := fun p q => mkA (p = none ↔ q = none)
+  all := fun _ f => qA (∀ x, f x = none)
+  ex := fun _ f => qA (∃ x, f x = none)
+  tall := fun Q => qA (∀ a, Q a = none)
+  tex := fun Q => qA (∃ a, Q a = none)
+  hneg := fun _ => mkA_V _
+  himp := fun _ _ => mkA_V _
+  hcnj := fun _ _ => mkA_V _
+  hdsj := fun _ _ => mkA_V _
+  hbic := fun _ _ => mkA_V _
+  hall := fun _ _ => qA_V _
+  hex := fun _ _ => qA_V _
+  htall := fun _ => qA_V _
+  htex := fun _ => qA_V _
+
+theorem MclH_eq {a : Code Empty} {x y : univA.El a} (h : MclHF.U.V (MclHF.eqv a a x y)) : x = y :=
+  groot_inj hcyA_inj a x y ((mkA_V _).mp h)
+
+theorem MclH_model : MclHF.IsModelPIm :=
+  MclHF.model_of_equiv (fun _ _ => mkA_V _) (fun _ _ => (mkA_V _).mpr rfl)
+    (fun _ _ _ _ h => (mkA_V _).mpr ((mkA_V _).mp h).symm)
+    (fun _ _ _ _ _ _ h1 h2 => (mkA_V _).mpr (((mkA_V _).mp h1).trans ((mkA_V _).mp h2)))
+
+theorem MclH_topF {n : Nat} {Γ : Ctx n} (ρ : MclHF.U.TEnv n) (env : MclHF.U.Env Γ ρ) :
+    MclHF.eval (topF : Fm Γ) ρ env = none :=
+  MclHF.holds_topF ρ env ⟨some true, fun h => nomatch (h : (some true : Option Bool) = none)⟩
+
+theorem MclH_LLEqv : MclHF.Valid LLEqv := by
+  intro ρ env
+  refine (MclHF.holds_tall _ _ _).mpr fun a => ?_
+  refine (MclHF.holds_all _ _ _ _).mpr fun x => (MclHF.holds_all _ _ _ _).mpr fun y => ?_
+  refine (MclHF.holds_imp _ _ _ _).mpr fun hxy => ?_
+  refine (MclHF.holds_all _ _ _ _).mpr fun G => (MclHF.holds_imp _ _ _ _).mpr fun hGx => ?_
+  have h := MclH_eq ((MclHF.holds_eqv _ _ _ _ _ _).mp hxy)
+  have e : x = y := eq_of_heq ((cast_heq _ _).symm.trans ((heq_of_eq h).trans (cast_heq _ _)))
+  subst e
+  exact hGx
+
+theorem MclH_Hae : MclHF.Valid Hae := by
+  intro ρ env
+  refine (MclHF.holds_tall _ _ _).mpr fun a => (MclHF.holds_all _ _ _ _).mpr fun x => ?_
+  refine (MclHF.holds_eqv _ _ _ _ _ _).mpr ((mkA_V _).mpr (groot_hae hcyA_inj a x _ ?_))
+  funext y
+  show mkA (rootA a y = rootA a x) = mkA (y = x)
+  exact congrArg mkA (propext ⟨fun h => groot_inj hcyA_inj a y x h, fun h => h ▸ rfl⟩)
+
+theorem MclH_Collapse : MclHF.Valid Collapse := by
+  intro ρ env
+  refine (MclHF.holds_all _ _ _ _).mpr fun p => (MclHF.holds_imp _ _ _ _).mpr fun hp => ?_
+  refine (MclHF.holds_eqv_t _ _ _ _).mpr ((mkA_V _).mpr ?_)
+  have hp' : p = none := hp
+  have et := MclH_topF (Γ := Ctx.nil.ext tyT) ρ (env, p)
+  exact congrArg (fun q => (⟨.t, q⟩ : Σ b : Code univA.Base, univA.El b)) (hp'.trans et.symm)
+
+theorem MclH_not_PropExt : ¬ MclHF.Valid PropExt := fun h => by
+  have h0 := (MclHF.holds_all _ _ _ _).mp ((MclHF.holds_all _ _ _ _).mp (h (fun i => i.elim0) ()) (some true))
+    (some false)
+  have h1 := (MclHF.holds_imp _ _ _ _).mp h0 ((MclHF.holds_iff _ _ _ _).mpr
+    (Iff.intro (fun (h : (some true : Option Bool) = none) => nomatch h)
+      (fun (h : (some false : Option Bool) = none) => nomatch h)))
+  have e := (mkA_V _).mp ((MclHF.holds_eqv_t _ _ _ _).mp h1)
+  have e2 : (some true : Option Bool) = some false := eq_of_heq (Sigma.mk.inj e).2
+  cases e2
+
+end Al
+
 end PIF
