@@ -1068,5 +1068,265 @@ theorem soundnessAt {Ax : Fm Ctx.nil → Prop} (hM : F.IsModelAt) (hAx : ∀ φ,
 
 end Frame
 
+/-! ## Frames in which identity holds only within a type -/
+
+namespace Univ
+variable (U : Univ)
+
+theorem rel_cast {a b : Code U.Base} (h : a = b) (w : U.W) (x y : U.El a) :
+    U.rel b w (cast (congrArg U.El h) x) (cast (congrArg U.El h) y) ↔ U.rel a w x y := by
+  subst h; exact Iff.rfl
+
+end Univ
+
+/-- The frame over `U` in which items are identified just in case they are of one type and
+identical at the world in question, and `≈` is identity of types. -/
+def Frame.simple (U : Univ) : Frame where
+  U := U
+  eqv := fun a b x y w => ∃ h : a = b, U.rel b w (cast (congrArg U.El h) x) y
+  teq := fun a b _ => a = b
+  eqv_resp := by
+    intro u a b x x' y y' hx hy
+    constructor
+    · rintro ⟨h, hr⟩
+      subst h
+      exact ⟨rfl, U.rel_trans _ u _ _ _ (U.rel_trans _ u _ _ _ (U.rel_symm _ u _ _ hx) hr) hy⟩
+    · rintro ⟨h, hr⟩
+      subst h
+      exact ⟨rfl, U.rel_trans _ u _ _ _ (U.rel_trans _ u _ _ _ hx hr) (U.rel_symm _ u _ _ hy)⟩
+
+namespace Frame
+variable (U : Univ)
+
+theorem simple_eqv_same (a : Code U.Base) (x y : U.El a) (w : U.W) :
+    (Frame.simple U).eqv a a x y w ↔ U.rel a w x y :=
+  ⟨fun ⟨_, hr⟩ => by rwa [cast_eq] at hr, fun h => ⟨rfl, h⟩⟩
+
+theorem simple_symm {a b : Code U.Base} {x : U.El a} {y : U.El b} {w : U.W} :
+    (Frame.simple U).eqv a b x y w → (Frame.simple U).eqv b a y x w := by
+  rintro ⟨h, hr⟩; subst h; exact ⟨rfl, U.rel_symm _ w _ _ hr⟩
+
+theorem simple_trans {a b c : Code U.Base} {x : U.El a} {y : U.El b} {z : U.El c} {w : U.W} :
+    (Frame.simple U).eqv a b x y w → (Frame.simple U).eqv b c y z w → (Frame.simple U).eqv a c x z w := by
+  rintro ⟨h1, r1⟩ ⟨h2, r2⟩; subst h1; subst h2; exact ⟨rfl, U.rel_trans _ w _ _ _ r1 r2⟩
+
+theorem simple_isModelAt : (Frame.simple U).IsModelAt where
+  refEqv := by
+    intro w ρ _ env _
+    refine (Frame.simple U).holdsAt_tall _ _ _ w |>.mpr fun a _ => ((Frame.simple U).holdsAt_all _ _ _ _ w).mpr fun x hx => ?_
+    exact ((Frame.simple U).holdsAt_eqv _ _ _ _ _ _ w).mpr ((simple_eqv_same U _ _ _ w).mpr hx)
+  symEqv := by
+    intro w ρ _ env _
+    refine (Frame.simple U).holdsAt_tall _ _ _ w |>.mpr fun a _ => (Frame.simple U).holdsAt_tall _ _ _ w |>.mpr fun b _ => ?_
+    refine ((Frame.simple U).holdsAt_all _ _ _ _ w).mpr fun x _ => ((Frame.simple U).holdsAt_all _ _ _ _ w).mpr fun y _ => ?_
+    refine ((Frame.simple U).holdsAt_imp _ _ _ _ w).mpr fun h => ?_
+    exact ((Frame.simple U).holdsAt_eqv _ _ _ _ _ _ w).mpr (simple_symm U ((Frame.simple U).holdsAt_eqv _ _ _ _ _ _ w |>.mp h))
+  transEqv := by
+    intro w ρ _ env _
+    refine (Frame.simple U).holdsAt_tall _ _ _ w |>.mpr fun a _ => (Frame.simple U).holdsAt_tall _ _ _ w |>.mpr fun b _ =>
+      (Frame.simple U).holdsAt_tall _ _ _ w |>.mpr fun c _ => ?_
+    refine ((Frame.simple U).holdsAt_all _ _ _ _ w).mpr fun x _ => ((Frame.simple U).holdsAt_all _ _ _ _ w).mpr fun y _ =>
+      ((Frame.simple U).holdsAt_all _ _ _ _ w).mpr fun z _ => ?_
+    refine ((Frame.simple U).holdsAt_imp _ _ _ _ w).mpr fun h => ?_
+    have h1 := ((Frame.simple U).holdsAt_eqv (Γ := (((Ctx.nil.text.text.text).ext tv2).ext tv1).ext tv0) tv2 tv1
+      (.var (.there (.there .here))) (.var (.there .here)) (scons c (scons b (scons a ρ))) (((env, x), y), z) w).mp h.1
+    have h2 := ((Frame.simple U).holdsAt_eqv (Γ := (((Ctx.nil.text.text.text).ext tv2).ext tv1).ext tv0) tv1 tv0
+      (.var (.there .here)) (.var .here) (scons c (scons b (scons a ρ))) (((env, x), y), z) w).mp h.2
+    exact ((Frame.simple U).holdsAt_eqv _ _ _ _ _ _ w).mpr (simple_trans U h1 h2)
+  refTeq := by
+    intro w ρ _ env _
+    exact (Frame.simple U).holdsAt_tall _ _ _ w |>.mpr fun a _ => ((Frame.simple U).holdsAt_teq _ _ _ _ w).mpr rfl
+  llTeq := by
+    intro n Γ Q w ρ _ env _
+    refine (Frame.simple U).holdsAt_tall _ _ _ w |>.mpr fun a _ => (Frame.simple U).holdsAt_tall _ _ _ w |>.mpr fun b _ => ?_
+    refine ((Frame.simple U).holdsAt_imp _ _ _ _ w).mpr fun hab => ?_
+    have hab' : a = b := ((Frame.simple U).holdsAt_teq (Γ := Γ.text.text) tv1 tv0 (scons b (scons a ρ)) env w).mp hab
+    subst hab'
+    refine ((Frame.simple U).holdsAt_imp _ _ _ _ w).mpr fun hq => ?_
+    have e1 : HEq ((Frame.simple U).eval (Tm.tapp Q.twk.twk tv1) (scons a (scons a ρ)) env)
+        ((Frame.simple U).eval Q.twk.twk (scons a (scons a ρ)) env a) :=
+      (Frame.simple U).heq_eval_tapp (K := Cat.t) Q.twk.twk tv1 (scons a (scons a ρ)) env
+    have e2 : HEq ((Frame.simple U).eval (Tm.tapp Q.twk.twk tv0) (scons a (scons a ρ)) env)
+        ((Frame.simple U).eval Q.twk.twk (scons a (scons a ρ)) env a) :=
+      (Frame.simple U).heq_eval_tapp (K := Cat.t) Q.twk.twk tv0 (scons a (scons a ρ)) env
+    exact cast ((Frame.simple U).holdsAt_of_heq (e1.trans e2.symm) w) hq
+
+end Frame
+
+namespace Frame
+variable (U : Univ)
+
+theorem simple_LLEqv : (Frame.simple U).ValidAt LLEqv := by
+  intro w ρ _ env _
+  refine (Frame.simple U).holdsAt_tall _ _ _ w |>.mpr fun a _ => ?_
+  refine ((Frame.simple U).holdsAt_all _ _ _ _ w).mpr fun x _ => ((Frame.simple U).holdsAt_all _ _ _ _ w).mpr fun y _ => ?_
+  refine ((Frame.simple U).holdsAt_imp _ _ _ _ w).mpr fun hxy => ?_
+  refine ((Frame.simple U).holdsAt_all _ _ _ _ w).mpr fun G hG => ((Frame.simple U).holdsAt_imp _ _ _ _ w).mpr fun hGx => ?_
+  have hxy' : U.rel a w x y := (simple_eqv_same U _ _ _ w).mp (((Frame.simple U).holdsAt_eqv _ _ _ _ _ _ w).mp hxy)
+  have hG' : U.rel (.arr a .t) w G G := hG
+  exact (hG' w (U.Rrefl w) x y hxy' w (U.Rrefl w)).mp hGx
+
+end Frame
+
+namespace Frame
+variable (F : Frame)
+
+theorem valid_closeCtx : ∀ {n : Nat} (Γ : Ctx n) (χ : Fm Γ),
+    (∀ ρ, (∀ i, F.U.D F.U.w0 (ρ i)) → ∀ env, F.EnvAdm Γ ρ F.U.w0 env → F.HoldsAt χ ρ env F.U.w0) →
+    F.Valid (closeCtx Γ χ)
+  | _, .nil, _, h => h
+  | _, .ext Γ σ, χ, h => valid_closeCtx Γ (Tm.all σ χ) fun ρ hρ env henv =>
+      (F.holdsAt_all σ χ ρ env _).mpr fun v hv => h ρ hρ (env, v) ⟨henv, F.adm_of_rel σ ρ _ v hv⟩
+  | _, .text Γ, χ, h => valid_closeCtx Γ (Tm.tall χ) fun ρ hρ env henv =>
+      (F.holdsAt_tall χ ρ env _).mpr fun a ha => h (scons a ρ) (fin_cases ha hρ) env henv
+
+/-- **Classicism.** A frame in which the identity axioms and LL≡ hold at every world, and in which
+identity within a type is identity at the world in question, is a model of Classicism. -/
+theorem Class_valid (hM : F.IsModelAt) (hLL : F.ValidAt LLEqv)
+    (heq : ∀ a x y w, F.eqv a a x y w ↔ F.U.rel a w x y) : ∀ χ, ClassSch χ → F.Valid χ := by
+  have sound : ∀ {n : Nat} {Γ : Ctx n} {θ : Fm Γ}, PIP Γ θ → F.ValidAt θ := fun h =>
+    F.soundnessAt hM (fun χ (e : χ = LLEqv) => e ▸ hLL) h
+  rintro _ (⟨n, Γ, φ, ψ, hp, rfl⟩ | ⟨n, Γ, σ, φ, ψ, hp, rfl⟩)
+  · refine F.valid_closeCtx Γ _ fun ρ hρ env henv => ?_
+    refine ((F.holdsAt_eqv tyT tyT φ ψ ρ env _).trans (heq _ _ _ _)).mpr ?_
+    intro v hv
+    exact sound hp v ρ (fun i => F.U.D_mono _ _ _ hv (hρ i)) env (F.EnvAdm_mono ρ _ v hv env henv)
+  · refine F.valid_closeCtx Γ _ fun ρ hρ env henv => ?_
+    refine ((F.holdsAt_eqv σ.pred σ.pred _ _ ρ env _).trans (heq _ _ _ _)).mpr ?_
+    refine (F.relV_iff σ.pred ρ _ _ _).mp ?_
+    intro v hv u u' huu x hx
+    have hA := F.adm_eval (Tm.lam σ φ) ρ _ env henv v hv u u' huu x hx
+    have hu' : F.hom.Rel σ.1 ρ ρ (F.homRs ρ) x u' u' := by
+      have h1 := (F.relV_iff σ ρ v u u').mp huu
+      have h2 := F.U.rel_mono _ v x _ _ hx (F.U.rel_refl_right _ v _ _ h1)
+      exact (F.relV_iff σ ρ x u' u').mpr h2
+    have hρx : ∀ i, F.U.D x (ρ i) := fun i => F.U.D_mono _ _ _ (F.U.Rtrans _ _ _ hv hx) (hρ i)
+    have henvx := F.EnvAdm_mono ρ _ x (F.U.Rtrans _ _ _ hv hx) env henv
+    exact hA.trans (sound hp x ρ hρx (env, u') ⟨henvx, hu'⟩)
+
+theorem simple_Class (U : Univ) : ∀ χ, ClassSch χ → (Frame.simple U).Valid χ :=
+  (Frame.simple U).Class_valid (simple_isModelAt U) (simple_LLEqv U) (fun a x y w => simple_eqv_same U a x y w)
+
+end Frame
+
+namespace Frame
+variable (F : Frame)
+
+theorem eval_botF {n : Nat} {Γ : Ctx n} (ρ : F.U.TEnv n) (env : F.U.Env Γ ρ) :
+    F.eval (botF : Fm Γ) ρ env = fun _ => False :=
+  funext fun w => propext ⟨fun h => (F.holdsAt_all (Γ := Γ) tyT (.var .here) ρ env w).mp h (fun _ => False)
+    (fun _ _ => Iff.rfl), fun h => h.elim⟩
+
+theorem eval_topF {n : Nat} {Γ : Ctx n} (ρ : F.U.TEnv n) (env : F.U.Env Γ ρ) :
+    F.eval (topF : Fm Γ) ρ env = fun _ => True :=
+  funext fun w => propext ⟨fun _ => trivial, fun _ h => by
+    have e := congrFun (F.eval_botF (Γ := Γ) ρ env) w
+    exact (cast e h : False)⟩
+
+end Frame
+
+/-! ### Principles true in every simple frame -/
+
+namespace Frame
+variable (U : Univ)
+
+abbrev S := Frame.simple U
+
+/-- `□φ`, in a simple frame: truth at every world the given world can see. -/
+theorem simple_box {n : Nat} {Γ : Ctx n} (φ : Fm Γ) (ρ : U.TEnv n) (env : U.Env Γ ρ) (w : U.W) :
+    (S U).HoldsAt (boxF φ) ρ env w ↔ ∀ v, U.R w v → (S U).HoldsAt φ ρ env v := by
+  refine ((S U).holdsAt_eqv tyT tyT φ topF ρ env w).trans ((simple_eqv_same U _ _ _ w).trans ?_)
+  show (∀ v, U.R w v → ((S U).eval φ ρ env v ↔ (S U).eval topF ρ env v)) ↔ _
+  have e := (S U).eval_topF ρ env
+  refine forall_congr' fun v => imp_congr Iff.rfl ?_
+  rw [e]
+  exact ⟨fun h => h.mpr trivial, fun h => ⟨fun _ => trivial, fun _ => h⟩⟩
+
+theorem simple_Valid_of {φ : Fm Ctx.nil} (h : (S U).HoldsAt φ (fun i => i.elim0) () U.w0) : (S U).Valid φ := by
+  intro ρ _ env _
+  have e1 : ρ = fun i => i.elim0 := funext fun i => i.elim0
+  subst e1
+  exact h
+
+theorem simple_not_Valid {φ : Fm Ctx.nil} (h : ¬ (S U).HoldsAt φ (fun i => i.elim0) () U.w0) : ¬ (S U).Valid φ :=
+  fun hv => h (hv _ (fun i => i.elim0) () trivial)
+
+theorem simple_Disjoint : (S U).Valid Disjoint := by
+  refine simple_Valid_of U ?_
+  refine ((S U).holdsAt_tall _ _ _ _).mpr fun a _ => ((S U).holdsAt_tall _ _ _ _).mpr fun b _ => ?_
+  refine ((S U).holdsAt_imp _ _ _ _ _).mpr fun hn => ?_
+  refine ((S U).holdsAt_all _ _ _ _ _).mpr fun x _ => ((S U).holdsAt_all _ _ _ _ _).mpr fun y _ => ?_
+  refine ((S U).holdsAt_neg _ _ _ _).mpr fun hxy => ?_
+  obtain ⟨h, _⟩ := ((S U).holdsAt_eqv _ _ _ _ _ _ _).mp hxy
+  exact ((S U).holdsAt_neg _ _ _ _).mp hn (((S U).holdsAt_teq _ _ _ _ _).mpr h)
+
+theorem simple_Slogan : (S U).Valid Slogan := by
+  refine simple_Valid_of U ?_
+  refine ((S U).holdsAt_all _ _ _ _ _).mpr fun x _ => ((S U).holdsAt_tall _ _ _ _).mpr fun b _ => ?_
+  refine ((S U).holdsAt_all _ _ _ _ _).mpr fun y _ => ((S U).holdsAt_neg _ _ _ _).mpr fun hxy => ?_
+  obtain ⟨h, _⟩ := ((S U).holdsAt_eqv _ _ _ _ _ _ _).mp hxy
+  exact nomatch h
+
+theorem simple_cong {a b c d : Code U.Base} {f : U.El (.arr a c)} {g : U.El (.arr b d)} {x : U.El a} {y : U.El b}
+    {w : U.W} (h1 : (S U).eqv (.arr a c) (.arr b d) f g w) (h2 : (S U).eqv a b x y w) :
+    (S U).eqv c d (f x) (g y) w := by
+  obtain ⟨e1, r1⟩ := h1; obtain ⟨e2, r2⟩ := h2
+  injection e1 with ea ec
+  subst ea; subst ec
+  exact ⟨rfl, r1 w (U.Rrefl w) x y r2⟩
+
+theorem simple_Cong : (S U).Valid Cong := by
+  refine simple_Valid_of U ?_
+  refine ((S U).holdsAt_tall _ _ _ _).mpr fun a _ => ((S U).holdsAt_tall _ _ _ _).mpr fun b _ =>
+    ((S U).holdsAt_tall _ _ _ _).mpr fun c _ => ((S U).holdsAt_tall _ _ _ _).mpr fun d _ => ?_
+  refine ((S U).holdsAt_all _ _ _ _ _).mpr fun f _ => ((S U).holdsAt_all _ _ _ _ _).mpr fun g _ =>
+    ((S U).holdsAt_all _ _ _ _ _).mpr fun x _ => ((S U).holdsAt_all _ _ _ _ _).mpr fun y _ => ?_
+  refine ((S U).holdsAt_imp _ _ _ _ _).mpr fun h => ?_
+  have hc := ((S U).holdsAt_conj _ _ _ _ _).mp h
+  have h1 := ((S U).holdsAt_eqv _ _ _ _ _ _ _).mp hc.1
+  have h2 := ((S U).holdsAt_eqv _ _ _ _ _ _ _).mp hc.2
+  have h3 := simple_cong U h1 h2
+  exact ((S U).holdsAt_eqv _ _ _ _ _ _ _).mpr h3
+
+theorem simple_Inj : (S U).Valid Inj := by
+  refine simple_Valid_of U ?_
+  refine ((S U).holdsAt_tall _ _ _ _).mpr fun a _ => ((S U).holdsAt_tall _ _ _ _).mpr fun b _ =>
+    ((S U).holdsAt_tall _ _ _ _).mpr fun c _ => ((S U).holdsAt_tall _ _ _ _).mpr fun d _ => ?_
+  refine ((S U).holdsAt_imp _ _ _ _ _).mpr fun h => ?_
+  have e : (Code.arr a c : Code U.Base) = .arr b d := ((S U).holdsAt_teq _ _ _ _ _).mp h
+  exact ((S U).holdsAt_conj _ _ _ _ _).mpr ⟨((S U).holdsAt_teq _ _ _ _ _).mpr (Code.arr.inj e).1,
+    ((S U).holdsAt_teq _ _ _ _ _).mpr (Code.arr.inj e).2⟩
+
+theorem simple_Recovery : (S U).Valid Recovery := by
+  refine simple_Valid_of U ?_
+  refine ((S U).holdsAt_tall _ _ _ _).mpr fun a _ => ((S U).holdsAt_tall _ _ _ _).mpr fun b _ =>
+    ((S U).holdsAt_tall _ _ _ _).mpr fun c _ => ((S U).holdsAt_tall _ _ _ _).mpr fun d _ => ?_
+  refine ((S U).holdsAt_imp _ _ _ _ _).mpr fun h => ?_
+  have e : (Code.arr a c : Code U.Base) = .arr b d := ((S U).holdsAt_teq _ _ _ _ _).mp (((S U).holdsAt_conj _ _ _ _ _).mp h).1
+  exact ((S U).holdsAt_teq _ _ _ _ _).mpr (Code.arr.inj e).2
+
+/-- In a simple frame, an item of one type is identical to an item of another only if the types
+are the same. -/
+theorem simple_sub_eq {n : Nat} {Γ : Ctx n} (ρ : U.TEnv n) (env : U.Env Γ ρ) (w : U.W) (a b : Code U.Base)
+    (h : (S U).HoldsAt (subT : Fm (Γ.text.text)) (scons b (scons a ρ)) env w) : a = b := by
+  obtain ⟨x, hx⟩ := U.adm_nonempty a
+  obtain ⟨y, _, hy⟩ := ((S U).holdsAt_ex _ _ _ _ _).mp (((S U).holdsAt_all _ _ _ _ _).mp h x (hx w))
+  exact (((S U).holdsAt_eqv _ _ _ _ _ _ _).mp hy).1
+
+theorem simple_ExtT : (S U).Valid ExtT := by
+  refine simple_Valid_of U ?_
+  refine ((S U).holdsAt_tall _ _ _ _).mpr fun a _ => ((S U).holdsAt_tall _ _ _ _).mpr fun b _ => ?_
+  refine ((S U).holdsAt_imp _ _ _ _ _).mpr fun h => ?_
+  exact ((S U).holdsAt_teq _ _ _ _ _).mpr (simple_sub_eq U _ _ _ a b (((S U).holdsAt_conj _ _ _ _ _).mp h).1)
+
+theorem simple_IntT : (S U).Valid IntT := by
+  refine simple_Valid_of U ?_
+  refine ((S U).holdsAt_tall _ _ _ _).mpr fun a _ => ((S U).holdsAt_tall _ _ _ _).mpr fun b _ => ?_
+  refine ((S U).holdsAt_imp _ _ _ _ _).mpr fun h => ?_
+  have h1 := (simple_box U _ _ _ _).mp (((S U).holdsAt_conj _ _ _ _ _).mp h).1 U.w0 (U.Rrefl U.w0)
+  exact ((S U).holdsAt_teq _ _ _ _ _).mpr (simple_sub_eq U _ _ _ a b h1)
+
+end Frame
+
 end Kr
 end PIF

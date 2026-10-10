@@ -360,6 +360,50 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   1737
  ],
+ "Kr.Mbf_Class": [
+  "PIKripkeModels.lean",
+  106
+ ],
+ "Kr.Mbf_Cong": [
+  "PIKripkeModels.lean",
+  111
+ ],
+ "Kr.Mbf_Disjoint": [
+  "PIKripkeModels.lean",
+  109
+ ],
+ "Kr.Mbf_ExtT": [
+  "PIKripkeModels.lean",
+  114
+ ],
+ "Kr.Mbf_Inj": [
+  "PIKripkeModels.lean",
+  112
+ ],
+ "Kr.Mbf_IntT": [
+  "PIKripkeModels.lean",
+  115
+ ],
+ "Kr.Mbf_LLEqv": [
+  "PIKripkeModels.lean",
+  107
+ ],
+ "Kr.Mbf_Recovery": [
+  "PIKripkeModels.lean",
+  113
+ ],
+ "Kr.Mbf_Slogan": [
+  "PIKripkeModels.lean",
+  110
+ ],
+ "Kr.Mbf_isModelAt": [
+  "PIKripkeModels.lean",
+  108
+ ],
+ "Kr.Mbf_not_TBFSch": [
+  "PIKripkeModels.lean",
+  104
+ ],
  "LLEqv": [
   "PIFoundation.lean",
   945
