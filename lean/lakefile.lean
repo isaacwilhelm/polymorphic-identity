@@ -92,3 +92,6 @@ lean_lib PIKripkeCong
 
 @[default_target]
 lean_lib PINoSelf
+
+@[default_target]
+lean_lib PICongQs
