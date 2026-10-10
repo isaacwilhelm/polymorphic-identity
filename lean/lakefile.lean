@@ -86,3 +86,9 @@ lean_lib PIKripkeND
 
 @[default_target]
 lean_lib PIKripkeHae
+
+@[default_target]
+lean_lib PIKripkeCong
+
+@[default_target]
+lean_lib PINoSelf
