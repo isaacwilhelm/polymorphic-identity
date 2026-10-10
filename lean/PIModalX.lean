@@ -60,6 +60,35 @@ theorem d_NIEqv_of_NIX (hN : S NIX) : Prov S Ctx.nil NIEqv := by
     ((((Ent.axm (Γ := Γxy) (Hs := []) hN).tinst tv0).tinst tv0).inst (.var (.there .here))).inst (.var .here)
   exact Ent.toProv (Ent.tgen (Hs := []) (Ent.gen tv0 (Hs := []) (Ent.gen tv0 (Hs := []) h)))
 
+set_option maxHeartbeats 4000000 in
+/-- Disjoint and NI≡ prove NI×: if `α ≈ β`, LL≈ carries NI≡ at `α` over to the pair `α, β`; if
+not, Disjoint says that nothing of type `α` is identical to anything of type `β`. -/
+theorem d_NIX_of_Disjoint (hD : S Disjoint) (hN : S NIEqv) : Prov S Ctx.nil NIX := by
+  have hQ : Ent S C11 [Tm.teq tv1 tv0] (LLTeq (Tm.tlam (Tm.all tv2 (Tm.all tv0 (Tm.imp
+      (Tm.eqv tv2 tv0 (.var (.there .here)) (.var .here)) (boxF (Tm.eqv tv2 tv0 (.var (.there .here)) (.var .here))))))
+      : Tm C11 (.pi .t))) := Ent.ofProv (Prov.llTeq _)
+  have h1 : Ent S C11 [Tm.teq tv1 tv0] ((Tm.teq tv1 tv0).imp
+      ((Tm.all tv1 (Tm.all tv1 (Tm.imp (Tm.eqv tv1 tv1 (.var (.there .here)) (.var .here))
+        (boxF (Tm.eqv tv1 tv1 (.var (.there .here)) (.var .here)))))).imp
+      (Tm.all tv1 (Tm.all tv0 (Tm.imp (Tm.eqv tv1 tv0 (.var (.there .here)) (.var .here))
+        (boxF (Tm.eqv tv1 tv0 (.var (.there .here)) (.var .here)))))))) :=
+    Ent.beta ((hQ.tinst tv1).tinst tv0) (BetaEq.imp (.refl _) (BetaEq.imp (BetaEq.tbeta _ _) (BetaEq.tbeta _ _)))
+  have hA := (Ent.axm (Γ := C11) (Hs := [Tm.teq tv1 tv0]) hN).tinst tv1
+  have hB := Ent.mp2 h1 (Ent.hyp _ 0 (by decide)) hA
+  have hE : Ent S C11 ([] ++ [Tm.teq tv1 tv0]) (ExyX.imp (boxF ExyX)) :=
+    (hB.inst (.var (.there .here))).inst (.var .here)
+  have hpos : Ent S C11 [] ((Tm.teq tv1 tv0).imp (ExyX.imp (boxF ExyX))) := Ent.intro hE
+  have hDj : Ent S C11 ([] ++ [neg (Tm.teq tv1 tv0)]) (neg ExyX) :=
+    ((Ent.mp (((Ent.axm (Γ := C11) (Hs := [neg (Tm.teq tv1 tv0)]) hD).tinst tv1).tinst tv0)
+      (Ent.hyp _ 0 (by decide))).inst (.var (.there .here))).inst (.var .here)
+  have hneg : Ent S C11 [] ((neg (Tm.teq tv1 tv0)).imp (neg ExyX)) := Ent.intro hDj
+  have hfin : Ent S C11 [] (ExyX.imp (boxF ExyX)) :=
+    Ent.mp2 (Ent.taut (.imp (.imp (.atom 0) (.imp (.atom 1) (.atom 2)))
+      (.imp (.imp (.neg (.atom 0)) (.neg (.atom 1))) (.imp (.atom 1) (.atom 2))))
+      (v3 (Tm.teq tv1 tv0) ExyX (boxF ExyX))
+      (fun v f g e => (Classical.em (v 0)).elim (fun a => f a e) (fun a => absurd e (g a)))) hpos hneg
+  exact Ent.toProv (Ent.tgen (Hs := []) (Ent.tgen (Hs := []) (Ent.gen tv1 (Hs := []) (Ent.gen tv0 (Hs := []) hfin))))
+
 end Derivations
 
 /-! ## The standard semantics -/
@@ -69,6 +98,13 @@ variable (F : Frame)
 
 theorem tr_Choice : F.Tr Choice ↔ ∀ a b (R : F.U.El a → F.U.El b → Prop),
     (∀ x, ∃ y, R x y) → ∃ f : F.U.El a → F.U.El b, ∀ x, R x (f x) := Iff.rfl
+
+theorem tr_Collapse : F.Tr Collapse ↔ ∀ p : Prop, p → F.eqv .t .t p (¬ ∀ q : Prop, q) := Iff.rfl
+
+/-- Collapse holds in every standard model: a truth is the proposition `⊤`. -/
+theorem Collapse_valid (hM : F.IsModelPIm) : F.Valid Collapse :=
+  (F.valid_iff_tr _).mpr <| F.tr_Collapse.mpr fun p hp =>
+    (propext ⟨fun _ h => h False, fun _ => hp⟩ : p = ¬ ∀ q : Prop, q) ▸ F.tr_RefEqv.mp ((F.valid_iff_tr _).mp hM.refEqv) .t p
 
 /-- Functional Choice holds in every standard frame. -/
 theorem Choice_valid : F.Valid Choice :=
@@ -91,7 +127,82 @@ theorem Choice_valid : F.Valid Choice :=
 theorem tr_NIX : F.Tr NIX ↔ ∀ a b (x : F.U.El a) (y : F.U.El b), F.eqv a b x y F.U.w0 →
     F.eqv .t .t (F.eqv a b x y) (F.eval (topF : Fm Ctx.nil) (fun i => i.elim0) ()) F.U.w0 := Iff.rfl
 
+theorem tr_NDX : F.Tr NDX ↔ ∀ a b (x : F.U.El a) (y : F.U.El b), ¬ F.eqv a b x y F.U.w0 →
+    F.eqv .t .t (fun w => ¬ F.eqv a b x y w) (F.eval (topF : Fm Ctx.nil) (fun i => i.elim0) ()) F.U.w0 := Iff.rfl
+
+/-- NI× holds when identity at the actual world persists to every world. -/
+theorem NIX_of (hr : ∀ p, F.eqv .t .t p p F.U.w0)
+    (h : ∀ a b (x : F.U.El a) (y : F.U.El b), F.eqv a b x y F.U.w0 → ∀ w, F.eqv a b x y w) : F.Valid NIX :=
+  (F.valid_iff_tr _).mpr <| F.tr_NIX.mpr fun a b x y hxy => by
+    have e : F.eqv a b x y = F.eval (topF : Fm Ctx.nil) (fun i => i.elim0) () := by
+      refine Eq.trans ?_ (F.eval_topF (Γ := Ctx.nil) _ _).symm; funext w; exact propext ⟨fun _ => trivial, fun _ => h a b x y hxy w⟩
+    rw [e]; exact hr _
+
+/-- ND× holds when distinctness at the actual world persists to every world. -/
+theorem NDX_of (hr : ∀ p, F.eqv .t .t p p F.U.w0)
+    (h : ∀ a b (x : F.U.El a) (y : F.U.El b), ¬ F.eqv a b x y F.U.w0 → ∀ w, ¬ F.eqv a b x y w) : F.Valid NDX :=
+  (F.valid_iff_tr _).mpr <| F.tr_NDX.mpr fun a b x y hxy => by
+    have e : (fun w => ¬ F.eqv a b x y w) = F.eval (topF : Fm Ctx.nil) (fun i => i.elim0) () := by
+      refine Eq.trans ?_ (F.eval_topF (Γ := Ctx.nil) _ _).symm; funext w; exact propext ⟨fun _ => trivial, fun _ => h a b x y hxy w⟩
+    rw [e]; exact hr _
+
+/-- NI× fails when two items are identical at the actual world but not at another. -/
+theorem not_NIX_of (hb : ∀ p q, F.eqv .t .t p q F.U.w0 → p = q) {a b : Code F.U.Base} (x : F.U.El a) (y : F.U.El b)
+    (h0 : F.eqv a b x y F.U.w0) (w : F.U.W) (hw : ¬ F.eqv a b x y w) : ¬ F.Valid NIX := fun hv => by
+  have e := (hb _ _ (F.tr_NIX.mp ((F.valid_iff_tr _).mp hv) a b x y h0)).trans (F.eval_topF (Γ := Ctx.nil) _ _)
+  exact hw (cast (congrFun e w).symm trivial)
+
+/-- ND× fails when two items are distinct at the actual world but identical at another. -/
+theorem not_NDX_of (hb : ∀ p q, F.eqv .t .t p q F.U.w0 → p = q) {a b : Code F.U.Base} (x : F.U.El a) (y : F.U.El b)
+    (h0 : ¬ F.eqv a b x y F.U.w0) (w : F.U.W) (hw : F.eqv a b x y w) : ¬ F.Valid NDX := fun hv => by
+  have e := (hb _ _ (F.tr_NDX.mp ((F.valid_iff_tr _).mp hv) a b x y h0)).trans (F.eval_topF (Γ := Ctx.nil) _ _)
+  exact cast (congrFun e w).symm trivial hw
+
 end Frame
+
+theorem RD.NDX_valid (D : RD) : D.frame.Valid NDX :=
+  D.frame.NDX_of (fun _ => ⟨rfl, HEq.rfl, D.hE⟩) fun _ _ _ _ h _ hw => h ⟨hw.1, hw.2.1, D.hE⟩
+theorem RD.NIX_valid (D : RD) (hE : ∀ w, D.Ee w) : D.frame.Valid NIX :=
+  D.frame.NIX_of (fun _ => ⟨rfl, HEq.rfl, D.hE⟩) fun _ _ _ _ h w => ⟨h.1, h.2.1, hE w⟩
+
+theorem Mw_NIX : DW.frame.Valid NIX := DW.NIX_valid fun _ => trivial
+theorem Mw_NDX : DW.frame.Valid NDX := DW.NDX_valid
+theorem Mnd_NIX : DND.frame.Valid NIX := DND.NIX_valid fun _ => trivial
+theorem Mnd_NDX : DND.frame.Valid NDX := DND.NDX_valid
+theorem Mni_NIX : DNI.frame.Valid NIX := DNI.NIX_valid fun _ => trivial
+theorem Mni_NDX : DNI.frame.Valid NDX := DNI.NDX_valid
+theorem Mie_NDX : DIE.frame.Valid NDX := DIE.NDX_valid
+
+theorem Mtt_NIX : MttF.Valid NIX :=
+  MttF.NIX_of (fun _ => ⟨rfl, Or.inl HEq.rfl⟩) fun _ _ _ _ h _ => h
+theorem Mtt_NDX : MttF.Valid NDX :=
+  MttF.NDX_of (fun _ => ⟨rfl, Or.inl HEq.rfl⟩) fun _ _ _ _ h _ => h
+
+theorem MtwC_NIX : MtwCF.Valid NIX := MtwCF.NIX_of (fun _ => ⟨Or.inl rfl, HEq.rfl⟩) fun _ _ _ _ h _ => h
+theorem MtwC_NDX : MtwCF.Valid NDX := MtwCF.NDX_of (fun _ => ⟨Or.inl rfl, HEq.rfl⟩) fun _ _ _ _ h _ => h
+theorem MhaeC_NIX : MhaeCF.Valid NIX := MhaeCF.NIX_of (fun _ => rfl) fun _ _ _ _ h _ => h
+theorem MhaeC_NDX : MhaeCF.Valid NDX := MhaeCF.NDX_of (fun _ => rfl) fun _ _ _ _ h _ => h
+
+theorem MieC_not_NIX : ¬ MieCF.Valid NIX :=
+  MieCF.not_NIX_of (fun _ _ h => MieC_eq _ _ _ _ h) (a := .e) (b := .base ()) () ()
+    (Or.inr ⟨rfl, Or.inl ⟨rfl, rfl⟩⟩) false (fun h => h.elim (fun h => nomatch h.1) (fun h => Bool.noConfusion h.1))
+theorem MieC_NDX : MieCF.Valid NDX :=
+  MieCF.NDX_of (fun _ => Or.inl ⟨rfl, HEq.rfl⟩) fun _ _ _ _ h _ hw =>
+    h (hw.elim Or.inl (fun hw' => Or.inr ⟨rfl, hw'.2⟩))
+theorem MieX_not_NIX : ¬ MieXF.Valid NIX :=
+  MieXF.not_NIX_of (fun _ _ h => MieX_eq _ _ _ _ h) (a := .e) (b := .base ()) () ()
+    (Or.inr ⟨rfl, ⟨(fun e => nomatch e), rfl, trivial⟩⟩) false
+    (fun h => h.elim (fun h => nomatch h.1) (fun h => Bool.noConfusion h.1))
+theorem MieX_NDX : MieXF.Valid NDX :=
+  MieXF.NDX_of (fun _ => Or.inl ⟨rfl, HEq.rfl⟩) fun _ _ _ _ h _ hw =>
+    h (hw.elim Or.inl (fun hw' => Or.inr ⟨rfl, hw'.2⟩))
+theorem MhieC_not_NIX : ¬ MhieF.Valid NIX :=
+  MhieF.not_NIX_of (fun _ _ h => MhieC_eq _ _ _ _ h) (a := .e) (b := .base ()) () () (Or.inr ⟨rfl, Or.inl ⟨rfl, rfl⟩⟩)
+    false (fun h => h.elim (fun h => nomatch congrArg Sigma.fst h) (fun h => Bool.noConfusion h.1))
+theorem MhieC_NDX : MhieF.Valid NDX :=
+  MhieF.NDX_of (fun _ => Or.inl rfl) fun _ _ _ _ h _ hw =>
+    h (hw.elim Or.inl (fun hw' => Or.inr ⟨rfl, hw'.2⟩))
+
 end Wd
 
 namespace Al
@@ -284,6 +395,43 @@ theorem Mch_Cong : MchK.Valid Cong := Frame.simple_Cong UCh
 theorem Mch_Inj : MchK.Valid Inj := Frame.simple_Inj UCh
 theorem Mch_ExtT : MchK.Valid ExtT := Frame.simple_ExtT UCh
 
+end Kr
+
+namespace Al
+
+section MqX
+variable (TA TE : (Code Empty → (Bool → Prop)) → Prop)
+
+/-- In `𝔐_q`, identity is rigid, so NI× holds. -/
+theorem Mq_NIX : (MqF TA TE).Valid NIX := by
+  intro ρ env
+  refine ((MqF TA TE).holds_tall _ _ _).mpr fun a => ((MqF TA TE).holds_tall _ _ _).mpr fun b => ?_
+  refine ((MqF TA TE).holds_all _ _ _ _).mpr fun x => ((MqF TA TE).holds_all _ _ _ _).mpr fun y => ?_
+  refine ((MqF TA TE).holds_imp _ _ _ _).mpr fun hxy => ?_
+  refine ((MqF TA TE).holds_eqv_t _ _ _ _).mpr ⟨rfl, heq_of_eq ?_⟩
+  exact (((MqF TA TE).eval_eqv _ _ _ _ _ _).trans (funext fun _ => propext ⟨fun _ => trivial, fun _ => hxy⟩)).trans
+    (Mq_top TA TE (Γ := ((Ctx.nil.text.text).ext tv1).ext tv0) _ _).symm
+
+/-- In `𝔐_q`, distinctness is rigid, so ND× holds. -/
+theorem Mq_NDX : (MqF TA TE).Valid NDX := by
+  intro ρ env
+  refine ((MqF TA TE).holds_tall _ _ _).mpr fun a => ((MqF TA TE).holds_tall _ _ _).mpr fun b => ?_
+  refine ((MqF TA TE).holds_all _ _ _ _).mpr fun x => ((MqF TA TE).holds_all _ _ _ _).mpr fun y => ?_
+  refine ((MqF TA TE).holds_imp _ _ _ _).mpr fun hxy => ?_
+  refine ((MqF TA TE).holds_eqv_t _ _ _ _).mpr ⟨rfl, heq_of_eq ?_⟩
+  refine Eq.trans ?_ (Mq_top TA TE (Γ := ((Ctx.nil.text.text).ext tv1).ext tv0) _ _).symm
+  funext w
+  refine propext ⟨fun _ => trivial, fun _ hw => ((MqF TA TE).holds_neg _ _ _).mp hxy ?_⟩
+  have e := (MqF TA TE).eval_eqv (Γ := ((Ctx.nil.text.text).ext tv1).ext tv0) tv1 tv0 (.var (.there .here)) (.var .here)
+    (scons b (scons a ρ)) ((env, x), y)
+  have hw' := congrFun e w ▸ hw
+  exact cast (congrFun e true).symm hw'
+
+end MqX
+end Al
+
+namespace Kr
+theorem Mbf_NIX : MbfK.Valid NIX := Frame.simple_NIX UBF
 end Kr
 
 end PIF
