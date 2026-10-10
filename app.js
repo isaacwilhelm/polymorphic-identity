@@ -61,7 +61,8 @@
 
   // ------------------------------------------------------------------ state
   // sel: id -> true (assumed) | false (negation assumed)
-  const state = { logic: "PI", sel: {}, focus: null, opened: [] };
+  const state = { logic: "PI", sel: {}, focus: null, opened: [], showThms: false };
+  try { state.showThms = localStorage.getItem("pi-showthms") === "1"; } catch (e) {}
 
   function readHash() {
     const h = decodeURIComponent(location.hash.replace(/^#/, ""));
@@ -227,7 +228,7 @@
   function renderChecklist() {
     const box = $("#checklist");
     const groups = [];
-    D.principles.filter(p => p.group !== "The logic").forEach(p => {
+    D.principles.filter(p => p.group !== "The logic" && !p.theorem).forEach(p => {
       let g = groups.find(g => g.name === p.group);
       if (!g) groups.push(g = { name: p.group, items: [] });
       g.items.push(p);
@@ -385,6 +386,11 @@
 
     // targets placed around an ellipse, grouped by status
     const assumed = new Set(an.A.map(a => a.id));
+    // theorems of the base logic are shown only on request
+    if (!state.showThms) {
+      const baseAn = analyseWith(an.A.filter(a => a.why.base));
+      if (!baseAn.inconsistent) Object.entries(baseAn.status).forEach(([id, st]) => { if (st.kind === "follows") assumed.add(id); });
+    }
     const targets = D.principles.filter(p => !assumed.has(p.id));
     const groupOf = id => an.inconsistent ? "none" : an.status[id].kind;
     const sorted = an.inconsistent ? targets
@@ -419,7 +425,7 @@
 
     // summary counts
     const counts = {};
-    if (!an.inconsistent) Object.values(an.status).forEach(s => counts[s.kind] = (counts[s.kind] || 0) + 1);
+    if (!an.inconsistent) Object.entries(an.status).forEach(([id, s]) => { if (!assumed.has(id)) counts[s.kind] = (counts[s.kind] || 0) + 1; });
     $("#legend").innerHTML = ORDER.map(k => `
       <span class="lg ${KIND[k].cls}" title="${KIND[k].desc}"><svg width="34" height="10" aria-hidden="true"><line x1="1" y1="5" x2="33" y2="5"/></svg>${KIND[k].label}<b>${counts[k] || 0}</b></span>`).join("");
     $("#banner").innerHTML = an.inconsistent
@@ -710,6 +716,46 @@
       .filter(sec => !sec.common && (onlyNew ? sec.level === key : L.levels.includes(sec.level)))
       .map(sec => secHTML(sec, sec.level !== "PI-" && !onlyNew ? "added in " + lvName(sec.level) : "")).join("");
   }
+  function thmLean(id) {
+    const t = D.pimTheorems.find(t => t.to === id);
+    if (t) return t.lean;
+    const r = D.rules.find(r => r.to === id && r.from.every(f => f === "LLeq" || f === "Class"));
+    return r ? r.lean : null;
+  }
+  function thmHTML(key) {
+    const order = ["PI-", "PI", "PIC"];
+    const upto = order.slice(0, order.indexOf(key) + 1).reverse();
+    const intro = `<p class="lblurb">Listed roughly from the most surprising to the least. ${key === "PI-" ? "" : "Each logic also proves the theorems of the weaker ones, listed after its own."} Click a theorem to see it in the explorer.</p>`;
+    return intro + upto.map(k => {
+      const L = D.theoremLists.find(l => l.logic === k);
+      const items = L.items.map((it, i) => {
+        const p = P[it.id];
+        return `<li><div class="thead"><span class="rank">${i + 1}.</span><a href="#" class="ttag" data-id="${it.id}">${p.tag}</a> ${leanBadge(thmLean(it.id))}</div>
+          ${tex(p.tex, true)}<div class="why">${it.why}</div></li>`;
+      }).join("");
+      return `<section class="lsec"><h4>${L.title}</h4><ol class="thmlist">${items}</ol></section>`;
+    }).join("");
+  }
+  function openThms(key) {
+    const dlg = $("#thmdlg");
+    const show = k => {
+      dlg.querySelectorAll(".ltabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.l === k));
+      $("#thmbody").innerHTML = thmHTML(k);
+      $("#thmbody").querySelectorAll(".ttag").forEach(a => a.addEventListener("click", e => {
+        e.preventDefault(); dlg.close();
+        if (!state.showThms) { state.showThms = true; try { localStorage.setItem("pi-showthms", "1"); } catch (err) {} }
+        openPrinciple(a.dataset.id);
+      }));
+    };
+    dlg.querySelectorAll(".ltabs button").forEach(b => b.onclick = () => show(b.dataset.l));
+    show(key);
+    if (!dlg.open) dlg.showModal();
+  }
+  function syncThmToggle() {
+    const b = $("#togglethms");
+    b.setAttribute("aria-pressed", state.showThms);
+    b.textContent = (state.showThms ? "Hide" : "Show") + " the theorems of " + logicName() + " in the graph";
+  }
   function openCommon() { $("#logicbody").innerHTML = commonHTML(); $("#logicdlg").showModal(); }
 
   // ------------------------------------------------------------------ main
@@ -717,6 +763,7 @@
     writeHash();
     const an = analyse();
     syncChecklist();
+    syncThmToggle();
     renderGraph(an);
     renderDetails(an);
     if (!$("#strength").hidden) renderStrength();
@@ -731,6 +778,14 @@
       update();
     }));
     $("#showlogic").addEventListener("click", openCommon);
+    $("#showthmlist").addEventListener("click", () => openThms(state.logic));
+    $("#thmdlg .lclose").addEventListener("click", () => $("#thmdlg").close());
+    $("#thmdlg").addEventListener("click", e => { if (e.target.id === "thmdlg") e.target.close(); });
+    $("#togglethms").addEventListener("click", () => {
+      state.showThms = !state.showThms;
+      try { localStorage.setItem("pi-showthms", state.showThms ? "1" : "0"); } catch (e) {}
+      update();
+    });
     $("#logicdlg .lclose").addEventListener("click", () => $("#logicdlg").close());
     $("#logicdlg").addEventListener("click", e => { if (e.target.id === "logicdlg") e.target.close(); });
     $("#reset").addEventListener("click", () => { state.sel = {}; state.focus = null; state.opened = []; update(); });

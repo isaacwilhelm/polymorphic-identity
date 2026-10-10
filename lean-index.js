@@ -1736,6 +1736,10 @@ window.LEANINDEX = {
   "PIModal.lean",
   31
  ],
+ "NoSelf": [
+  "PINoSelf.lean",
+  116
+ ],
  "PCong": [
   "PIFoundation.lean",
   1711
@@ -2411,6 +2415,10 @@ window.LEANINDEX = {
  "d_NITeq_of_Collapse": [
   "PIModal.lean",
   118
+ ],
+ "d_NoSelf": [
+  "PIDerivations.lean",
+  766
  ],
  "d_PropExt_of_Collapse": [
   "PIModal.lean",

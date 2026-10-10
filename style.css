@@ -241,3 +241,17 @@ a.mv { text-decoration: none; }
 .linkbtn { margin-left: auto; background: none; border: none; padding: 0; color: var(--accent); text-decoration: underline; cursor: pointer; font: inherit; font-size: 13px; }
 .logiccard .lblurb { color: var(--muted); }
 .logiccard .katex-display { overflow-x: auto; overflow-y: hidden; padding-bottom: 2px; }
+
+.logic .thmtoggle { flex-basis: 100%; margin-top: 8px; padding: 5px 10px; font-weight: 600; font-size: 0.85em; border: 1px solid var(--c-follows); color: var(--c-follows); background: var(--c-follows-bg); border-radius: 6px; cursor: pointer; text-align: left; }
+.logic .thmtoggle[aria-pressed="true"] { background: var(--c-follows); color: #fff; }
+.logicdlg .ltabs { display: flex; gap: 4px; }
+.logicdlg .ltabs button { font: inherit; padding: 4px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); cursor: pointer; }
+.logicdlg .ltabs button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--panel); }
+.thmlist { list-style: none; padding: 0; margin: 0; }
+.thmlist li { border-top: 1px solid var(--line); padding: 10px 0; }
+.thmlist .thead { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.thmlist .rank { color: var(--muted); font-size: 0.85em; min-width: 1.5em; }
+.thmlist .ttag { font-weight: 600; }
+.thmlist .katex-display { margin: 4px 0; text-align: left; overflow-x: auto; overflow-y: hidden; }
+.thmlist .katex-display > .katex { text-align: left; }
+.thmlist .why { color: var(--ink); font-size: 0.95em; }
