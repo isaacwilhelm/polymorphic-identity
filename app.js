@@ -62,7 +62,7 @@
   // ------------------------------------------------------------------ state
   // sel: id -> true (assumed) | false (negation assumed)
   const state = { logic: "PI", sel: {}, focus: null, opened: [], showThms: false, sortMode: "subject" };
-  try { const m = localStorage.getItem("pi-sortmode2"); if (["topic", "dims", "subject", "power"].includes(m)) state.sortMode = m; } catch (e) {}
+  try { const m = localStorage.getItem("pi-sortmode2"); if (["topic", "dims", "subject"].includes(m)) state.sortMode = m; } catch (e) {}
   try { state.showThms = localStorage.getItem("pi-showthms") === "1"; } catch (e) {}
 
   function readHash() {
@@ -808,10 +808,15 @@
       </div>`).join("");
     box.querySelectorAll(".coll").forEach(b => b.addEventListener("click", () => {
       const c = D.collections[+b.dataset.g].items[+b.dataset.c];
-      state.logic = c.logic;
-      state.sel = Object.fromEntries(c.sel.map(id => [id, true]));
-      state.focus = c.target || null;
-      state.opened = c.target ? [c.target] : [];
+      if (b.classList.contains("on")) {
+        // clicking the active collection again clears it
+        state.sel = {}; state.focus = null; state.opened = [];
+      } else {
+        state.logic = c.logic;
+        state.sel = Object.fromEntries(c.sel.map(id => [id, true]));
+        state.focus = c.target || null;
+        state.opened = c.target ? [c.target] : [];
+      }
       update();
     }));
   }
@@ -823,6 +828,7 @@
       const on = state.logic === c.logic && !neg && ids.join() === c.sel.slice().sort().join();
       b.classList.toggle("on", on);
       b.setAttribute("aria-pressed", on);
+      b.title = on ? "Click again to clear this selection" : "Select these principles in " + LOGIC_NAMES[c.logic];
     });
   }
 

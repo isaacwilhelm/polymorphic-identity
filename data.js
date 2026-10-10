@@ -1741,10 +1741,10 @@ const collections = [
 // Alternative groupings of the principles in the left-hand panel.
 const sortings = {
   dims: [
-    { name: "Grain of propositions and necessity", ids: ["PropExt", "Collapse", "Bool", "IdId", "Truth", "TAx", "TopBot", "NIEqv", "NIX", "NDX", "NITeq", "NDTeq", "BF", "CBF", "Nec", "TBF", "TCBF", "TNec"] },
-    { name: "Identity across types", ids: ["Disjoint", "Slogan", "LLPoly", "Bridge", "Twin", "Hae", "Cantor"] },
-    { name: "Identity of types (≈)", ids: ["Inj", "Recovery", "Ext", "Int"] },
-    { name: "Functions (cutting across)", ids: ["Cong", "WCong", "PCong", "PExt", "Choice"] },
+    { name: "Dimension 1: grain of propositions, and necessity", ids: ["PropExt", "Collapse", "Bool", "IdId", "Truth", "TAx", "TopBot", "NIEqv", "NIX", "NDX", "NITeq", "NDTeq", "BF", "CBF", "Nec", "TBF", "TCBF", "TNec"] },
+    { name: "Dimension 2: identity across types", ids: ["Disjoint", "Slogan", "LLPoly", "Bridge", "Twin", "Hae", "Cantor"] },
+    { name: "Dimension 3: identity of types (≈)", ids: ["Inj", "Recovery", "Ext", "Int"] },
+    { name: "Functions (cutting across the dimensions)", ids: ["Cong", "WCong", "PCong", "PExt", "Choice"] },
   ],
   // `ids` are listed first, then a divider, then the modal principles `modal`.
   subject: [
