@@ -308,9 +308,101 @@ window.LEANINDEX = {
   "PIModalX2.lean",
   293
  ],
+ "Al.MqI_BF": [
+  "PIBF.lean",
+  547
+ ],
+ "Al.MqI_Bool": [
+  "PIBF.lean",
+  415
+ ],
+ "Al.MqI_CBF": [
+  "PIBF.lean",
+  566
+ ],
+ "Al.MqI_Cong": [
+  "PIBF.lean",
+  486
+ ],
+ "Al.MqI_Disjoint": [
+  "PIBF.lean",
+  448
+ ],
+ "Al.MqI_Inj": [
+  "PIBF.lean",
+  456
+ ],
+ "Al.MqI_LLEqv": [
+  "PIBF.lean",
+  370
+ ],
+ "Al.MqI_NDTeq": [
+  "PIBF.lean",
+  439
+ ],
+ "Al.MqI_NDX": [
+  "PIBF.lean",
+  390
+ ],
+ "Al.MqI_NIEqv": [
+  "PIBF.lean",
+  422
+ ],
+ "Al.MqI_NITeq": [
+  "PIBF.lean",
+  431
+ ],
+ "Al.MqI_NIX": [
+  "PIBF.lean",
+  381
+ ],
+ "Al.MqI_Nec": [
+  "PIBF.lean",
+  533
+ ],
+ "Al.MqI_PExt": [
+  "PIBF.lean",
+  475
+ ],
+ "Al.MqI_Slogan": [
+  "PIBF.lean",
+  468
+ ],
+ "Al.MqI_TBF": [
+  "PIBF.lean",
+  494
+ ],
+ "Al.MqI_TCBF": [
+  "PIBF.lean",
+  505
+ ],
+ "Al.MqI_TNec": [
+  "PIBF.lean",
+  514
+ ],
+ "Al.MqI_model": [
+  "PIBF.lean",
+  355
+ ],
+ "Al.MqI_not_BF": [
+  "PIBF.lean",
+  596
+ ],
+ "Al.MqI_not_CBF": [
+  "PIBF.lean",
+  610
+ ],
+ "Al.Mq_BF": [
+  "PIBF.lean",
+  657
+ ],
  "Al.Mq_Bool": [
   "PIBarcanModels.lean",
   242
+ ],
+ "Al.Mq_CBF": [
+  "PIBF.lean",
+  671
  ],
  "Al.Mq_Cong": [
   "PIBarcanModels.lean",
@@ -352,6 +444,10 @@ window.LEANINDEX = {
   "PIModalX.lean",
   408
  ],
+ "Al.Mq_Nec": [
+  "PIBF.lean",
+  648
+ ],
  "Al.Mq_PExt": [
   "PIBarcanModels.lean",
   318
@@ -392,6 +488,10 @@ window.LEANINDEX = {
   "PIAlgIModels.lean",
   71
  ],
+ "BF": [
+  "PIBF.lean",
+  17
+ ],
  "BoolSch": [
   "PIModal.lean",
   64
@@ -399,6 +499,10 @@ window.LEANINDEX = {
  "Bridge": [
   "PIFoundation.lean",
   1740
+ ],
+ "CBF": [
+  "PIBF.lean",
+  22
  ],
  "Cantor": [
   "PIFoundation.lean",
@@ -2160,6 +2264,10 @@ window.LEANINDEX = {
   "PIModalX.lean",
   20
  ],
+ "Nec": [
+  "PIBF.lean",
+  27
+ ],
  "NoSelf": [
   "PINoSelf.lean",
   116
@@ -2208,6 +2316,22 @@ window.LEANINDEX = {
   "PIModalX.lean",
   112
  ],
+ "Tg.MhtT_Hae": [
+  "PIBF.lean",
+  716
+ ],
+ "Tg.MhtT_LLEqv": [
+  "PIBF.lean",
+  717
+ ],
+ "Tg.MhtT_model": [
+  "PIBF.lean",
+  714
+ ],
+ "Tg.MhtT_not_CBF": [
+  "PIBF.lean",
+  722
+ ],
  "Tg.Mht_Hae": [
   "PINew.lean",
   565
@@ -2228,9 +2352,17 @@ window.LEANINDEX = {
   "PINew.lean",
   563
  ],
+ "Tg.Mht_not_BF": [
+  "PIBF.lean",
+  690
+ ],
  "Tg.Mht_not_IdId": [
   "PIModalX2.lean",
   52
+ ],
+ "Tg.Mht_not_Nec": [
+  "PIBF.lean",
+  700
  ],
  "Tg.Mht_not_PropExt": [
   "PINew.lean",
@@ -2372,6 +2504,10 @@ window.LEANINDEX = {
   "PIWorlds.lean",
   1291
  ],
+ "Tg.Mz_CBF": [
+  "PIBF.lean",
+  229
+ ],
  "Tg.Mz_Cong": [
   "PINew.lean",
   464
@@ -2476,6 +2612,30 @@ window.LEANINDEX = {
   "PIModalX.lean",
   684
  ],
+ "Wd.MNec_BF": [
+  "PIBF.lean",
+  803
+ ],
+ "Wd.MNec_CBF": [
+  "PIBF.lean",
+  804
+ ],
+ "Wd.MNec_LLEqv": [
+  "PIBF.lean",
+  775
+ ],
+ "Wd.MNec_Nec": [
+  "PIBF.lean",
+  789
+ ],
+ "Wd.MNec_model": [
+  "PIBF.lean",
+  771
+ ],
+ "Wd.MNec_not_NIEqv": [
+  "PIBF.lean",
+  798
+ ],
  "Wd.Mcol_Bool": [
   "PIWorlds.lean",
   1136
@@ -2496,6 +2656,14 @@ window.LEANINDEX = {
   "PIWorlds.lean",
   1138
  ],
+ "Wd.MhE_BF": [
+  "PIBF.lean",
+  311
+ ],
+ "Wd.MhE_CBF": [
+  "PIBF.lean",
+  312
+ ],
  "Wd.MhE_Hae": [
   "PIModalX2.lean",
   248
@@ -2515,6 +2683,10 @@ window.LEANINDEX = {
  "Wd.MhE_not_NIEqv": [
   "PIModalX2.lean",
   259
+ ],
+ "Wd.MhE_not_Nec": [
+  "PIBF.lean",
+  313
  ],
  "Wd.MhND_model": [
   "PIModalX2.lean",
@@ -3096,6 +3268,14 @@ window.LEANINDEX = {
   "PIWorlds.lean",
   1022
  ],
+ "d_BF_of_Collapse": [
+  "PIBF.lean",
+  183
+ ],
+ "d_BF_of_PExt": [
+  "PIBF.lean",
+  86
+ ],
  "d_Bool_of_Class": [
   "PIClass.lean",
   40
@@ -3111,6 +3291,14 @@ window.LEANINDEX = {
  "d_Bridge_of_LLPoly": [
   "PISchemas.lean",
   226
+ ],
+ "d_CBF_of_Class": [
+  "PIBF.lean",
+  53
+ ],
+ "d_CBF_of_Collapse": [
+  "PIBF.lean",
+  194
  ],
  "d_Cantor_of_Disjoint": [
   "PINoSelf.lean",
@@ -3156,6 +3344,10 @@ window.LEANINDEX = {
   "PIModal.lean",
   125
  ],
+ "d_NDTeq_of_DisjInjNDX": [
+  "PIBF.lean",
+  133
+ ],
  "d_NDX_of_Collapse": [
   "PIModalX.lean",
   53
@@ -3187,6 +3379,14 @@ window.LEANINDEX = {
  "d_NIX_of_Disjoint": [
   "PIModalX.lean",
   68
+ ],
+ "d_Nec_of_Class": [
+  "PIBF.lean",
+  42
+ ],
+ "d_Nec_of_Collapse": [
+  "PIBF.lean",
+  173
  ],
  "d_NoSelf": [
   "PIDerivations.lean",

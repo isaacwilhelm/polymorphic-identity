@@ -104,3 +104,6 @@ lean_lib PIModalX
 
 @[default_target]
 lean_lib PIModalX2
+
+@[default_target]
+lean_lib PIBF
