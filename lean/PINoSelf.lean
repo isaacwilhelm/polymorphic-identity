@@ -127,5 +127,47 @@ theorem d_NoSelf : Prov S Ctx.nil NoSelf := by
     exact Ent.absurd Ent.last (Ent.ofProv not_InjF)
   exact Ent.toProv (Ent.tgen (Hs := []) (Ent.notI (Hs := []) (B := teq tv0 P1) Ent.last h3))
 
+set_option maxHeartbeats 8000000 in
+/-- Disjoint proves Cantor, in PI⁻: items of `α→t` and of `α` are never identified, since the
+types are distinct. -/
+theorem d_Cantor_of_Disjoint (hD : S Disjoint) : Prov S Ctx.nil Cantor := by
+  have hns : Ent S Δ1 [] (neg (teq tv0 P1)) := (Ent.closed (Γ := Δ1) d_NoSelf).tinst tv0
+  have hsym : Ent S Δ1 [] (imp (teq P1 tv0) (teq tv0 P1)) :=
+    ((Ent.closed (Γ := Δ1) Derive.d_SymTeq).tinst P1).tinst tv0
+  have hn : Ent S Δ1 [] (neg (teq P1 tv0)) :=
+    Ent.mp2 (Ent.taut (.imp (.imp (.atom 0) (.atom 1)) (.imp (.neg (.atom 1)) (.neg (.atom 0))))
+      (v2 (teq P1 tv0) (teq tv0 P1)) (fun _ f nb a => nb (f a))) hsym hns
+  have hd : Ent S Δ1 [] (imp (neg (teq P1 tv0)) (all P1 (all tv0 (neg (eqv P1 tv0 (var (.there .here)) (var .here)))))) :=
+    ((Ent.axm (Γ := Δ1) hD).tinst P1).tinst tv0
+  have hall := Ent.mp hd hn
+  have hG := Ent.inst hall (lam tv0 topF)
+  exact Ent.toProv (Ent.tgen (Hs := []) (Ent.exI (lam tv0 topF) hG))
+
+abbrev HaeT : Tm (Δ1.ext tv0) P1.1 := lam tv0 (eqv tv0 tv0 (var .here) (var (.there .here)))
+
+set_option maxHeartbeats 8000000 in
+/-- Haecceitism proves Twin, in PI⁻: each item is identified with its haecceity, an item of a
+distinct type. -/
+theorem d_Twin_of_Hae (hH : S Hae) : Prov S Ctx.nil Twin := by
+  have hns : Ent S (Δ1.ext tv0) [] (neg (teq tv0 P1)) := (Ent.closed (Γ := Δ1.ext tv0) d_NoSelf).tinst tv0
+  have hh : Ent S (Δ1.ext tv0) [] (eqv tv0 P1 (var .here) HaeT) :=
+    Ent.inst ((Ent.axm (Γ := Δ1.ext tv0) hH).tinst tv0) (var .here)
+  have hex : Ent S (Δ1.ext tv0) [] (ex P1 (eqv tv0 P1 (var (.there .here)) (var .here))) := Ent.exI HaeT hh
+  exact Ent.toProv (Ent.tgen (Hs := []) (Ent.gen tv0 (Hs := []) (Ent.texI P1 (Ent.andI hns hex))))
+
+abbrev HaeTop : Tm Ctx.nil tyT.pred.1 := lam tyT (eqv tyT tyT (var .here) topF)
+
+set_option maxHeartbeats 8000000 in
+/-- Haecceitism and Disjoint are jointly inconsistent, in PI⁻. -/
+theorem d_Hae_Disjoint (hH : S Hae) (hD : S Disjoint) : Prov S Ctx.nil Bot := by
+  have hns : Ent S Ctx.nil [] (neg (teq tyT tyT.pred)) := (Ent.closed (Γ := Ctx.nil) d_NoSelf).tinst tyT
+  have hh : Ent S Ctx.nil [] (eqv tyT tyT.pred topF HaeTop) :=
+    Ent.inst ((Ent.axm (Γ := Ctx.nil) hH).tinst tyT) topF
+  have hd : Ent S Ctx.nil [] (imp (neg (teq tyT tyT.pred))
+      (all tyT (all tyT.pred (neg (eqv tyT tyT.pred (var (.there .here)) (var .here)))))) :=
+    ((Ent.axm (Γ := Ctx.nil) hD).tinst tyT).tinst tyT.pred
+  have hn := Ent.inst (Ent.inst (Ent.mp hd hns) topF) HaeTop
+  exact Ent.toProv (Ent.absurd hh hn)
+
 end NoSelf
 end PIF

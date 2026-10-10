@@ -360,6 +360,18 @@ window.LEANINDEX = {
   "PIFoundation.lean",
   1737
  ],
+ "Kr.KC_Cong": [
+  "PIKripkeCong.lean",
+  193
+ ],
+ "Kr.KC_isModelAt": [
+  "PIKripkeCong.lean",
+  75
+ ],
+ "Kr.KC_not_Bridge": [
+  "PIKripkeCong.lean",
+  184
+ ],
  "Kr.MbfH_Class": [
   "PIKripkeHae.lean",
   320
@@ -2340,6 +2352,10 @@ window.LEANINDEX = {
   "PISchemas.lean",
   226
  ],
+ "d_Cantor_of_Disjoint": [
+  "PINoSelf.lean",
+  133
+ ],
  "d_Collapse_of_PropExt": [
   "PIModal.lean",
   98
@@ -2351,6 +2367,10 @@ window.LEANINDEX = {
  "d_ExtT_of_PropExt": [
   "PINew.lean",
   156
+ ],
+ "d_Hae_Disjoint": [
+  "PINoSelf.lean",
+  162
  ],
  "d_IdId_of_Class": [
   "PIClass.lean",
@@ -2439,6 +2459,10 @@ window.LEANINDEX = {
  "d_Truth_of_PropExt": [
   "PINew.lean",
   124
+ ],
+ "d_Twin_of_Hae": [
+  "PINoSelf.lean",
+  151
  ],
  "d_WCong_of_Cong": [
   "PIExplore.lean",
