@@ -217,6 +217,225 @@ theorem MieC_IntT : MieCF.Valid IntT := by
   · exact e
   · exact (Bool.false_ne_true hw).elim
 
+/-! ### `𝔐_tw,c`: Twin without Collapse, in PIᶜ
+
+Two worlds. Entities are propositions (sets of worlds), and each type is paired with a twin, got by
+swapping its leftmost `e` and `t`; the twins have the very same items, and each item is identified
+with itself in the twin type. Identity within a type is identity, and `≈` is identity of types. So
+Twin holds, while Collapse fails, since a truth need not hold at the other world. -/
+
+def univTW : Univ where
+  W := Bool
+  w0 := true
+  E := Bool → Prop
+  Base := Empty
+  B := Empty.elim
+  neE := ⟨fun _ => True⟩
+  neB := fun b => b.elim
+
+def sw : Code Empty → Code Empty
+  | .e => .t
+  | .t => .e
+  | .base b => b.elim
+  | .arr a c => .arr (sw a) c
+
+theorem sw_sw : ∀ a, sw (sw a) = a
+  | .e => rfl
+  | .t => rfl
+  | .base b => b.elim
+  | .arr a c => by simp only [sw, sw_sw a]
+
+theorem sw_ne : ∀ a, sw a ≠ a
+  | .e => fun h => nomatch h
+  | .t => fun h => nomatch h
+  | .base b => b.elim
+  | .arr a c => fun h => by injection h with h1; exact sw_ne a h1
+
+theorem El_sw : ∀ a, univTW.El (sw a) = univTW.El a
+  | .e => rfl
+  | .t => rfl
+  | .base b => b.elim
+  | .arr a c => by show (univTW.El (sw a) → univTW.El c) = (univTW.El a → univTW.El c); rw [El_sw a]
+
+def MtwCF : Frame where
+  U := univTW
+  eqv := fun a b x y _ => (b = a ∨ b = sw a) ∧ HEq x y
+  teq := fun a b _ => a = b
+
+theorem MtwC_sym : ∀ a b x y w, MtwCF.eqv a b x y w → MtwCF.eqv b a y x w := by
+  rintro a b x y w ⟨h | h, hx⟩
+  · exact ⟨Or.inl h.symm, hx.symm⟩
+  · exact ⟨Or.inr (by rw [h]; exact (sw_sw _).symm), hx.symm⟩
+
+theorem MtwC_trans : ∀ a b c x y z w, MtwCF.eqv a b x y w → MtwCF.eqv b c y z w → MtwCF.eqv a c x z w := by
+  rintro a b c x y z w ⟨h1, hx⟩ ⟨h2, hy⟩
+  refine ⟨?_, hx.trans hy⟩
+  rcases h1 with h1 | h1 <;> rcases h2 with h2 | h2
+  · exact Or.inl (h2.trans h1)
+  · exact Or.inr (h2.trans (congrArg sw h1))
+  · exact Or.inr (h2.trans h1)
+  · exact Or.inl ((h2.trans (congrArg sw h1)).trans (sw_sw a))
+
+theorem MtwC_isModelAt : MtwCF.IsModelAt :=
+  MtwCF.isModelAt_of (fun _ _ _ => ⟨Or.inl rfl, HEq.rfl⟩) MtwC_sym MtwC_trans (fun _ _ _ => Iff.rfl)
+
+theorem MtwC_eq : ∀ a x y w, MtwCF.eqv a a x y w → x = y := fun _ _ _ _ h => eq_of_heq h.2
+
+theorem MtwC_model : MtwCF.IsModelPIm :=
+  MtwCF.model_of_equiv (fun _ _ => Iff.rfl) (fun _ _ => ⟨Or.inl rfl, HEq.rfl⟩)
+    (fun a b x y h => MtwC_sym a b x y _ h) (fun a b c x y z h1 h2 => MtwC_trans a b c x y z _ h1 h2)
+
+theorem MtwC_LLEqv : MtwCF.Valid LLEqv := fun ρ env => MtwCF.LLEqv_validAt_of MtwC_eq _ ρ env
+
+theorem MtwC_Class : ∀ χ, ClassSch χ → MtwCF.Valid χ :=
+  MtwCF.Class_valid_of MtwC_isModelAt (MtwCF.LLEqv_validAt_of MtwC_eq) fun _ _ => ⟨Or.inl rfl, HEq.rfl⟩
+
+theorem MtwC_Twin : MtwCF.Valid Twin := by
+  intro ρ env
+  show ∀ a (x : univTW.El a), ∃ b, ¬ (a = b) ∧ ∃ y : univTW.El b, (b = a ∨ b = sw a) ∧ HEq x y
+  intro a x
+  exact ⟨sw a, fun h => sw_ne a h.symm, cast (El_sw a).symm x, ⟨Or.inr rfl, (cast_heq _ _).symm⟩⟩
+
+theorem MtwC_not_Collapse : ¬ MtwCF.Valid Collapse := fun h => by
+  have h0 := (MtwCF.holds_all _ _ _ _).mp (h (fun i => i.elim0) ()) (fun w => w = true)
+  have hb := (MtwCF.holds_imp _ _ _ _).mp h0 (show true = true from rfl)
+  have := MtwCF.box_all (fun p q h => MtwC_eq _ _ _ _ h) _ _ _ hb false
+  exact Bool.false_ne_true this
+
+/-! ### `𝔐_hae,c`: Haecceitism without Collapse, in PIᶜ
+
+Two worlds, one entity. Each item `x : α` is identified with its haecceity `λy.(y = x)` in `α→t`,
+which is identified with its own haecceity in turn, and so on: two items are identified just in
+case they have the same root, got by stripping off haecceities. Within a type, identity is
+identity. Haecceitism holds, while Collapse fails. -/
+
+open Classical
+
+def univHC : Univ where
+  W := Bool
+  w0 := true
+  E := Unit
+  Base := Empty
+  B := Empty.elim
+  neE := ⟨()⟩
+  neB := fun b => b.elim
+
+/-- The haecceity of `z`. -/
+def hcy (a : Code Empty) (z : univHC.El a) : univHC.El (.arr a .t) := fun y _ => y = z
+
+theorem hcy_inj {a : Code Empty} {z z' : univHC.El a} (h : hcy a z = hcy a z') : z = z' := by
+  have := congrFun (congrFun h z) true
+  exact cast this rfl
+
+def csz : Code Empty → Nat
+  | .arr a c => csz a + csz c + 1
+  | _ => 0
+
+open Classical in
+/-- The root of an item: strip off haecceities. -/
+noncomputable def root : (a : Code Empty) → univHC.El a → (Σ b : Code Empty, univHC.El b)
+  | .arr a .t, f => if h : ∃ z, f = hcy a z then root a (Classical.choose h) else ⟨.arr a .t, f⟩
+  | a, x => ⟨a, x⟩
+
+theorem root_sz : ∀ (a : Code Empty) (x : univHC.El a), csz (root a x).1 ≤ csz a
+  | .e, _ => Nat.le_refl _
+  | .t, _ => Nat.le_refl _
+  | .base b, _ => b.elim
+  | .arr a .t, f => by
+    unfold root
+    split
+    · rename_i h; have := root_sz a (Classical.choose h); simp only [csz]; omega
+    · exact Nat.le_refl _
+  | .arr a .e, _ => Nat.le_refl _
+  | .arr a (.base b), _ => b.elim
+  | .arr a (.arr c d), _ => Nat.le_refl _
+
+theorem root_hcy (a : Code Empty) (z : univHC.El a) : root (.arr a .t) (hcy a z) = root a z := by
+  have h : ∃ z', hcy a z = hcy a z' := ⟨z, rfl⟩
+  show (if h : ∃ z', hcy a z = hcy a z' then root a (Classical.choose h) else ⟨.arr a .t, hcy a z⟩) = _
+  split
+  · rename_i h'; rw [← hcy_inj (Classical.choose_spec h')]
+  · exact absurd h ‹_›
+
+theorem root_inj : ∀ (a : Code Empty) (x y : univHC.El a), root a x = root a y → x = y
+  | .e, _, _, h => eq_of_heq (Sigma.mk.inj h).2
+  | .t, _, _, h => eq_of_heq (Sigma.mk.inj h).2
+  | .base b, _, _, _ => b.elim
+  | .arr a .e, _, _, h => eq_of_heq (Sigma.mk.inj h).2
+  | .arr a (.base b), _, _, _ => b.elim
+  | .arr a (.arr c d), _, _, h => eq_of_heq (Sigma.mk.inj h).2
+  | .arr a .t, f, g, h => by
+    by_cases hf : ∃ z, f = hcy a z <;> by_cases hg : ∃ z, g = hcy a z
+    · obtain ⟨z, rfl⟩ := hf; obtain ⟨z', rfl⟩ := hg
+      rw [root_hcy, root_hcy] at h
+      rw [root_inj a z z' h]
+    · obtain ⟨z, rfl⟩ := hf
+      rw [root_hcy] at h
+      have e : root (.arr a .t) g = ⟨.arr a .t, g⟩ := by
+        show (if h : ∃ z, g = hcy a z then root a (Classical.choose h) else ⟨.arr a .t, g⟩) = _
+        split
+        · exact absurd ‹_› hg
+        · rfl
+      rw [e] at h
+      have := root_sz a z; rw [congrArg Sigma.fst h] at this; simp only [csz] at this; omega
+    · obtain ⟨z', rfl⟩ := hg
+      rw [root_hcy] at h
+      have e : root (.arr a .t) f = ⟨.arr a .t, f⟩ := by
+        show (if h : ∃ z, f = hcy a z then root a (Classical.choose h) else ⟨.arr a .t, f⟩) = _
+        split
+        · exact absurd ‹_› hf
+        · rfl
+      rw [e] at h
+      have := root_sz a z'; rw [← congrArg Sigma.fst h] at this; simp only [csz] at this; omega
+    · have e1 : root (.arr a .t) f = ⟨.arr a .t, f⟩ := by
+        show (if h : ∃ z, f = hcy a z then root a (Classical.choose h) else ⟨.arr a .t, f⟩) = _
+        split
+        · exact absurd ‹_› hf
+        · rfl
+      have e2 : root (.arr a .t) g = ⟨.arr a .t, g⟩ := by
+        show (if h : ∃ z, g = hcy a z then root a (Classical.choose h) else ⟨.arr a .t, g⟩) = _
+        split
+        · exact absurd ‹_› hg
+        · rfl
+      rw [e1, e2] at h
+      exact eq_of_heq (Sigma.mk.inj h).2
+
+noncomputable def MhaeCF : Frame where
+  U := univHC
+  eqv := fun a b x y _ => root a x = root b y
+  teq := fun a b _ => a = b
+
+theorem MhaeC_isModelAt : MhaeCF.IsModelAt :=
+  MhaeCF.isModelAt_of (fun _ _ _ => rfl) (fun _ _ _ _ _ h => h.symm) (fun _ _ _ _ _ _ _ h1 h2 => h1.trans h2)
+    (fun _ _ _ => Iff.rfl)
+
+theorem MhaeC_eq : ∀ a x y w, MhaeCF.eqv a a x y w → x = y := fun a x y _ h => root_inj a x y h
+
+theorem MhaeC_model : MhaeCF.IsModelPIm :=
+  MhaeCF.model_of_equiv (fun _ _ => Iff.rfl) (fun _ _ => rfl) (fun _ _ _ _ h => h.symm)
+    (fun _ _ _ _ _ _ h1 h2 => h1.trans h2)
+
+theorem MhaeC_LLEqv : MhaeCF.Valid LLEqv := fun ρ env => MhaeCF.LLEqv_validAt_of MhaeC_eq _ ρ env
+
+theorem MhaeC_Class : ∀ χ, ClassSch χ → MhaeCF.Valid χ :=
+  MhaeCF.Class_valid_of MhaeC_isModelAt (MhaeCF.LLEqv_validAt_of MhaeC_eq) fun _ _ => rfl
+
+theorem MhaeC_Hae : MhaeCF.Valid Hae := by
+  intro ρ env
+  show ∀ a (x : univHC.El a), root a x = root (.arr a .t) (fun y _ => root a y = root a x)
+  intro a x
+  have e : (fun (y : univHC.El a) (_ : Bool) => root a y = root a x) = hcy a x :=
+    funext fun y => funext fun _ => propext ⟨root_inj a y x, fun h => h ▸ rfl⟩
+  have := root_hcy a x
+  rw [← e] at this
+  exact this.symm
+
+theorem MhaeC_not_Collapse : ¬ MhaeCF.Valid Collapse := fun h => by
+  have h0 := (MhaeCF.holds_all _ _ _ _).mp (h (fun i => i.elim0) ()) (fun w => w = true)
+  have hb := (MhaeCF.holds_imp _ _ _ _).mp h0 (show true = true from rfl)
+  have := MhaeCF.box_all (fun p q h => MhaeC_eq _ _ _ _ h) _ _ _ hb false
+  exact Bool.false_ne_true this
+
 end Wd
 
 end PIF

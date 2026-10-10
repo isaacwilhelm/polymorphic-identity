@@ -381,7 +381,7 @@ const models = [
     } },
   { id: "Mall", lean: { model: "Mall_model", IdId: "Mall_IdId", LLeq: "Mall_not_LLEqv", Bridge: "Mall_Bridge", LLPoly: "Mall_not_LLPoly", Cong: "Mall_Cong", WCong: "Mall_WCong", PCong: "Mall_PCong", Hae: "Mall_Hae", Twin: "Mall_Twin", Inj: "Mall_Inj", Truth: "Mall_not_Truth", TopBot: "Mall_not_TopBot", Cantor: "Mall_not_Cantor", Disjoint: "Mall_not_Disjoint", Slogan: "Mall_not_Slogan", Ext: "Mall_not_ExtT", Int: "Mall_not_IntT" , PropExt: "Frame.PropExt_valid" , PExt: "Mall_PExt" },
     leanNote: "With E = 1: ≡ relates every item to every item; ≈ is identity of types. LL≡/≈ holds because each type can be permuted freely.",
-    name: "𝔐_all (new; a model of PI⁻ only)",
+    name: "𝔐_all (a model of PI⁻ only)",
     desc: "Every item, of every type, is identified with every item; ≈ is identity of types. Checked in Lean.",
     src: "observed",
     values: {
@@ -399,7 +399,7 @@ const models = [
     } },
   { id: "Mcan", lean: { model: "Mcan_model", LLeq: "Mcan_not_LLEqv", Cantor: "Mcan_not_Cantor", Truth: "Mcan_Truth", TopBot: "Mcan_TopBot", Inj: "Mcan_Inj", LLPoly: "Mcan_not_LLPoly", PCong: "Mcan_not_PCong", WCong: "Mcan_not_WCong", Disjoint: "Mcan_not_Disjoint", Slogan: "Mcan_not_Slogan", Twin: "Mcan_not_Twin", Hae: "Mcan_not_Hae", Ext: "Mcan_not_ExtT", Int: "Mcan_not_IntT" , PropExt: "Frame.PropExt_valid" },
     leanNote: "With E = 1: the entity and its two properties form one class of identified items; nothing else is identified with anything but itself; ≈ is identity of types.",
-    name: "𝔐_can (new; a model of PI⁻ only)",
+    name: "𝔐_can (a model of PI⁻ only)",
     desc: "E = 1. The entity and both properties of entities are identified with each other; nothing else is identified with anything but itself; ≈ is identity of types. So Cantor fails at e. Checked in Lean.",
     src: "observed",
     values: {
@@ -416,7 +416,7 @@ const models = [
     } },
   { id: "Mct", lean: { model: "Mct_model", LLeq: "Mct_not_LLEqv", Cantor: "Mct_not_Cantor", Slogan: "Mct_Slogan", Ext: "Mct_ExtT", Int: "Mct_IntT", Truth: "Mct_Truth", TopBot: "Mct_TopBot", Inj: "Mct_Inj", Disjoint: "Mct_not_Disjoint", Twin: "Mct_not_Twin", Hae: "Mct_not_Hae", PCong: "Mct_not_PCong", WCong: "Mct_not_WCong" , PropExt: "Frame.PropExt_valid" },
     leanNote: "With E = 1: ⊤ and the four functions from t to t form one class of identified items; nothing else is identified with anything but itself; ≈ is identity of types.",
-    name: "𝔐_cant (new; a model of PI⁻ only)",
+    name: "𝔐_cant (a model of PI⁻ only)",
     desc: "⊤ and every function from t to t are identified with each other; nothing else is identified with anything but itself; ≈ is identity of types. So Cantor fails at t, while Slogan, Ext≈ and Int≈ hold. Checked in Lean.",
     src: "observed",
     values: {
@@ -432,7 +432,7 @@ const models = [
     } },
   { id: "MDtw", lean: { model: "MDtw_model", LLeq: "MDtw_not_LLEqv", Bridge: "MDtw_not_Bridge", Twin: "MDtw_Twin", Truth: "MDtw_Truth", TopBot: "MDtw_TopBot", Inj: "MDtw_Inj", Cantor: "MDtw_Cantor", Slogan: "MDtw_Slogan", Disjoint: "MDtw_not_Disjoint", Ext: "MDtw_not_ExtT", Int: "MDtw_not_IntT", Hae: "MDtw_not_Hae", PCong: "MDtw_not_PCong", WCong: "MDtw_not_WCong" , PropExt: "Frame.PropExt_valid" },
     leanNote: "𝔐_D (E = {0,1,2}) with a duplicate of e and of t; ≡ identifies each item with its copy, and is otherwise as in 𝔐_D.",
-    name: "𝔐_D,twin (new; a model of PI⁻ only)",
+    name: "𝔐_D,twin (a model of PI⁻ only)",
     desc: "As 𝔐_D, except that e and t each have a distinct duplicate with the very same items, and each item is identified with its copies. So Twin holds while LL≡/≈ fails. Checked in Lean.",
     src: "observed",
     values: {
@@ -448,7 +448,7 @@ const models = [
     } },
   { id: "Mhp", lean: { Class: "Mhp_Class", model: "Mhp_model", LLeq: "Mhp_LLEqv", Hae: "Mhp_Hae", Twin: "Mhp_Twin", Inj: "Mhp_Inj", PCong: "Mhp_not_PCong", Ext: "Mhp_not_ExtT", Int: "Mhp_not_IntT" , PropExt: "Frame.PropExt_valid" , PExt: "Mhp_not_PExt" },
     leanNote: "E = 1, with a three-item base type D and a duplicate d of e. Each item gets a root: the haecceity of x has the root of x; the item of d, and the function g₀ : e→D with value 2, have the root of the entity; other items are their own roots. Items are identified just in case they have the same root.",
-    name: "𝔐_hae,p (new)",
+    name: "𝔐_hae,p",
     desc: "A haecceitist model, as in 𝔐(HF⁺, ∼ₕ): each item is identified with its haecceity. In addition, e has a duplicate type whose item is identified with the entity, and a function from e to a three-item type D is identified with the entity's haecceity. Items of one type are identified only with themselves, so LL≡ holds. Haecceitism holds while PCong and Ext≈ fail. Checked in Lean.",
     src: "observed",
     values: {
@@ -462,7 +462,7 @@ const models = [
     } },
   { id: "Mhm", lean: { model: "Mhm_model", LLeq: "Mhm_not_LLEqv", Hae: "Mhm_Hae", Twin: "Mhm_Twin", Inj: "Mhm_Inj", PCong: "Mhm_not_PCong", WCong: "Mhm_not_WCong" , PropExt: "Frame.PropExt_valid" },
     leanNote: "E = 1. As in 𝔐_hae,p, items are identified just in case they have the same root, and the haecceity of x has the root of x; here every property of the entity has the root of the entity.",
-    name: "𝔐_hae⁻ (new; a model of PI⁻ only)",
+    name: "𝔐_hae⁻ (a model of PI⁻ only)",
     desc: "A haecceitist model in which, in addition, both properties of the (one) entity are identified with it. Haecceitism holds while PCong and WCong fail. Checked in Lean.",
     src: "observed",
     values: {
@@ -474,7 +474,7 @@ const models = [
     } },
   { id: "Mhk", lean: { Class: "Mhk_Class", model: "Mhk_model", LLeq: "Mhk_LLEqv", Hae: "Mhk_Hae", Twin: "Mhk_Twin", Inj: "Mhk_not_Inj", Recovery: "Mhk_not_Recovery" , PropExt: "Frame.PropExt_valid" },
     leanNote: "E = 1, with a base type D of propositions. ≈ identifies α→D with α→t (and so on up through the types), but not D with t. Each item gets a root: the haecceity of x has the root of x, and other items are their own roots, filed under the ≈-normal form of their type. Items are identified just in case they have the same root. LL≈ holds by the invariance lemma.",
-    name: "𝔐_hae,κ (new)",
+    name: "𝔐_hae,κ",
     desc: "A haecceitist model in which, as in 𝔐_κ, e→t ≈ e→D but not t ≈ D. Each item is identified with its haecceity; items of one type are identified only with themselves, so LL≡ holds. Haecceitism holds while Inj≈ and Recovery fail. Checked in Lean.",
     src: "observed",
     values: {
@@ -486,7 +486,7 @@ const models = [
     } },
   { id: "Mint", lean: { model: "Tg.Mi_model", NIEqv: "Tg.Mi_NIEqv", NITeq: "Tg.Mi_NITeq", NDTeq: "Tg.Mi_NDTeq", Bool: "Tg.Mi_not_Bool", IdId: "Tg.Mi_not_IdId", LLeq: "Tg.Mi_LLEqv", Int: "Tg.Mi_IntT", Ext: "Tg.Mi_not_ExtT" , PropExt: "Tg.Mi_not_PropExt" , Twin: "Tg.Mi_Twin" , Slogan: "Tg.Mi_Slogan" , Inj: "Tg.Mi_Inj" , Cong: "Tg.Mi_Cong" , PExt: "Tg.Mi_PExt" },
     leanNote: "In a broader semantics (lean/PITagged.lean): the items of t are pairs of a truth value and a tag, which records whether the proposition is quantified; the proof that PI is sound is repeated for this semantics. E = 1, with duplicates of e and of t; ≈ is identity of types, and each item is identified with its copy.",
-    name: "𝔐_int (new; propositions finer than truth values)",
+    name: "𝔐_int (propositions finer than truth values)",
     desc: "Unlike the standard models, the items of type t are not just the two truth values: a proposition is a truth value together with a tag saying whether it is quantified, and a sentence is true when its truth value is. PI is still sound for such models. Here e and t have duplicate types whose items are identified with the entity and with the propositions, so Ext≈ fails. But α ⊑ β is a quantified proposition, so it is never identical to ⊤, and □(α ⊑ β) is always false; so Int≈ holds. Checked in Lean.",
     src: "observed",
     values: {
@@ -507,7 +507,7 @@ const models = [
     } },
   { id: "Mtb", lean: { model: "Tg.Mtb_model", TAx: "Tg.Mtb_TAx", TopBot: "Tg.Mtb_TopBot", Truth: "Tg.Mtb_not_Truth" , PropExt: "Tg.Mtb_not_PropExt" },
     leanNote: "In the broader semantics of lean/PITagged.lean (propositions are truth values with tags; here every quantified proposition gets one tag, and ⊤ another). E = 1; ≈ is identity of types.",
-    name: "𝔐_tb (new; PI⁻ only; propositions finer than truth values)",
+    name: "𝔐_tb (PI⁻ only; propositions finer than truth values)",
     desc: "Propositions are truth values with a tag recording whether they are quantified. All quantified propositions, true or false, are identified with each other; nothing else is identified with anything but itself. ⊤ is not quantified, so ⊤ ≢ ⊥; but a true quantified proposition is identified with a false one, so Truth fails. Checked in Lean.",
     src: "observed",
     values: {
@@ -518,7 +518,7 @@ const models = [
     } },
   { id: "Mit", lean: { model: "Tg.Mit_model", TAx: "Tg.Mit_not_TAx", Int: "Tg.Mit_IntT", TopBot: "Tg.Mit_not_TopBot", Truth: "Tg.Mit_not_Truth" , PropExt: "Tg.Mit_not_PropExt" },
     leanNote: "In the broader semantics of lean/PITagged.lean: propositions quantified over t share their tag with ⊤, and all propositions with that tag are identified. E = 1; ≈ is identity of types.",
-    name: "𝔐_it (new; PI⁻ only; propositions finer than truth values)",
+    name: "𝔐_it (PI⁻ only; propositions finer than truth values)",
     desc: "Propositions are truth values with a tag. Propositions quantified over t get the same tag as ⊤, and all propositions with that tag are identified with each other, so ⊤ ≡ ⊥. Since α ⊑ β is quantified over α, □(α ⊑ β) holds just in case α is t; so Int≈ holds. Checked in Lean.",
     src: "observed",
     values: {
@@ -530,7 +530,7 @@ const models = [
     } },
   { id: "Mw", lean: { Class: "Wd.Mw_Class", TBF: "Wd.Mw_TBF", TCBF: "Wd.Mw_TCBF", TNec: "Wd.Mw_TNec", model: "Wd.Mw_model", Slogan: "Wd.Mw_Slogan", Cong: "Wd.Mw_Cong", PExt: "Wd.Mw_PExt", Inj: "Wd.Mw_Inj", LLeq: "Wd.Mw_LLEqv", Truth: "Wd.Mw_Truth", Bool: "Wd.Mw_Bool", IdId: "Wd.Mw_IdId", NIEqv: "Wd.Mw_NIEqv", NITeq: "Wd.Mw_NITeq", NDTeq: "Wd.Mw_NDTeq", Disjoint: "Wd.Mw_Disjoint", Collapse: "Wd.Mw_not_Collapse", PropExt: "Wd.Mw_not_PropExt" },
     leanNote: "In a broader semantics (lean/PIWorlds.lean): the items of t are sets of worlds, a sentence is true when its value contains the actual world, and the values of ≡ and ≈ may vary from world to world; the proof that PI is sound is repeated for this semantics. Here there are two worlds, E = 1, and identity of items and of types is identity, at both worlds.",
-    name: "𝔐_w (new; propositions as sets of worlds)",
+    name: "𝔐_w (propositions as sets of worlds)",
     desc: "The items of type t are the sets of two worlds, and a sentence is true when it is true at the actual world. Identity is rigid: x ≡ y, and α ≈ β, hold at both worlds or at neither. Tautologically equivalent propositions are the same set, so Booleanism holds; but a proposition true only at the actual world is true without being identical to ⊤, so Collapse and PropExt≡ fail. Checked in Lean.",
     src: "observed",
     values: {
@@ -555,7 +555,7 @@ const models = [
     } },
   { id: "Mnd", lean: { TBF: "Wd.Mnd_TBF", TCBF: "Wd.Mnd_TCBF", TNec: "Wd.Mnd_TNec", model: "Wd.Mnd_model", Slogan: "Wd.Mnd_Slogan", Cong: "Wd.Mnd_Cong", PExt: "Wd.Mnd_PExt", Inj: "Wd.Mnd_Inj", Disjoint: "Wd.Mnd_Disjoint", LLeq: "Wd.Mnd_LLEqv", Truth: "Wd.Mnd_Truth", Bool: "Wd.Mnd_Bool", IdId: "Wd.Mnd_IdId", NIEqv: "Wd.Mnd_NIEqv", NITeq: "Wd.Mnd_NITeq", NDTeq: "Wd.Mnd_not_NDTeq" },
     leanNote: "In the sets-of-worlds semantics of lean/PIWorlds.lean. Two worlds, E = 1; identity of items is rigid; at the actual world ≈ is identity of types, and at the other world every type is identified with every type.",
-    name: "𝔐_nd (new; propositions as sets of worlds)",
+    name: "𝔐_nd (propositions as sets of worlds)",
     desc: "Like 𝔐_w, except that at the non-actual world every type is identified with every other. So e and t are distinct, but not necessarily distinct: ND≈ fails. Identities that hold still hold at both worlds, so NI≈ and NI≡ hold. Checked in Lean.",
     src: "observed",
     values: {
@@ -577,7 +577,7 @@ const models = [
     } },
   { id: "Mni", lean: { TBF: "Wd.Mni_TBF", TCBF: "Wd.Mni_TCBF", TNec: "Wd.Mni_not_TNec", model: "Wd.Mni_model", Slogan: "Wd.Mni_Slogan", Cong: "Wd.Mni_Cong", PExt: "Wd.Mni_PExt", Inj: "Wd.Mni_Inj", Disjoint: "Wd.Mni_Disjoint", LLeq: "Wd.Mni_LLEqv", Truth: "Wd.Mni_Truth", Bool: "Wd.Mni_Bool", IdId: "Wd.Mni_IdId", NIEqv: "Wd.Mni_NIEqv", NDTeq: "Wd.Mni_NDTeq", NITeq: "Wd.Mni_not_NITeq" },
     leanNote: "In the sets-of-worlds semantics of lean/PIWorlds.lean. Two worlds, E = 1; identity of items is rigid; ≈ is identity of types at the actual world and holds of nothing at the other world.",
-    name: "𝔐_ni (new; propositions as sets of worlds)",
+    name: "𝔐_ni (propositions as sets of worlds)",
     desc: "Like 𝔐_w, except that at the non-actual world no type is identified with anything, itself included. So e ≈ e is true but not necessary: NI≈ fails, while ND≈ holds. Since LL≈ holds in every model, this also shows that PI⁻ does not prove □(α ≈ α). Checked in Lean.",
     src: "observed",
     values: {
@@ -599,7 +599,7 @@ const models = [
     } },
   { id: "Mie", lean: { TBF: "Wd.Mie_TBF", TCBF: "Wd.Mie_TCBF", TNec: "Wd.Mie_TNec", model: "Wd.Mie_model", Slogan: "Wd.Mie_Slogan", Cong: "Wd.Mie_Cong", PExt: "Wd.Mie_PExt", Inj: "Wd.Mie_Inj", Disjoint: "Wd.Mie_Disjoint", LLeq: "Wd.Mie_LLEqv", Truth: "Wd.Mie_Truth", Bool: "Wd.Mie_Bool", NITeq: "Wd.Mie_NITeq", NDTeq: "Wd.Mie_NDTeq", NIEqv: "Wd.Mie_not_NIEqv", IdId: "Wd.Mie_not_IdId" },
     leanNote: "In the sets-of-worlds semantics of lean/PIWorlds.lean. Two worlds, E = 1; ≈ is rigid identity of types; ≡ is identity of items at the actual world and holds of nothing at the other world.",
-    name: "𝔐_ie (new; propositions as sets of worlds)",
+    name: "𝔐_ie (propositions as sets of worlds)",
     desc: "Like 𝔐_w, except that at the non-actual world no item is identified with anything, itself included. So the entity is identical to itself, but not necessarily: NI≡ fails, although LL≡ holds. And x ≡ x is not the proposition ∀F(Fx → Fx), which holds at both worlds, so the Identity Identity fails. Checked in Lean.",
     src: "observed",
     values: {
@@ -621,7 +621,7 @@ const models = [
     } },
   { id: "Mcol", lean: { model: "Wd.Mcol_model", Collapse: "Wd.Mcol_Collapse", Truth: "Wd.Mcol_Truth", Bool: "Wd.Mcol_Bool", PropExt: "Wd.Mcol_not_PropExt" },
     leanNote: "In the sets-of-worlds semantics of lean/PIWorlds.lean. Two worlds, E = 1; ≈ is identity of types; all propositions true at the actual world are identified with each other, and nothing else is identified with anything but itself.",
-    name: "𝔐_col (new; PI⁻ only; propositions as sets of worlds)",
+    name: "𝔐_col (PI⁻ only; propositions as sets of worlds)",
     desc: "Propositions are sets of two worlds. All propositions true at the actual world are identified, so Collapse holds; but two distinct false propositions are not, so PropExt≡ fails. Booleanism holds. So, by the derivation of PropExt≡ from Collapse, Booleanism and LL≡, LL≡ fails here. Checked in Lean.",
     src: "observed",
     values: {
@@ -632,7 +632,7 @@ const models = [
     } },
   { id: "Mtt", lean: { model: "Wd.Mtt_model", TopBot: "Wd.Mtt_TopBot", TAx: "Wd.Mtt_not_TAx" },
     leanNote: "In the sets-of-worlds semantics of lean/PIWorlds.lean. Two worlds, E = 1; ≈ is identity of types; ⊤ is identified with the proposition true only at the non-actual world, and nothing else is identified with anything but itself.",
-    name: "𝔐_tt (new; PI⁻ only; propositions as sets of worlds)",
+    name: "𝔐_tt (PI⁻ only; propositions as sets of worlds)",
     desc: "Propositions are sets of two worlds. ⊤ is identified with a proposition that is false (it holds only at the non-actual world), so that proposition is 'necessary' without being true, and T fails. But ⊥ is not identified with ⊤. Checked in Lean.",
     src: "observed",
     values: {
@@ -641,7 +641,7 @@ const models = [
     } },
   { id: "Mtc", lean: { model: "Tg.Mtc_model", Collapse: "Tg.Mtc_Collapse", Bool: "Tg.Mtc_not_Bool" },
     leanNote: "In the semantics of lean/PITagged.lean (propositions are truth values with tags). E = 1; ≈ is identity of types; all true propositions are identified with each other, and nothing else is identified with anything but itself.",
-    name: "𝔐_tc (new; PI⁻ only; propositions finer than truth values)",
+    name: "𝔐_tc (PI⁻ only; propositions finer than truth values)",
     desc: "Propositions are truth values with a tag recording whether they are quantified. Every true proposition is identified with every other, so Collapse holds. A false quantified proposition p and ¬¬p differ in their tags and are not identified, so Booleanism fails. Checked in Lean.",
     src: "observed",
     values: {
@@ -650,7 +650,7 @@ const models = [
     } },
   { id: "Mcl", lean: { model: "Al.Mcl_model", LLeq: "Al.Mcl_LLEqv", Collapse: "Al.Mcl_Collapse", Bool: "Al.Mcl_not_Bool", IdId: "Al.Mcl_not_IdId" },
     leanNote: "In the most general semantics used here (lean/PIAlg.lean): propositions form any set with a truth predicate, and each model supplies the operations for the connectives and quantifiers, subject only to their truth conditions; the proof that PI is sound is repeated for this semantics. Here there is exactly one true proposition, ⊤; false propositions carry a tag, true for the values of the connectives and of ≡ and ≈, and false for the values of the quantifiers. E = 1, and identity is identity.",
-    name: "𝔐_cl (new; one true proposition)",
+    name: "𝔐_cl (one true proposition)",
     desc: "There is exactly one true proposition, so Collapse holds; and identity is identity, so LL≡ holds. But there are several false propositions: a false quantified proposition p differs from ¬¬p, so Booleanism fails (and so does PropExt≡); and when x ≢ y, the propositions x ≡ y and ∀F(Fx → Fy) are different false propositions, so the Identity Identity fails. Checked in Lean.",
     src: "observed",
     values: {
@@ -661,7 +661,7 @@ const models = [
     } },
   { id: "Mii", lean: { model: "Al.Mii_model", LLeq: "Al.Mii_LLEqv", IdId: "Al.Mii_IdId", NIEqv: "Al.Mii_not_NIEqv", Bool: "Al.Mii_not_Bool" },
     leanNote: "In the semantics of lean/PIAlg.lean. Propositions are truth values with a tag; the values of ≡ and of the quantifiers have tag false, those of ≈ and of the connectives tag true. E = 1, and identity is identity.",
-    name: "𝔐_ii (new; propositions finer than truth values)",
+    name: "𝔐_ii (propositions finer than truth values)",
     desc: "Propositions are truth values with a tag. Identity propositions and quantified propositions share a tag, so x ≡ y is the proposition ∀F(Fx → Fy), and the Identity Identity holds. But a true identity has a different tag from ⊤, so it is not necessary: NI≡ fails. And ¬¬p differs from a quantified p, so Booleanism fails. Checked in Lean.",
     src: "observed",
     values: {
@@ -672,7 +672,7 @@ const models = [
     } },
   { id: "Mhw", lean: { model: "Al.Mhw_model", TNec: "Al.Mhw_TNec", Hae: "Al.Mhw_Hae", LLeq: "Al.Mhw_LLEqv", NIEqv: "Al.Mhw_not_NIEqv", NITeq: "Al.Mhw_not_NITeq", NDTeq: "Al.Mhw_not_NDTeq", Collapse: "Al.Mhw_not_Collapse", Bool: "Al.Mhw_not_Bool", IdId: "Al.Mhw_not_IdId" },
     leanNote: "In the semantics of lean/PIAlg.lean: a haecceity tower (as in lean/PIHae.lean) in which propositions are pairs of a set of two worlds and a tag. E = 1. Identity of items is sameness of root at the actual world (and fails at the other world), with tag false; ≈ is identity at the actual world and difference at the other world; the connectives and quantifiers act world by world, with tag true.",
-    name: "𝔐_hw (new; haecceities, worlds and tags)",
+    name: "𝔐_hw (haecceities, worlds and tags)",
     desc: "Every item is identified with its haecceity, as in 𝔐_hae,p; within a type, identity is identity, so LL≡ holds. But propositions are sets of two worlds with a tag, identity of items holds only at the actual world, and identity of types is reversed at the other world. So NI≡, NI≈ and ND≈ fail; a contingent truth is not identical to ⊤, so Collapse fails; and tags separate ¬¬p from p, and x ≡ y from ∀F(Fx → Fy), so Booleanism and the Identity Identity fail. Checked in Lean.",
     src: "observed",
     values: {
@@ -688,7 +688,7 @@ const models = [
     } },
   { id: "MEkT", lean: { model: "MEkT_model", IdId: "MEkT_IdId", Bridge: "MEkT_not_Bridge", WCong: "MEkT_not_WCong" },
     leanNote: "Like 𝔐_E,k (lean/PIBridge.lean), with in addition all propositions identified with each other (lean/PIAlgModels.lean).",
-    name: "𝔐_E,k,t (new; PI⁻ only)",
+    name: "𝔐_E,k,t (PI⁻ only)",
     desc: "As 𝔐_E,k, except that all propositions are identified with each other. Then x ≡ y and ∀F(Fx → Fy) are always identified, so the Identity Identity holds; but LL≡/≈ still fails for the predicate of 𝔐_E,k, and WCong fails because 0 ≡ 1 while a function sends them to 0 and 2. Checked in Lean.",
     src: "observed",
     values: {
@@ -696,19 +696,53 @@ const models = [
       Bridge: [false, "as in 𝔐_E,k", true],
       WCong: [false, "0 ≡ 1, but a function sends them to 0 and 2, which are not identified", true],
     } },
-  { id: "Mif", lean: { model: "AlI.Mif_model", LLeq: "AlI.Mif_LLEqv", Disjoint: "AlI.Mif_Disjoint", PExt: "AlI.Mif_not_PExt" },
+  { id: "MieC", lean: { model: "Wd.MieC_model", LLeq: "Wd.MieC_LLEqv", Class: "Wd.MieC_Class", Int: "Wd.MieC_IntT", Ext: "Wd.MieC_not_ExtT" },
+    leanNote: "In the sets-of-worlds semantics of lean/PIWorlds.lean (lean/PIClassModels.lean). Two worlds, E = 1, and a base type d with one item; ≈ is identity of types; the entity is identified with the item of d at the actual world only; otherwise identity is identity, at every world.",
+    name: "𝔐_ie,c (PI + Classicism; propositions as sets of worlds)",
+    desc: "Propositions are sets of two worlds. The entity is identified with the one item of another type d, but only at the actual world. So e and d are coextensive, but not necessarily coextensive: Ext≈ fails, while Int≈ holds. Identity within a type is identity at every world, so the identity axioms and LL≡ hold at every world, and so does Classicism. Checked in Lean.",
+    src: "observed",
+    values: {
+      LLeq: [true, "identity within a type is identity", true],
+      Class: [true, "every theorem of PI holds at both worlds, so provably equivalent formulas express the same set of worlds", true],
+      Int: [true, "at the other world, no item is identified with an item of a different type", true],
+      Ext: [false, "e and d are coextensive at the actual world, but not identical", true],
+    } },
+  { id: "MtwC", lean: { model: "Wd.MtwC_model", LLeq: "Wd.MtwC_LLEqv", Class: "Wd.MtwC_Class", Twin: "Wd.MtwC_Twin", Collapse: "Wd.MtwC_not_Collapse" },
+    leanNote: "In the sets-of-worlds semantics of lean/PIWorlds.lean (lean/PIClassModels.lean). Two worlds; the entities are the sets of worlds; each type is paired with the type got by swapping its leftmost e and t, which has the very same items; ≈ is identity of types.",
+    name: "𝔐_twin,c (PI + Classicism; propositions as sets of worlds)",
+    desc: "Propositions are sets of two worlds, and so are entities. Each type is paired with a twin, got by swapping its leftmost e and t, which has the very same items; each item is identified with itself in the twin type. So Twin holds. Identity within a type is identity, so Classicism holds; but a truth need not hold at the other world, so Collapse fails. Checked in Lean.",
+    src: "observed",
+    values: {
+      LLeq: [true, "identity within a type is identity", true],
+      Class: [true, "every theorem of PI holds at both worlds, so provably equivalent formulas express the same set of worlds", true],
+      Twin: [true, "each item is identified with itself in the twin type", true],
+      Collapse: [false, "the set of the actual world is true, but not identical to ⊤", true],
+    } },
+  { id: "MhaeC", lean: { model: "Wd.MhaeC_model", LLeq: "Wd.MhaeC_LLEqv", Class: "Wd.MhaeC_Class", Hae: "Wd.MhaeC_Hae", Collapse: "Wd.MhaeC_not_Collapse" },
+    leanNote: "In the sets-of-worlds semantics of lean/PIWorlds.lean (lean/PIClassModels.lean). Two worlds, E = 1. The haecceity of x is λy.(y = x); the root of an item is got by stripping off haecceities; two items are identified just in case they have the same root; ≈ is identity of types.",
+    name: "𝔐_hae,c (PI + Classicism; propositions as sets of worlds)",
+    desc: "Propositions are sets of two worlds. Each item is identified with its haecceity, which is identified with its own haecceity in turn, and so on; two items are identified just in case stripping off haecceities leads to the same item. So Haecceitism holds. Identity within a type is identity, so Classicism holds; but a truth need not hold at the other world, so Collapse fails. Checked in Lean.",
+    src: "observed",
+    values: {
+      LLeq: [true, "identity within a type is identity", true],
+      Class: [true, "every theorem of PI holds at both worlds, so provably equivalent formulas express the same set of worlds", true],
+      Hae: [true, "each item has the same root as its haecceity", true],
+      Collapse: [false, "the set of the actual world is true, but not identical to ⊤", true],
+    } },
+  { id: "Mif", lean: { model: "AlI.Mif_model", LLeq: "AlI.Mif_LLEqv", Class: "AlI.Mif_Class", Disjoint: "AlI.Mif_Disjoint", PExt: "AlI.Mif_not_PExt" },
     leanNote: "In a semantics with intensional functions (lean/PIAlgI.lean): an item of a function type is a function together with a tag, the value of λx.M has tag true, and application ignores the tag; the proof that PI is sound is repeated for this semantics. Here propositions are truth values, E = 1, ≈ is identity of types, and identity is identity.",
-    name: "𝔐_if (new; intensional functions)",
+    name: "𝔐_if (intensional functions)",
     desc: "Identity is identity, and nothing is identified across types, so LL≡ and Disjoint hold. But two items of a function type can take the same value at every argument and still be distinct (they differ in a tag), since PI has neither η-conversion nor an axiom of extensionality. So PExt fails. Checked in Lean.",
     src: "observed",
     values: {
       LLeq: [true, "identity is identity", true],
       Disjoint: [true, "nothing is identified across types", true],
       PExt: [false, "the constant function to the entity, with tag true and with tag false, takes the same value everywhere, but the two are distinct", true],
+      Class: [true, "provably equivalent formulas take the same truth value, and every λ-abstraction has tag true", true],
     } },
   { id: "Mcb", lean: { model: "Al.Mb_model", LLeq: "Al.Mb_LLEqv", TBF: "Al.Mb_TBF", TNec: "Al.Mb_TNec", TCBF: "Al.Mb_not_TCBF" },
     leanNote: "In the semantics of lean/PIAlg.lean. Propositions are truth values with a tag; the values of ≈ have tag false, everything else tag true. E = 1, and identity is identity.",
-    name: "𝔐_cb (new; propositions finer than truth values)",
+    name: "𝔐_cb (propositions finer than truth values)",
     desc: "Propositions are truth values with a tag, and only the values of ≈ have tag false. So 𝔸α(α ≈ α) is true and has the tag of ⊤, so it is necessary; but e ≈ e has a different tag, so it is not. So TCBF fails, while TBF and Type Necessitism hold. Checked in Lean.",
     src: "observed",
     values: {
@@ -719,7 +753,7 @@ const models = [
     } },
   { id: "MqA", lean: { model: "Al.Mq_model", LLeq: "Al.Mq_LLEqv", Bool: "Al.Mq_Bool", IdId: "Al.Mq_IdId", NIEqv: "Al.Mq_NIEqv", NITeq: "Al.Mq_NITeq", NDTeq: "Al.Mq_NDTeq", Disjoint: "Al.Mq_Disjoint", Inj: "Al.Mq_Inj", Slogan: "Al.Mq_Slogan", PExt: "Al.Mq_PExt", Cong: "Al.Mq_Cong", TBF: "Al.MqA_not_TBF", TCBF: "Al.MqA_TCBF", TNec: "Al.MqA_TNec" },
     leanNote: "In the semantics of lean/PIAlg.lean (lean/PIBarcanModels.lean). Propositions are sets of two worlds; identity of items and of types is rigid; the connectives and term quantifiers act world by world; at the actual world the type quantifiers are as usual, and at the other world every type-universal claim is false and every type-existential claim true. E = 1.",
-    name: "𝔐_q,A (new; propositions as sets of worlds)",
+    name: "𝔐_q,A (propositions as sets of worlds)",
     desc: "Propositions are sets of two worlds, and identity is rigid, so Booleanism, the Identity Identity, and the necessity of identity and distinctness all hold. The type quantifiers behave as usual at the actual world, but at the other world 𝔸αφ is always false and 𝔼αφ always true. So 𝔸α⊤ is not necessary although each instance is: TBF fails. TCBF holds vacuously, and Type Necessitism holds. Checked in Lean.",
     src: "observed",
     values: {
@@ -740,7 +774,7 @@ const models = [
     } },
   { id: "MqC", lean: { model: "Al.Mq_model", LLeq: "Al.Mq_LLEqv", Bool: "Al.Mq_Bool", IdId: "Al.Mq_IdId", NIEqv: "Al.Mq_NIEqv", NITeq: "Al.Mq_NITeq", NDTeq: "Al.Mq_NDTeq", Disjoint: "Al.Mq_Disjoint", Inj: "Al.Mq_Inj", Slogan: "Al.Mq_Slogan", PExt: "Al.Mq_PExt", Cong: "Al.Mq_Cong", TBF: "Al.MqC_TBF", TCBF: "Al.MqC_not_TCBF", TNec: "Al.MqC_not_TNec" },
     leanNote: "As 𝔐_q,A, except that at the other world every type-universal claim is true and every type-existential claim false.",
-    name: "𝔐_q,C (new; propositions as sets of worlds)",
+    name: "𝔐_q,C (propositions as sets of worlds)",
     desc: "As 𝔐_q,A, except that at the other world 𝔸αφ is always true and 𝔼αφ always false. So 𝔸α𝔼β(α ≈ β) is necessary, but no instance 𝔼β(α ≈ β) is: TCBF fails, and so does Type Necessitism. TBF holds. Checked in Lean.",
     src: "observed",
     values: {
@@ -761,7 +795,7 @@ const models = [
     } },
   { id: "MhwA", lean: { model: "Al.MhwG_model", Hae: "Al.MhwG_Hae", LLeq: "Al.MhwG_LLEqv", TBF: "Al.MhwA_not_TBF" },
     leanNote: "As 𝔐_hw (lean/PIAlgModels.lean), with the type quantifiers treated as in 𝔐_q,A (lean/PIBarcanModels.lean).",
-    name: "𝔐_hw,A (new; haecceities, worlds and tags)",
+    name: "𝔐_hw,A (haecceities, worlds and tags)",
     desc: "The haecceity tower of 𝔐_hw, with the type quantifiers treated as in 𝔐_q,A. Haecceitism and LL≡ hold, and TBF fails. Checked in Lean.",
     src: "observed",
     values: {
@@ -771,7 +805,7 @@ const models = [
     } },
   { id: "MhwC", lean: { model: "Al.MhwG_model", Hae: "Al.MhwG_Hae", LLeq: "Al.MhwG_LLEqv", TCBF: "Al.MhwC_not_TCBF", TNec: "Al.MhwC_not_TNec" },
     leanNote: "As 𝔐_hw, with the type quantifiers treated as in 𝔐_q,C.",
-    name: "𝔐_hw,C (new; haecceities, worlds and tags)",
+    name: "𝔐_hw,C (haecceities, worlds and tags)",
     desc: "The haecceity tower of 𝔐_hw, with the type quantifiers treated as in 𝔐_q,C. Haecceitism and LL≡ hold; TCBF and Type Necessitism fail. Checked in Lean.",
     src: "observed",
     values: {
@@ -782,7 +816,7 @@ const models = [
     } },
   { id: "McqA", lean: { model: "Al.Mcq_model", Collapse: "Al.Mcq_Collapse", TBF: "Al.McqA_not_TBF" },
     leanNote: "In the semantics of lean/PIAlg.lean (lean/PIBarcanModels.lean). Propositions are sets of two worlds; the propositions true at the actual world, and the proposition p₀ true only at the other world, are identified with each other, and nothing else is identified with anything but itself; the type quantifiers act at the other world as in 𝔐_q,A.",
-    name: "𝔐_cq,A (new; PI⁻ only; propositions as sets of worlds)",
+    name: "𝔐_cq,A (PI⁻ only; propositions as sets of worlds)",
     desc: "Every truth is identified with ⊤, so Collapse holds; but so is the false proposition p₀, so T fails. 𝔼β⊥ is p₀, so it is necessary at every type; but 𝔸α𝔼β⊥ is the empty set, which is not necessary. So TBF fails. Checked in Lean.",
     src: "observed",
     values: {
@@ -791,7 +825,7 @@ const models = [
     } },
   { id: "McqC", lean: { model: "Al.Mcq_model", Collapse: "Al.Mcq_Collapse", TCBF: "Al.McqC_not_TCBF" },
     leanNote: "As 𝔐_cq,A, with the type quantifiers acting at the other world as in 𝔐_q,C.",
-    name: "𝔐_cq,C (new; PI⁻ only; propositions as sets of worlds)",
+    name: "𝔐_cq,C (PI⁻ only; propositions as sets of worlds)",
     desc: "As 𝔐_cq,A, except that 𝔸α⊥ is p₀ and so necessary, while ⊥ is not. So TCBF fails, while Collapse holds. Checked in Lean.",
     src: "observed",
     values: {
@@ -800,7 +834,7 @@ const models = [
     } },
   { id: "MEk", lean: { model: "MEk_model", PCong: "MEk_PCong", Bridge: "MEk_not_Bridge", Inj: "MEk_Inj", Disjoint: "MEk_Disjoint" , PropExt: "Frame.PropExt_valid" },
     leanNote: "𝔐_E (E = {0,1,2}, 0 ∼ 1) with k₁ = (0↦0, 1↦0, 2↦2) and k₂ = (0↦1, 1↦0, 2↦2) identified in e→e. LL≡/≈ fails for the predicate λγ.λz.∃f,g:γ→γ (f ≡ g ∧ f z ≐ z ∧ ¬ g z ≐ z), with ≐ Leibniz equality.",
-    name: "𝔐_E,k (new; a model of PI⁻ only)",
+    name: "𝔐_E,k (a model of PI⁻ only)",
     desc: "As 𝔐_E (0 ∼ 1 at type e), and in addition two functions k₁, k₂ from e to e are identified, whose values at each argument are identified. So PCong holds. But 0 is a fixed point of k₁ and not of k₂, while 1 is a fixed point of neither; a predicate saying so holds of 0 and not of 1, though 0 ≡ 1. So LL≡/≈ fails. Checked in Lean.",
     src: "observed",
     values: {
@@ -811,7 +845,7 @@ const models = [
     } },
   { id: "Mhb", lean: { model: "Mhb_model", Hae: "Mhb_Hae", Twin: "Mhb_Twin", Inj: "Mhb_Inj", Bridge: "Mhb_not_Bridge" , PropExt: "Frame.PropExt_valid" },
     leanNote: "A haecceity tower (lean/PIHae.lean) over E = {0,1,2}, in which 1 and the property λy.(y = 1) have the root of 0.",
-    name: "𝔐_hae,R (new; a model of PI⁻ only)",
+    name: "𝔐_hae,R (a model of PI⁻ only)",
     desc: "A haecceitist model over E = {0,1,2}: each item is identified with its haecceity; in addition, 1 is identified with 0, and the property of being 1 is identified with the haecceity of 0. Then the predicate R = Λγ.λz.∃F(Fz ∧ ∃G(F ≡ G ∧ ¬Gz)) holds of 0 and not of 1, though 0 ≡ 1; so LL≡/≈ fails while Haecceitism holds. Checked in Lean.",
     src: "observed",
     values: {
@@ -822,7 +856,7 @@ const models = [
     } },
   { id: "Mz", lean: { TBF: "Tg.Mz_not_TBF", TNec: "Tg.Mz_not_TNec", model: "Tg.Mz_model", Bool: "Tg.Mz_not_Bool", LLeq: "Tg.Mz_LLEqv", Disjoint: "Tg.Mz_Disjoint", Ext: "Tg.Mz_ExtT", Int: "Tg.Mz_IntT", PropExt: "Tg.Mz_not_PropExt", Slogan: "Tg.Mz_Slogan", Cong: "Tg.Mz_Cong", PExt: "Tg.Mz_PExt" },
     leanNote: "In the broader semantics of lean/PITagged.lean. E = 1; ≈ is identity of types; nothing is identified with anything but itself.",
-    name: "𝔐_int0 (new; propositions finer than truth values)",
+    name: "𝔐_int0 (propositions finer than truth values)",
     desc: "The diagonal model, except that propositions are truth values with tags: nothing is identified with anything but itself. A true quantified proposition is materially equivalent to ⊤ but not identical to it, so PropExt≡ fails, while Disjoint, Ext≈, Int≈, Cong and PExt hold. Checked in Lean.",
     src: "observed",
     values: {
@@ -836,7 +870,7 @@ const models = [
     } },
   { id: "Mbt", lean: { Class: "Mbt_Class", model: "Mbt_model", LLeq: "Mbt_LLEqv", Cong: "Mbt_Cong", PExt: "Mbt_not_PExt", Ext: "Mbt_ExtT", Int: "Mbt_IntT", Slogan: "Mbt_Slogan", Inj: "Mbt_Inj" },
     leanNote: "E = 1, with a further base type d of two items; the entity is identified with the first of them; nothing else is identified with anything but itself.",
-    name: "𝔐_bt (new)",
+    name: "𝔐_bt",
     desc: "E = 1, and a further type d has two items; the entity is identified with the first, and nothing else is identified with anything but itself. The constant functions on e with values the entity and that item take identified values but are not identified, so PExt fails; Cong holds, since no functions are identified across types. Checked in Lean.",
     src: "observed",
     values: {
@@ -848,7 +882,7 @@ const models = [
     } },
   { id: "Mht", lean: { model: "Tg.Mht_model", LLeq: "Tg.Mht_LLEqv", Hae: "Tg.Mht_Hae", PropExt: "Tg.Mht_not_PropExt" },
     leanNote: "The haecceity towers of lean/PIHae.lean, in the broader semantics of lean/PITagged.lean (propositions are truth values with tags). E = 1.",
-    name: "𝔐_hae,int (new; propositions finer than truth values)",
+    name: "𝔐_hae,int (propositions finer than truth values)",
     desc: "A haecceitist model in which propositions are truth values with tags: each item is identified with its haecceity, and items of one type only with themselves. A true quantified proposition is not identical to ⊤, so PropExt≡ fails while Haecceitism and LL≡ hold. Checked in Lean.",
     src: "observed",
     values: {
@@ -857,7 +891,7 @@ const models = [
     } },
   { id: "Mhx", lean: { Class: "Mhx_Class", model: "Mhx_model", LLeq: "Mhx_LLEqv", Hae: "Mhx_Hae", PExt: "Mhx_PExt", Twin: "Mhx_Twin", Inj: "Mhx_Inj" },
     leanNote: "In lean/PINF.lean. E = 1. Each item has a normal form: a function's is the normal form of x, if its values have the normal forms of the values of x's haecceity, and otherwise the map from its domain to the normal forms of its values.",
-    name: "𝔐_hae,x (new)",
+    name: "𝔐_hae,x",
     desc: "A haecceitist model in which identification is sameness of normal form, and the normal form of a function depends only on its domain and the normal forms of its values. So PExt holds; each item is identified with its haecceity; and items of one type only with themselves, so LL≡ holds. Checked in Lean.",
     src: "observed",
     values: {
@@ -868,7 +902,7 @@ const models = [
     } },
   { id: "Mpb", lean: { model: "Mpb_model", PExt: "Mpb_PExt", Bridge: "Mpb_not_Bridge", Inj: "Mpb_Inj" },
     leanNote: "In lean/PINF.lean. E = {0,1,2} with 0 ∼ 1. Normal forms of functions are maps from their domains to the normal forms of their values, except that h₁ = (0↦2, 1↦0, 2↦0) gets the normal form of the constant function 0. LL≡/≈ fails for the predicate λγ.λz.∃f,g:γ→γ (f ≡ g ∧ ¬ fz ≡ gz).",
-    name: "𝔐_pb (new; a model of PI⁻ only)",
+    name: "𝔐_pb (a model of PI⁻ only)",
     desc: "E = {0,1,2}, with 0 and 1 identified; functions are identified when their values are, and in addition h₁ = (0↦2, 1↦0, 2↦0) is identified with the constant function 0. So PExt holds. But some identified functions take unidentified values at 0, and none do at 1, though 0 ≡ 1; so LL≡/≈ fails. Checked in Lean.",
     src: "observed",
     values: {
@@ -922,7 +956,7 @@ const models = [
     } },
   { id: "Mtw", lean: { Class: "Mtw_Class", model: "Mtw_model", LLeq: "Mtw_LLEqv", Cong: "Mtw_Cong", Inj: "Mtw_Inj", Twin: "Mtw_Twin", Slogan: "Mtw_Slogan", Disjoint: "Mtw_not_Disjoint", Ext: "Mtw_not_ExtT", Hae: "Mtw_not_Hae" , Int: "Mtw_not_IntT" , PropExt: "Frame.PropExt_valid" , PExt: "Mtw_PExt" },
     leanNote: "Types are codes; each code has a duplicate, and ≡ identifies each item with the same item of the duplicate type.",
-    name: "𝔐_twin (new)",
+    name: "𝔐_twin",
     desc: "Every type has a distinct duplicate with the very same items, and each item is identified with its copy in the duplicate type; ≈ is identity of types. Checked in Lean.",
     src: "observed",
     values: {
@@ -937,7 +971,7 @@ const models = [
     } },
   { id: "Mt2", lean: { Class: "Mt2_Class", model: "Mt2_model", LLeq: "Mt2_LLEqv", Twin: "Mt2_Twin", PCong: "Mt2_not_PCong", Inj: "Mt2_not_Inj", Recovery: "Mt2_not_Recovery", Disjoint: "Mt2_not_Disjoint" , PropExt: "Frame.PropExt_valid" , PExt: "Mt2_PExt" },
     leanNote: "By combining 𝔐_twin with the model for 𝔐_κ: e, t, and a second two-element type D each get a duplicate; ≈ identifies e→D with e→t; ≡ identifies each item with its copy in the duplicate type.",
-    name: "𝔐_twin,κ (new)",
+    name: "𝔐_twin,κ",
     desc: "e, t, and D each have a distinct duplicate with the very same items, and each item is identified with its copy; as in 𝔐_κ, e→t ≈ e→D but not t ≈ D. So Twin holds while PCong, Inj≈, and Recovery fail. Checked in Lean.",
     src: "observed",
     values: {
@@ -952,7 +986,7 @@ const models = [
     } },
   { id: "Mrec", lean: { Class: "Mrec_Class", model: "Mrec_model", LLeq: "Mrec_LLEqv", Cong: "Mrec_Cong", Recovery: "Mrec_not_Recovery", Inj: "Mrec_not_Inj", Slogan: "Mrec_Slogan", Disjoint: "Mrec_not_Disjoint" , PropExt: "Frame.PropExt_valid" , PExt: "Mrec_PExt" },
     leanNote: "From the model for 𝔐_κ: ≈ identifies e→t with e→D, and ≡ also identifies the items of t and of D.",
-    name: "𝔐_rec (new)",
+    name: "𝔐_rec",
     desc: "As 𝔐_κ (e→t ≈ e→D, but not t ≈ D), except that items of t and of D are also identified with each other. Then Cong holds but Recovery fails. Checked in Lean.",
     src: "observed",
     values: {
