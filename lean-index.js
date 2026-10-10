@@ -310,91 +310,99 @@ window.LEANINDEX = {
  ],
  "Al.MqI_BF": [
   "PIBF.lean",
-  547
+  645
  ],
  "Al.MqI_Bool": [
   "PIBF.lean",
-  415
+  513
  ],
  "Al.MqI_CBF": [
   "PIBF.lean",
-  566
+  664
  ],
  "Al.MqI_Cong": [
   "PIBF.lean",
-  486
+  584
  ],
  "Al.MqI_Disjoint": [
   "PIBF.lean",
-  448
+  546
+ ],
+ "Al.MqI_IdId": [
+  "PIBF.lean",
+  684
  ],
  "Al.MqI_Inj": [
   "PIBF.lean",
-  456
+  554
  ],
  "Al.MqI_LLEqv": [
   "PIBF.lean",
-  370
+  468
  ],
  "Al.MqI_NDTeq": [
   "PIBF.lean",
-  439
+  537
  ],
  "Al.MqI_NDX": [
   "PIBF.lean",
-  390
+  488
  ],
  "Al.MqI_NIEqv": [
   "PIBF.lean",
-  422
+  520
  ],
  "Al.MqI_NITeq": [
   "PIBF.lean",
-  431
+  529
  ],
  "Al.MqI_NIX": [
   "PIBF.lean",
-  381
+  479
  ],
  "Al.MqI_Nec": [
   "PIBF.lean",
-  533
+  631
  ],
  "Al.MqI_PExt": [
   "PIBF.lean",
-  475
+  573
  ],
  "Al.MqI_Slogan": [
   "PIBF.lean",
-  468
+  566
  ],
  "Al.MqI_TBF": [
   "PIBF.lean",
-  494
+  592
  ],
  "Al.MqI_TCBF": [
   "PIBF.lean",
-  505
+  603
  ],
  "Al.MqI_TNec": [
   "PIBF.lean",
-  514
+  612
  ],
  "Al.MqI_model": [
   "PIBF.lean",
-  355
+  453
  ],
  "Al.MqI_not_BF": [
   "PIBF.lean",
-  596
+  723
  ],
  "Al.MqI_not_CBF": [
   "PIBF.lean",
-  610
+  737
+ ],
+ "Al.MqI_not_Nec": [
+  "PIBF.lean",
+  706
  ],
  "Al.Mq_BF": [
   "PIBF.lean",
-  657
+  784
  ],
  "Al.Mq_Bool": [
   "PIBarcanModels.lean",
@@ -402,7 +410,7 @@ window.LEANINDEX = {
  ],
  "Al.Mq_CBF": [
   "PIBF.lean",
-  671
+  798
  ],
  "Al.Mq_Cong": [
   "PIBarcanModels.lean",
@@ -446,7 +454,7 @@ window.LEANINDEX = {
  ],
  "Al.Mq_Nec": [
   "PIBF.lean",
-  648
+  775
  ],
  "Al.Mq_PExt": [
   "PIBarcanModels.lean",
@@ -2318,19 +2326,19 @@ window.LEANINDEX = {
  ],
  "Tg.MhtT_Hae": [
   "PIBF.lean",
-  716
+  843
  ],
  "Tg.MhtT_LLEqv": [
   "PIBF.lean",
-  717
+  844
  ],
  "Tg.MhtT_model": [
   "PIBF.lean",
-  714
+  841
  ],
  "Tg.MhtT_not_CBF": [
   "PIBF.lean",
-  722
+  849
  ],
  "Tg.Mht_Hae": [
   "PINew.lean",
@@ -2354,7 +2362,7 @@ window.LEANINDEX = {
  ],
  "Tg.Mht_not_BF": [
   "PIBF.lean",
-  690
+  817
  ],
  "Tg.Mht_not_IdId": [
   "PIModalX2.lean",
@@ -2362,7 +2370,7 @@ window.LEANINDEX = {
  ],
  "Tg.Mht_not_Nec": [
   "PIBF.lean",
-  700
+  827
  ],
  "Tg.Mht_not_PropExt": [
   "PINew.lean",
@@ -2506,7 +2514,7 @@ window.LEANINDEX = {
  ],
  "Tg.Mz_CBF": [
   "PIBF.lean",
-  229
+  327
  ],
  "Tg.Mz_Cong": [
   "PINew.lean",
@@ -2614,27 +2622,27 @@ window.LEANINDEX = {
  ],
  "Wd.MNec_BF": [
   "PIBF.lean",
-  803
+  930
  ],
  "Wd.MNec_CBF": [
   "PIBF.lean",
-  804
+  931
  ],
  "Wd.MNec_LLEqv": [
   "PIBF.lean",
-  775
+  902
  ],
  "Wd.MNec_Nec": [
   "PIBF.lean",
-  789
+  916
  ],
  "Wd.MNec_model": [
   "PIBF.lean",
-  771
+  898
  ],
  "Wd.MNec_not_NIEqv": [
   "PIBF.lean",
-  798
+  925
  ],
  "Wd.Mcol_Bool": [
   "PIWorlds.lean",
@@ -2658,11 +2666,11 @@ window.LEANINDEX = {
  ],
  "Wd.MhE_BF": [
   "PIBF.lean",
-  311
+  409
  ],
  "Wd.MhE_CBF": [
   "PIBF.lean",
-  312
+  410
  ],
  "Wd.MhE_Hae": [
   "PIModalX2.lean",
@@ -2686,7 +2694,7 @@ window.LEANINDEX = {
  ],
  "Wd.MhE_not_Nec": [
   "PIBF.lean",
-  313
+  411
  ],
  "Wd.MhND_model": [
   "PIModalX2.lean",
@@ -3311,6 +3319,10 @@ window.LEANINDEX = {
  "d_ExtT_of_Collapse": [
   "PIModal.lean",
   132
+ ],
+ "d_ExtT_of_IntNIXBF": [
+  "PIBF.lean",
+  289
  ],
  "d_ExtT_of_PropExt": [
   "PINew.lean",

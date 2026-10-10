@@ -199,6 +199,104 @@ theorem d_CBF_of_Collapse (hC : S Collapse) (hT : S TAx) : Prov S Ctx.nil CBF :=
   have h4 : Ent S ΓF [boxF AllF] (all tv0 (boxF FxF)) := Ent.gen tv0 h3
   exact Ent.toProv (Ent.tgen (Hs := []) (Ent.gen tv0.pred (Hs := []) (Ent.intro (Hs := []) h4)))
 
+abbrev Cx : Ctx 2 := Δ2.ext tv1
+abbrev Qx : Fm Cx := ex tv0 (eqv tv1 tv0 (.var (.there .here)) (.var .here))
+abbrev Qx' : Fm C11 := ex tv0 (eqv tv1 tv0 (.var (.there (.there .here))) (.var .here))
+
+set_option maxHeartbeats 16000000 in
+/-- Classicism, LL≡, NI× and BF make `α ⊑ β` necessary, if true. -/
+theorem d_box_subT (hC : ∀ χ, ClassSch χ → S χ) (hLL : S LLEqv) (hN : S NIX) (hB : S BF) :
+    Prov S Δ2 ((subT : Fm Δ2).imp (boxF subT)) := by
+  -- Classicism in context `x, y`: `Q ∨ E ≡ Q` and `Q ∨ ⊤ ≡ ⊤`, where `Q` is `∃y'(x ≡ y')`
+  have hc1 : S (closeCtx C11 (eqv tyT tyT (disj Qx' ExyX) Qx')) := by
+    refine hC _ (Or.inl ⟨2, C11, disj Qx' ExyX, Qx', ?_, rfl⟩)
+    have hE : Ent (fun χ => χ = LLEqv) C11 [ExyX] Qx' := Ent.exI (.var .here) (Ent.hyp _ 0 (by decide))
+    exact Ent.toProv (Ent.mp (Ent.taut (.imp (.imp (.atom 1) (.atom 0)) (.iff (.disj (.atom 0) (.atom 1)) (.atom 0)))
+      (v2 Qx' ExyX) (fun _ f => ⟨fun h => h.elim id f, Or.inl⟩)) (Ent.intro (Hs := []) hE))
+  have hc2 : S (closeCtx C11 (eqv tyT tyT (disj Qx' topF) topF)) := by
+    refine hC _ (Or.inl ⟨2, C11, disj Qx' topF, topF, ?_, rfl⟩)
+    exact Ent.toProv (Ent.mp (Ent.taut (.imp (.atom 1) (.iff (.disj (.atom 0) (.atom 1)) (.atom 1)))
+      (v2 Qx' topF) (fun _ t => ⟨fun _ => t, Or.inr⟩)) (Ent.top (Ax := fun χ => χ = LLEqv) (Hs := [])))
+  -- in context `x, y`, with `Q` and `x ≡ y`: `□Q`
+  let H2 : List (Fm C11) := [Qx', ExyX]
+  have hbE : Ent S C11 H2 (boxF ExyX) :=
+    Ent.mp ((((((Ent.axm (Γ := C11) (Hs := H2) hN).tinst tv1).tinst tv0).inst (.var (.there .here))).inst (.var .here)))
+      (Ent.hyp _ 1 (by decide))
+  have e1 : Ent S C11 H2 (eqv tyT tyT (disj Qx' ExyX) Qx') :=
+    ((((Ent.axm (Γ := C11) (Hs := H2) hc1).tinst tv1).tinst tv0).inst (.var (.there .here))).inst (.var .here)
+  have e2 : Ent S C11 H2 (eqv tyT tyT (disj Qx' topF) topF) :=
+    ((((Ent.axm (Γ := C11) (Hs := H2) hc2).tinst tv1).tinst tv0).inst (.var (.there .here))).inst (.var .here)
+  have e3 := Ent.mp (Ent.ofProv (or_cong hLL Qx' ExyX topF)) hbE
+  have e4 := Ent.mp (Ent.ofProv (sym_t (disj Qx' ExyX) Qx')) e1
+  have e5 := Ent.mp (Ent.ofProv (trans_t Qx' (disj Qx' ExyX) (disj Qx' topF))) (Ent.andI e4 e3)
+  have hbQ' : Ent S C11 H2 (boxF Qx') := Ent.mp (Ent.ofProv (trans_t Qx' (disj Qx' topF) topF)) (Ent.andI e5 e2)
+  -- in context `x`, with `Q`: `□Q`, by ∃-elimination
+  have hbQ : Ent S Cx [Qx] (boxF Qx) := Ent.exE (Ent.hyp _ 0 (by decide)) hbQ'
+  have hQQ : Ent S Cx [] (Qx.imp (boxF Qx)) := Ent.intro (Hs := []) hbQ
+  -- in context `α, β`, with `α ⊑ β`: `∀x □Q`
+  have hall : Ent S Δ2 [subT] (all tv1 (boxF Qx)) :=
+    Ent.gen tv1 (Ent.mp (Ent.ofProv (Ent.toProv hQQ)) ((Ent.hyp _ 0 (by decide) : Ent S Cx [(subT : Fm Δ2).wk tv1] _).inst (.var .here)))
+  -- BF, with `F := λx.Q`
+  have hbf0 := ((Ent.axm (Γ := Δ2) (Hs := [subT]) hB).tinst tv1).inst (Tm.lam tv1 Qx)
+  have hbf : Ent S Δ2 [subT] ((all tv1 (boxF Qx)).imp (boxF subT)) :=
+    Ent.beta hbf0 (BetaEq.imp (BetaEq.appR _ (BetaEq.lamC tv1 (BetaEq.eqvC (.step (.beta _ _)) (.refl _))))
+      (BetaEq.eqvC (BetaEq.appR _ (BetaEq.lamC tv1 (.step (.beta _ _)))) (.refl _)))
+  exact Ent.toProv (Ent.intro (Hs := []) (Ent.mp hbf hall))
+
+abbrev Cy : Ctx 2 := Δ2.ext tv0
+abbrev Cyx : Ctx 2 := Cy.ext tv1
+abbrev Eyx : Fm Cyx := eqv tv1 tv0 (.var .here) (.var (.there .here))
+abbrev Qy : Fm Cy := ex tv1 (eqv tv1 tv0 (.var .here) (.var (.there .here)))
+abbrev Qy' : Fm Cyx := ex tv1 (eqv tv1 tv0 (.var .here) (.var (.there (.there .here))))
+
+set_option maxHeartbeats 16000000 in
+/-- Classicism, LL≡, NI× and BF make `β ⊑ α` (as in Ext≈) necessary, if true. -/
+theorem d_box_supT (hC : ∀ χ, ClassSch χ → S χ) (hLL : S LLEqv) (hN : S NIX) (hB : S BF) :
+    Prov S Δ2 ((supT : Fm Δ2).imp (boxF supT)) := by
+  have hc1 : S (closeCtx Cyx (eqv tyT tyT (disj Qy' Eyx) Qy')) := by
+    refine hC _ (Or.inl ⟨2, Cyx, disj Qy' Eyx, Qy', ?_, rfl⟩)
+    have hE : Ent (fun χ => χ = LLEqv) Cyx [Eyx] Qy' := Ent.exI (.var .here) (Ent.hyp _ 0 (by decide))
+    exact Ent.toProv (Ent.mp (Ent.taut (.imp (.imp (.atom 1) (.atom 0)) (.iff (.disj (.atom 0) (.atom 1)) (.atom 0)))
+      (v2 Qy' Eyx) (fun _ f => ⟨fun h => h.elim id f, Or.inl⟩)) (Ent.intro (Hs := []) hE))
+  have hc2 : S (closeCtx Cyx (eqv tyT tyT (disj Qy' topF) topF)) := by
+    refine hC _ (Or.inl ⟨2, Cyx, disj Qy' topF, topF, ?_, rfl⟩)
+    exact Ent.toProv (Ent.mp (Ent.taut (.imp (.atom 1) (.iff (.disj (.atom 0) (.atom 1)) (.atom 1)))
+      (v2 Qy' topF) (fun _ t => ⟨fun _ => t, Or.inr⟩)) (Ent.top (Ax := fun χ => χ = LLEqv) (Hs := [])))
+  let H2 : List (Fm Cyx) := [Qy', Eyx]
+  have hbE : Ent S Cyx H2 (boxF Eyx) :=
+    Ent.mp ((((((Ent.axm (Γ := Cyx) (Hs := H2) hN).tinst tv1).tinst tv0).inst (.var .here)).inst (.var (.there .here))))
+      (Ent.hyp _ 1 (by decide))
+  have e1 : Ent S Cyx H2 (eqv tyT tyT (disj Qy' Eyx) Qy') :=
+    ((((Ent.axm (Γ := Cyx) (Hs := H2) hc1).tinst tv1).tinst tv0).inst (.var (.there .here))).inst (.var .here)
+  have e2 : Ent S Cyx H2 (eqv tyT tyT (disj Qy' topF) topF) :=
+    ((((Ent.axm (Γ := Cyx) (Hs := H2) hc2).tinst tv1).tinst tv0).inst (.var (.there .here))).inst (.var .here)
+  have e3 := Ent.mp (Ent.ofProv (or_cong hLL Qy' Eyx topF)) hbE
+  have e4 := Ent.mp (Ent.ofProv (sym_t (disj Qy' Eyx) Qy')) e1
+  have e5 := Ent.mp (Ent.ofProv (trans_t Qy' (disj Qy' Eyx) (disj Qy' topF))) (Ent.andI e4 e3)
+  have hbQ' : Ent S Cyx H2 (boxF Qy') := Ent.mp (Ent.ofProv (trans_t Qy' (disj Qy' topF) topF)) (Ent.andI e5 e2)
+  have hbQ : Ent S Cy [Qy] (boxF Qy) := Ent.exE (Ent.hyp _ 0 (by decide)) hbQ'
+  have hQQ : Ent S Cy [] (Qy.imp (boxF Qy)) := Ent.intro (Hs := []) hbQ
+  have hall : Ent S Δ2 [supT] (all tv0 (boxF Qy)) :=
+    Ent.gen tv0 (Ent.mp (Ent.ofProv (Ent.toProv hQQ)) ((Ent.hyp _ 0 (by decide) : Ent S Cy [(supT : Fm Δ2).wk tv0] _).inst (.var .here)))
+  have hbf0 := ((Ent.axm (Γ := Δ2) (Hs := [supT]) hB).tinst tv0).inst (Tm.lam tv0 Qy)
+  have hbf : Ent S Δ2 [supT] ((all tv0 (boxF Qy)).imp (boxF supT)) :=
+    Ent.beta hbf0 (BetaEq.imp (BetaEq.appR _ (BetaEq.lamC tv0 (BetaEq.eqvC (.step (.beta _ _)) (.refl _))))
+      (BetaEq.eqvC (BetaEq.appR _ (BetaEq.lamC tv0 (.step (.beta _ _)))) (.refl _)))
+  exact Ent.toProv (Ent.intro (Hs := []) (Ent.mp hbf hall))
+
+set_option maxHeartbeats 8000000 in
+/-- Classicism, LL≡, NI×, BF and Int≈ prove Ext≈: coextensive types are necessarily coextensive. -/
+theorem d_ExtT_of_IntNIXBF (hC : ∀ χ, ClassSch χ → S χ) (hLL : S LLEqv) (hN : S NIX) (hB : S BF) (hI : S IntT) :
+    Prov S Ctx.nil ExtT := by
+  let H : Fm Δ2 := conj subT supT
+  have hH : Ent S Δ2 [H] H := Ent.hyp _ 0 (by decide)
+  have h1 : Ent S Δ2 [H] (boxF subT) := Ent.mp (Ent.ofProv (d_box_subT hC hLL hN hB)) (Ent.andE1 hH)
+  have h2 : Ent S Δ2 [H] (boxF supT) := Ent.mp (Ent.ofProv (d_box_supT hC hLL hN hB)) (Ent.andE2 hH)
+  have hi : Ent S Δ2 [H] ((conj (boxF (subT : Fm Δ2)) (boxF (supT : Fm Δ2))).imp (teq tv1 tv0)) :=
+    ((Ent.axm (Γ := Δ2) (Hs := [H]) hI).tinst tv1).tinst tv0
+  have h3 : Ent S Δ2 ([] ++ [H]) (teq tv1 tv0) := Ent.mp hi (Ent.andI h1 h2)
+  exact Ent.toProv (Ent.tgen (Hs := []) (Ent.tgen (Hs := []) (Ent.intro (Hs := []) h3)))
+
 end Derivations
 
 /-! ## Tagged models: quantified propositions carry the tag `false`, so BF and Necessitism fail -/
@@ -582,6 +680,35 @@ theorem MqI_CBF (hIA : ¬ IA) : (MqIF IA IE).Valid CBF := by
     · exact fun hw => hw x
     · exact fun hw => absurd hw hIA
   · exact hw x
+
+theorem MqI_IdId : (MqIF IA IE).Valid IdId := by
+  intro ρ env
+  refine ((MqIF IA IE).holds_tall _ _ _).mpr fun a => ?_
+  refine ((MqIF IA IE).holds_all _ _ _ _).mpr fun x => ((MqIF IA IE).holds_all _ _ _ _).mpr fun y => ?_
+  refine ((MqIF IA IE).holds_eqv_t _ _ _ _).mpr ⟨rfl, heq_of_eq ?_⟩
+  refine ((MqIF IA IE).eval_eqv _ _ _ _ _ _).trans (Eq.trans ?_ ((MqIF IA IE).eval_all
+    (Γ := ((Ctx.nil.text).ext tv0).ext tv0) tv0.pred
+    (Tm.imp (.app (.var .here) (.var (.there (.there .here)))) (.app (.var .here) (.var (.there .here))))
+    (scons a ρ) ((env, x), y)).symm)
+  funext w
+  refine propext ⟨fun h => ?_, fun h => ?_⟩
+  · have e : x = y := eq_of_heq ((cast_heq _ _).symm.trans (h.2.trans (cast_heq _ _)))
+    subst e
+    cases w
+    · exact fun G hG => hG
+    · exact fun G hG => hG
+  · have hy : HEq y x := by
+      cases w
+      · exact h (fun z _ => HEq z x) (by exact HEq.rfl)
+      · exact h (fun z _ => HEq z x) (by exact HEq.rfl)
+    exact ⟨rfl, (cast_heq _ _).trans (hy.symm.trans (cast_heq _ _).symm)⟩
+
+theorem MqI_not_Nec : ¬ (MqIF IA False).Valid Nec := fun h => by
+  have h0 := ((MqIF IA False).holds_all _ _ _ _).mp (((MqIF IA False).holds_tall _ _ _).mp (h (fun i => i.elim0) ()) .e) ()
+  have e := (eq_of_heq (((MqIF IA False).holds_eqv_t _ _ _ _).mp h0).2).trans
+    (MqI_top IA False (Γ := (Ctx.nil.text).ext tv0) _ _)
+  replace e := (MqI_eval_ex IA False _ _ _ _).symm.trans e
+  exact (cast (congrFun e false).symm trivial : False)
 
 end MqI
 
