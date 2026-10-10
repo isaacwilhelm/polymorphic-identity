@@ -363,4 +363,233 @@ theorem Mhr_not_Inj : ¬ Mhr.Valid Inj := fun h => by
 
 end Mhr
 
+/-! ## `𝔐_hae,ie`: Int≈ without Ext≈, in PIᶜ + Haecceitism
+
+Two worlds, one entity, and a base type `D` with one item. Each item has a root, got by stripping
+off haecceities; items are identified at a world just in case they have the same root, or the world
+is the actual one and their roots are the entity and the item of `D`. `≈` is identity of types. -/
+
+namespace Wd
+open Classical
+
+def univHI : Univ where
+  W := Bool
+  w0 := true
+  E := Unit
+  Base := Unit
+  B := fun _ => Unit
+  neE := ⟨()⟩
+  neB := fun _ => ⟨()⟩
+
+abbrev CHI := Code univHI.Base
+
+def hcyI (a : CHI) (z : univHI.El a) : univHI.El (.arr a .t) := fun y _ => y = z
+
+theorem hcyI_inj {a : CHI} {z z' : univHI.El a} (h : hcyI a z = hcyI a z') : z = z' := by
+  have := congrFun (congrFun h z) true
+  exact cast this rfl
+
+noncomputable def rootI : (a : CHI) → univHI.El a → (Σ b : CHI, univHI.El b)
+  | .arr a .t, f => if h : ∃ z, f = hcyI a z then rootI a (Classical.choose h) else ⟨.arr a .t, f⟩
+  | a, x => ⟨a, x⟩
+
+theorem rootI_t (a : CHI) (f : univHI.El (.arr a .t)) :
+    rootI (.arr a .t) f = if h : ∃ z, f = hcyI a z then rootI a (Classical.choose h) else ⟨.arr a .t, f⟩ := by
+  rw [rootI]
+
+/-- An item either is its own root, or has a root of a smaller type. -/
+theorem rootI_lt : ∀ (a : CHI) (x : univHI.El a), rootI a x = ⟨a, x⟩ ∨ PIF.csz (rootI a x).1 < PIF.csz a
+  | .e, _ => Or.inl rfl
+  | .t, _ => Or.inl rfl
+  | .base _, _ => Or.inl rfl
+  | .arr a .e, _ => Or.inl rfl
+  | .arr a (.base _), _ => Or.inl rfl
+  | .arr a (.arr c d), _ => Or.inl rfl
+  | .arr a .t, f => by
+    rw [rootI_t]
+    split
+    · next h =>
+      refine Or.inr ?_
+      rcases rootI_lt a (Classical.choose h) with e | e
+      · rw [e]; show PIF.csz a < PIF.csz a + 1 + 1; omega
+      · show _ < PIF.csz a + 1 + 1; omega
+    · exact Or.inl rfl
+
+theorem rootI_le (a : CHI) (x : univHI.El a) : PIF.csz (rootI a x).1 ≤ PIF.csz a := by
+  rcases rootI_lt a x with e | e
+  · rw [e]; exact Nat.le_refl _
+  · exact Nat.le_of_lt e
+
+theorem rootI_hcy (a : CHI) (z : univHI.El a) : rootI (.arr a .t) (hcyI a z) = rootI a z := by
+  have h : ∃ z', hcyI a z = hcyI a z' := ⟨z, rfl⟩
+  rw [rootI_t]
+  split
+  · rename_i h'; rw [← hcyI_inj (Classical.choose_spec h')]
+  · exact absurd h ‹_›
+
+theorem rootI_not (a : CHI) (f : univHI.El (.arr a .t)) (hf : ¬ ∃ z, f = hcyI a z) :
+    rootI (.arr a .t) f = ⟨.arr a .t, f⟩ := by
+  rw [rootI_t]
+  split
+  · exact absurd ‹_› hf
+  · rfl
+
+theorem rootI_inj : ∀ (a : CHI) (x y : univHI.El a), rootI a x = rootI a y → x = y
+  | .e, _, _, h => eq_of_heq (Sigma.mk.inj h).2
+  | .t, _, _, h => eq_of_heq (Sigma.mk.inj h).2
+  | .base _, _, _, h => eq_of_heq (Sigma.mk.inj h).2
+  | .arr a .e, _, _, h => eq_of_heq (Sigma.mk.inj h).2
+  | .arr a (.base _), _, _, h => eq_of_heq (Sigma.mk.inj h).2
+  | .arr a (.arr c d), _, _, h => eq_of_heq (Sigma.mk.inj h).2
+  | .arr a .t, f, g, h => by
+    by_cases hf : ∃ z, f = hcyI a z <;> by_cases hg : ∃ z, g = hcyI a z
+    · obtain ⟨z, rfl⟩ := hf; obtain ⟨z', rfl⟩ := hg
+      rw [rootI_hcy, rootI_hcy] at h
+      rw [rootI_inj a z z' h]
+    · obtain ⟨z, rfl⟩ := hf
+      rw [rootI_hcy, rootI_not a g hg] at h
+      have := rootI_le a z; rw [congrArg Sigma.fst h] at this; simp only [PIF.csz] at this; omega
+    · obtain ⟨z', rfl⟩ := hg
+      rw [rootI_hcy, rootI_not a f hf] at h
+      have := rootI_le a z'; rw [← congrArg Sigma.fst h] at this; simp only [PIF.csz] at this; omega
+    · rw [rootI_not a f hf, rootI_not a g hg] at h
+      exact eq_of_heq (Sigma.mk.inj h).2
+
+/-- The bottom of a tower of haecceity types. -/
+def foot : CHI → CHI
+  | .arr a .t => foot a
+  | c => c
+
+theorem foot_rootI : ∀ (a : CHI) (x : univHI.El a), foot (rootI a x).1 = foot a
+  | .e, _ => rfl
+  | .t, _ => rfl
+  | .base _, _ => rfl
+  | .arr a .e, _ => rfl
+  | .arr a (.base _), _ => rfl
+  | .arr a (.arr c d), _ => rfl
+  | .arr a .t, f => by
+    rw [rootI_t]
+    split
+    · exact foot_rootI a _
+    · rfl
+
+/-- Roots which are the entity and the item of `D`. -/
+def crossI (r s : Σ b : CHI, univHI.El b) : Prop := (r.1 = .e ∧ s.1 = .base ()) ∨ (r.1 = .base () ∧ s.1 = .e)
+
+theorem crossI_symm {r s : Σ b : CHI, univHI.El b} (h : crossI r s) : crossI s r :=
+  h.elim (fun h => Or.inr ⟨h.2, h.1⟩) (fun h => Or.inl ⟨h.2, h.1⟩)
+
+theorem sig_e : ∀ r : Σ b : CHI, univHI.El b, r.1 = .e → r = ⟨.e, ()⟩
+  | ⟨_, _⟩, rfl => rfl
+theorem sig_D : ∀ r : Σ b : CHI, univHI.El b, r.1 = .base () → r = ⟨.base (), ()⟩
+  | ⟨_, _⟩, rfl => rfl
+
+theorem crossI_trans {r s u : Σ b : CHI, univHI.El b} (h1 : crossI r s) (h2 : crossI s u) : r = u := by
+  rcases h1 with ⟨a1, a2⟩ | ⟨a1, a2⟩ <;> rcases h2 with ⟨b1, b2⟩ | ⟨b1, b2⟩
+  · rw [a2] at b1; cases b1
+  · rw [sig_e r a1, sig_e u b2]
+  · rw [sig_D r a1, sig_D u b2]
+  · rw [a2] at b1; cases b1
+
+noncomputable def MhieF : Frame where
+  U := univHI
+  eqv := fun a b x y w => rootI a x = rootI b y ∨ (w = true ∧ crossI (rootI a x) (rootI b y))
+  teq := fun a b _ => a = b
+
+theorem MhieC_symm : ∀ a b x y w, MhieF.eqv a b x y w → MhieF.eqv b a y x w := fun _ _ _ _ _ h =>
+  h.elim (fun h => Or.inl h.symm) (fun h => Or.inr ⟨h.1, crossI_symm h.2⟩)
+
+theorem MhieC_trans : ∀ a b c x y z w, MhieF.eqv a b x y w → MhieF.eqv b c y z w → MhieF.eqv a c x z w := by
+  intro a b c x y z w h1 h2
+  rcases h1 with h1 | ⟨hw, h1⟩ <;> rcases h2 with h2 | ⟨_, h2⟩
+  · exact Or.inl (h1.trans h2)
+  · rw [← h1] at h2; exact Or.inr ⟨by assumption, h2⟩
+  · rw [h2] at h1; exact Or.inr ⟨hw, h1⟩
+  · exact Or.inl (crossI_trans h1 h2)
+
+theorem MhieC_eq : ∀ a x y w, MhieF.eqv a a x y w → x = y := by
+  intro a x y w h
+  rcases h with h | ⟨_, h⟩
+  · exact rootI_inj a x y h
+  · have f1 := foot_rootI a x
+    have f2 := foot_rootI a y
+    rcases h with ⟨h1, h2⟩ | ⟨h1, h2⟩ <;> rw [h1] at f1 <;> rw [h2] at f2 <;> rw [← f2] at f1 <;> cases f1
+
+theorem MhieC_isModelAt : MhieF.IsModelAt :=
+  MhieF.isModelAt_of (fun _ _ _ => Or.inl rfl) MhieC_symm MhieC_trans (fun _ _ _ => Iff.rfl)
+
+theorem MhieC_model : MhieF.IsModelPIm :=
+  MhieF.model_of_equiv (fun _ _ => Iff.rfl) (fun _ _ => Or.inl rfl) (fun a b x y h => MhieC_symm a b x y _ h)
+    (fun a b c x y z h1 h2 => MhieC_trans a b c x y z _ h1 h2)
+
+theorem MhieC_LLEqv : MhieF.Valid LLEqv := fun ρ env => MhieF.LLEqv_validAt_of MhieC_eq _ ρ env
+
+theorem MhieC_Class : ∀ χ, ClassSch χ → MhieF.Valid χ :=
+  MhieF.Class_valid_of MhieC_isModelAt (MhieF.LLEqv_validAt_of MhieC_eq) fun _ _ => Or.inl rfl
+
+theorem MhieC_Hae : MhieF.Valid Hae := by
+  intro ρ env
+  show ∀ a (x : univHI.El a), MhieF.eqv a (.arr a .t) x (fun y w => MhieF.eqv a a y x w) univHI.w0
+  intro a x
+  have e : (fun (y : univHI.El a) (w : Bool) => MhieF.eqv a a y x w) = hcyI a x :=
+    funext fun y => funext fun w => propext ⟨fun h => MhieC_eq a y x w h, fun h => h ▸ Or.inl rfl⟩
+  refine Or.inl ?_
+  exact (rootI_hcy a x).symm.trans (congrArg (rootI (.arr a .t)) e.symm)
+
+theorem MhieC_not_ExtT : ¬ MhieF.Valid ExtT := fun h => by
+  have h0 := (MhieF.holds_tall _ _ _).mp ((MhieF.holds_tall _ _ _).mp (h (fun i => i.elim0) ()) .e) (.base ())
+  have hc : crossI (rootI .e ()) (rootI (.base ()) ()) := Or.inl ⟨rfl, rfl⟩
+  have hT := (MhieF.holds_imp _ _ _ _).mp h0 ((MhieF.holds_conj _ _ _ _).mpr
+    ⟨(MhieF.holds_all _ _ _ _).mpr fun x => (MhieF.holds_ex _ _ _ _).mpr
+        ⟨(), (MhieF.holds_eqv _ _ _ _ _ _).mpr (Or.inr ⟨rfl, hc⟩)⟩,
+     (MhieF.holds_all _ _ _ _).mpr fun y => (MhieF.holds_ex _ _ _ _).mpr
+        ⟨(), (MhieF.holds_eqv _ _ _ _ _ _).mpr (Or.inr ⟨rfl, hc⟩)⟩⟩)
+  exact nomatch (show (Code.e : CHI) = .base () from (MhieF.holds_teq _ _ _ _).mp hT)
+
+/-- Every type has an item which is its own root. -/
+theorem own_item : ∀ a : CHI, ∃ x : univHI.El a, rootI a x = ⟨a, x⟩
+  | .e => ⟨(), rfl⟩
+  | .t => ⟨fun _ => True, rfl⟩
+  | .base _ => ⟨(), rfl⟩
+  | .arr _ .e => ⟨fun _ => (), rfl⟩
+  | .arr _ (.base _) => ⟨fun _ => (), rfl⟩
+  | .arr a (.arr c d) => ⟨Classical.choice (Univ.El_nonempty (U := univHI) (.arr a (.arr c d))), rfl⟩
+  | .arr a .t => ⟨fun _ _ => False, rootI_not a _ fun ⟨z, hz⟩ => cast (congrFun (congrFun hz z) true).symm rfl⟩
+
+/-- If every item of `a` has the root of an item of `b`, then `a` is no bigger than `b`. -/
+theorem sub_le (a b : CHI) (h : ∀ x : univHI.El a, ∃ y : univHI.El b, rootI a x = rootI b y) :
+    PIF.csz a ≤ PIF.csz b ∧ (PIF.csz a = PIF.csz b → a = b) := by
+  obtain ⟨x, hx⟩ := own_item a
+  obtain ⟨y, hy⟩ := h x
+  rw [hx] at hy
+  have l := rootI_le b y
+  rw [← hy] at l
+  refine ⟨l, fun e => ?_⟩
+  rcases rootI_lt b y with e2 | e2
+  · rw [e2] at hy; exact congrArg Sigma.fst hy
+  · rw [← hy] at e2; simp only at e2; omega
+
+theorem MhieC_IntT : MhieF.Valid IntT := by
+  intro ρ env
+  refine (MhieF.holds_tall _ _ _).mpr fun a => (MhieF.holds_tall _ _ _).mpr fun b => ?_
+  refine (MhieF.holds_imp _ _ _ _).mpr fun h => (MhieF.holds_teq _ _ _ _).mpr ?_
+  have hb : ∀ p q, MhieF.eqv .t .t p q MhieF.U.w0 → p = q := fun p q h => MhieC_eq _ _ _ _ h
+  have hs := MhieF.box_all hb _ _ _ ((MhieF.holds_conj _ _ _ _).mp h).1 false
+  have ht := MhieF.box_all hb _ _ _ ((MhieF.holds_conj _ _ _ _).mp h).2 false
+  have h1 : ∀ x : univHI.El a, ∃ y : univHI.El b, rootI a x = rootI b y := fun x => by
+    obtain ⟨y, hy⟩ := (MhieF.holdsAt_ex _ _ _ _ false).mp ((MhieF.holdsAt_all _ _ _ _ false).mp hs x)
+    rcases (MhieF.holdsAt_eqv _ _ _ _ _ _ false).mp hy with e | ⟨hw, _⟩
+    · exact ⟨y, e⟩
+    · exact (Bool.false_ne_true hw).elim
+  have h2 : ∀ y : univHI.El b, ∃ x : univHI.El a, rootI b y = rootI a x := fun y => by
+    obtain ⟨x, hx⟩ := (MhieF.holdsAt_ex _ _ _ _ false).mp ((MhieF.holdsAt_all _ _ _ _ false).mp ht y)
+    rcases (MhieF.holdsAt_eqv _ _ _ _ _ _ false).mp hx with e | ⟨hw, _⟩
+    · exact ⟨x, e.symm⟩
+    · exact (Bool.false_ne_true hw).elim
+  have l1 := sub_le a b h1
+  have l2 := sub_le b a h2
+  exact l1.2 (Nat.le_antisymm l1.1 l2.1)
+
+end Wd
+
 end PIF
