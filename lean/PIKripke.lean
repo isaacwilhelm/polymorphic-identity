@@ -1403,5 +1403,76 @@ theorem box_of (heq : ∀ a x y w, F.eqv a a x y w ↔ F.U.rel a w x y) {n : Nat
 
 end Frame
 
+/-! ## Extensionality for identification (PExt) -/
+
+namespace Univ
+variable (U : Univ)
+
+/-- If `v` can see back to every world that sees it, then every item self-identical at `v` is
+identical there to an item self-identical at `w`, for any `w` all of whose successors see `v`. -/
+theorem dense (w v : U.W) (hwv : ∀ v', U.R w v' → U.R v' v) (hvv : ∀ v', U.R v v' → U.R v' v) :
+    ∀ a x, U.rel a v x x → ∃ z, U.rel a w z z ∧ U.rel a v z x
+  | .e, x, _ => ⟨x, U.re_refl w x, U.re_refl v x⟩
+  | .t, p, _ => ⟨p, fun _ _ => Iff.rfl, fun _ _ => Iff.rfl⟩
+  | .base b, x, _ => ⟨x, U.rb_refl w b x, U.rb_refl v b x⟩
+  | .arr a c, F, hF => by
+    have ne : Nonempty (U.El c) := let ⟨y, _⟩ := U.adm_nonempty c; ⟨y⟩
+    let P : U.El c → U.El c → Prop := fun y z => U.rel c w z z ∧ U.rel c v z y
+    let rep : U.El c → U.El c := fun y => Classical.epsilon (P y)
+    have spec : ∀ y, U.rel c v y y → P y (rep y) := fun y hy =>
+      Classical.epsilon_spec (dense w v hwv hvv c y hy)
+    have inv : ∀ y y', U.rel c v y y' → rep y = rep y' := by
+      intro y y' h
+      have : P y = P y' := funext fun z => propext ⟨fun ⟨h1, h2⟩ => ⟨h1, U.rel_trans c v _ _ _ h2 h⟩,
+        fun ⟨h1, h2⟩ => ⟨h1, U.rel_trans c v _ _ _ h2 (U.rel_symm c v _ _ h)⟩⟩
+      show Classical.epsilon (P y) = Classical.epsilon (P y')
+      rw [this]
+    refine ⟨fun x => rep (F x), ?_, ?_⟩
+    · intro v' hv' x x' hxx'
+      have hxv : U.rel a v x x' := U.rel_mono a v' v x x' (hwv v' hv') hxx'
+      have hF' := hF v (U.Rrefl v) x x' hxv
+      have e := inv _ _ hF'
+      have h0 := U.rel_mono c w v' _ _ hv' (spec _ (U.rel_refl_right c v _ _ hF')).1
+      show U.rel c v' (rep (F x)) (rep (F x'))
+      rw [e]; exact h0
+    · intro v'' hv'' x x' hxx'
+      have hxv : U.rel a v x x' := U.rel_mono a v'' v x x' (hvv v'' hv'') hxx'
+      have hF' := hF v (U.Rrefl v) x x' hxv
+      have h1 := (spec _ (U.rel_refl_left c v _ _ hF')).2
+      exact U.rel_mono c v v'' _ _ hv'' (U.rel_trans c v _ _ _ h1 hF')
+
+end Univ
+
+namespace Frame
+variable (F : Frame)
+
+theorem PExt_of (heq : ∀ a x y w, F.eqv a a x y w ↔ F.U.rel a w x y)
+    (hcross : ∀ a b x y, F.eqv a b x y F.U.w0 → a = b)
+    (hdense : ∀ v, F.U.R F.U.w0 v → ∀ a x, F.U.rel a v x x → ∃ z, F.U.rel a F.U.w0 z z ∧ F.U.rel a v z x) :
+    F.Valid PExt := by
+  intro ρ _ env _
+  refine (F.holdsAt_tall _ _ _ _).mpr fun a _ => (F.holdsAt_tall _ _ _ _).mpr fun c _ =>
+    (F.holdsAt_tall _ _ _ _).mpr fun d _ => ?_
+  refine (F.holdsAt_all _ _ _ _ _).mpr fun f hf => (F.holdsAt_all _ _ _ _ _).mpr fun g hg => ?_
+  refine (F.holdsAt_imp _ _ _ _ _).mpr fun h => ?_
+  have hpt : ∀ x : F.U.El a, F.U.rel a F.U.w0 x x → F.eqv c d (f x) (g x) F.U.w0 := fun x hx =>
+    (F.holdsAt_eqv _ _ _ _ _ _ _).mp ((F.holdsAt_all _ _ _ _ _).mp h x hx)
+  obtain ⟨x0, hx0⟩ := F.U.adm_nonempty a
+  have ecd : c = d := hcross _ _ _ _ (hpt x0 (hx0 _))
+  subst ecd
+  have hf' : F.U.rel (.arr a c) F.U.w0 f f := hf
+  have hg' : F.U.rel (.arr a c) F.U.w0 g g := hg
+  have key : F.U.rel (.arr a c) F.U.w0 f g := by
+    intro v hv x x' hxx'
+    obtain ⟨z, hz, hzx⟩ := hdense v hv a x' (F.U.rel_refl_right a v _ _ hxx')
+    have hxz : F.U.rel a v x z := F.U.rel_trans a v _ _ _ hxx' (F.U.rel_symm a v _ _ hzx)
+    have h1 := hf' v hv x z hxz
+    have h2 := F.U.rel_mono c F.U.w0 v _ _ hv ((heq _ _ _ _).mp (hpt z hz))
+    have h3 := hg' v hv z x' hzx
+    exact F.U.rel_trans c v _ _ _ h1 (F.U.rel_trans c v _ _ _ h2 h3)
+  exact (F.holdsAt_eqv _ _ _ _ _ _ _).mpr ((heq _ _ _ _).mpr key)
+
+end Frame
+
 end Kr
 end PIF

@@ -458,3 +458,22 @@ theorem Mbf_NDTeq : MbfK.Valid NDTeq := by
 
 end Kr
 end PIF
+
+namespace PIF
+namespace Kr
+
+
+theorem Mbf_PExt : MbfK.Valid PExt :=
+  MbfK.PExt_of (fun a x y w => Frame.simple_eqv_same UBF a x y w) (fun _ _ _ _ h => h.1) fun v _ a x hx => by
+    cases v with
+    | true => exact ⟨x, hx, hx⟩
+    | false => exact UBF.dense true false (fun _ _ => Or.inr rfl) (fun _ _ => Or.inr rfl) a x hx
+
+theorem Mnd_PExt : MndK.Valid PExt :=
+  MndK.PExt_of MndK_heq (fun _ _ _ _ h => h.1 rfl) fun v _ a x hx => by
+    cases v with
+    | true => exact ⟨x, hx, hx⟩
+    | false => exact UND.dense true false (fun _ _ => Or.inr rfl) (fun _ _ => Or.inr rfl) a x hx
+
+end Kr
+end PIF
