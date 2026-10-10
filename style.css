@@ -187,7 +187,7 @@ main { padding-top: 18px; padding-bottom: 30px; }
 .skey { display: flex; flex-wrap: wrap; gap: 6px 22px; color: var(--muted); font-size: 13.5px; }
 .skey span { display: inline-flex; align-items: center; gap: 8px; }
 .sbox { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow-x: auto; }
-.sbox svg { display: block; width: 100%; height: auto; }
+.sbox svg { display: block; height: auto; margin: 0 auto; }
 .se { stroke-width: 2; }
 .se.strict { stroke: var(--ink); opacity: .75; }
 .se.unk { stroke: var(--c-notder); stroke-dasharray: 6 5; }

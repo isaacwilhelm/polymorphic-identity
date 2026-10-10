@@ -606,70 +606,79 @@
   function renderStrength() {
     const box = $("#strengthMain");
     const S = strengthData();
-    const head = `<div class="shead"><p>Each box is a principle, or a group of principles that are equivalent. An arrow from one box to another means that the first implies the second, given <b>${baseLabel()}</b> (the bottom box, which also contains every principle that follows from it outright). Change the base logic or the assumptions on the left and this diagram updates.</p>
+    const head = `<div class="shead"><p>Each box is a principle, or a group of principles that are equivalent. An arrow from one box to another means that the first implies the second, given <b>${baseLabel()}</b> (the leftmost box, which also contains every principle that follows from it outright). Stronger principles are further to the right. Change the base logic or the assumptions on the left and this diagram updates.</p>
       <p class="skey"><span><svg width="34" height="10"><line x1="1" y1="5" x2="31" y2="5" class="se strict" marker-end="url(#sarr-strict)"/></svg> strictly stronger: the converse is known to fail</span>
       <span><svg width="34" height="10"><line x1="1" y1="5" x2="31" y2="5" class="se unk" marker-end="url(#sarr-unk)"/></svg> stronger; whether the converse holds is open</span></p></div>`;
     if (S.inconsistent) { box.innerHTML = head + `<div class="bad">The current assumptions are inconsistent.</div>`; return; }
     const { cls, covers, layer, given, base } = S;
-    // geometry
-    const label = c => c.map(tag).join(" ⟺ ");
-    const wOf = t => Math.max(60, t.length * 8 + 26);
+    // geometry: the layers are columns, from the base on the left to the strongest principles on the right
+    const wOf = t => Math.max(60, t.length * 7.6 + 26);
+    // a box lists equivalent principles one per line, and the base lists its assumptions one per line
+    const linesOf = k => (k === BASE ? baseText.split(" + ").map((t, n) => (n ? "+ " + t : t)) : cls[k].map((id, n) => (n ? "⟺ " : "") + tag(id)));
     const nL = Math.max(0, ...layer) + 1;
-    const rows = Array.from({ length: nL }, () => []);
-    cls.forEach((c, i) => rows[layer[i]].push(i));
-    const gapX = 26, rowH = 110, padY = 30;
-    // order rows bottom-up by barycentre of what they cover
-    const xpos = {}, BASE = -1;
+    const cols = Array.from({ length: nL }, () => []);
+    cls.forEach((c, i) => cols[layer[i]].push(i));
+    const BASE = -1;
     const baseText = baseLabel();
-    // the edges, from each class down to the classes it covers (or to the base)
+    // the edges, from each class to the classes it covers (or to the base)
     const E = [];
     cls.forEach((c, i) => (covers[i].length ? covers[i] : [BASE]).forEach(j => E.push({ i, j })));
     const indeg = {}, outdeg = {};
     E.forEach(({ i, j }) => { outdeg[i] = (outdeg[i] || 0) + 1; indeg[j] = (indeg[j] || 0) + 1; });
-    // bubbles are wide enough for their lines to meet them apart
-    const wid = k => Math.max(wOf(k === BASE ? baseText : label(cls[k])), 14 * Math.max(indeg[k] || 0, outdeg[k] || 0) + 26);
-    const rowWidth = r => r.reduce((s, i) => s + wid(i) + gapX, -gapX);
-    const W = Math.max(640, wid(BASE) + 40, ...rows.map(r => rowWidth(r) + 60));
-    xpos[BASE] = W / 2;
-    for (let l = 1; l < nL; l++) {
-      rows[l].sort((a, b) => {
-        const bc = i => { const k = covers[i].map(j => xpos[j]).filter(v => v !== undefined); return k.length ? k.reduce((x, y) => x + y) / k.length : W / 2; };
-        return bc(a) - bc(b);
-      });
-      let x = (W - rowWidth(rows[l])) / 2;
-      rows[l].forEach(i => { const w = wid(i); xpos[i] = x + w / 2; x += w + gapX; });
+    const wid = k => Math.max(...linesOf(k).map(wOf));
+    // bubbles are tall enough for their lines to meet them apart
+    const hgt = k => Math.max(28, 17 * linesOf(k).length + 11, 9 * Math.max(indeg[k] || 0, outdeg[k] || 0) + 12);
+    const gapY = 14, gapX = 84, padX = 20, padY = 24;
+    const colW = l => Math.max(...(l === 0 ? [wid(BASE)] : cols[l].map(wid)));
+    const colH = l => (l === 0 ? [BASE] : cols[l]).reduce((s, k) => s + hgt(k) + gapY, -gapY);
+    const H = padY * 2 + Math.max(...Array.from({ length: nL }, (_, l) => colH(l)));
+    const xcol = [];
+    let xc = padX;
+    for (let l = 0; l < nL; l++) { xcol[l] = xc + colW(l) / 2; xc += colW(l) + gapX; }
+    const W = xc - gapX + padX;
+    const ypos = {};
+    ypos[BASE] = H / 2;
+    const above = cls.map(() => []);
+    cls.forEach((c, i) => covers[i].forEach(j => above[j].push(i)));
+    const place = l => { let y = (H - colH(l)) / 2; cols[l].forEach(i => { const h = hgt(i); ypos[i] = y + h / 2; y += h + gapY; }); };
+    const avg = (ks, d) => { const v = ks.map(j => ypos[j]).filter(v => v !== undefined); return v.length ? v.reduce((x, y) => x + y) / v.length : d; };
+    // order each column by the average height of what it covers, then sweep back and forth so that boxes sit near their neighbours
+    for (let l = 1; l < nL; l++) { cols[l].sort((a, b) => avg(covers[a], H / 2) - avg(covers[b], H / 2)); place(l); }
+    for (let it = 0; it < 4; it++) {
+      for (let l = nL - 2; l >= 1; l--) { cols[l].sort((a, b) => avg(above[a], ypos[a]) - avg(above[b], ypos[b])); place(l); }
+      for (let l = 2; l < nL; l++) { cols[l].sort((a, b) => avg(covers[a], ypos[a]) - avg(covers[b], ypos[b])); place(l); }
     }
-    const H = padY * 2 + (nL) * rowH - (rowH - 30);
-    const ypos = l => H - padY - 15 - l * rowH;
+    const lay = k => (k === BASE ? 0 : layer[k]);
+    const xpos = k => xcol[lay(k)];
     let svgEdges = "", svgNodes = "";
     const edge = (x1, y1, x2, y2, strict, key) => {
       svgEdges += `<line class="se ${strict ? "strict" : "unk"}" data-k="${key}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" marker-end="url(#sarr-${strict ? "strict" : "unk"})"/>`;
-      if (!strict) svgEdges += `<text class="sq" x="${(x1 + x2) / 2 + 6}" y="${(y1 + y2) / 2 + 4}">?</text>`;
+      if (!strict) svgEdges += `<text class="sq" x="${(x1 + x2) / 2}" y="${(y1 + y2) / 2 - 5}">?</text>`;
     };
     // base-level status of a principle: is it known not to follow from the base?
     const strictOverBase = i => !!base.status[cls[i][0]].counter;
     // converse known to fail: some member of the upper class fails given the lower class
     const strictPair = (i, j) => { const s = given[cls[j][0]][cls[i][0]]; return !!(s && s.counter); };
-    // spread the ends of the lines along the bottom of the source and the top of the target
-    const lay = k => (k === BASE ? 0 : layer[k]);
-    const spread = (k, n, idx) => { const span = Math.max(0, wid(k) - 30); return n <= 1 ? xpos[k] : xpos[k] - span / 2 + span * idx / (n - 1); };
+    // spread the ends of the lines along the left side of the source and the right side of the target
+    const spread = (k, n, idx) => { const span = Math.max(0, hgt(k) - 12); return n <= 1 ? ypos[k] : ypos[k] - span / 2 + span * idx / (n - 1); };
     const outs = {}, ins = {};
     E.forEach(e => { (outs[e.i] = outs[e.i] || []).push(e); (ins[e.j] = ins[e.j] || []).push(e); });
-    Object.values(outs).forEach(l => l.sort((a, b) => xpos[a.j] - xpos[b.j]));
-    Object.values(ins).forEach(l => l.sort((a, b) => xpos[a.i] - xpos[b.i]));
+    Object.values(outs).forEach(l => l.sort((a, b) => ypos[a.j] - ypos[b.j]));
+    Object.values(ins).forEach(l => l.sort((a, b) => ypos[a.i] - ypos[b.i]));
     E.forEach(e => {
-      const x1 = spread(e.i, outs[e.i].length, outs[e.i].indexOf(e));
-      const x2 = spread(e.j, ins[e.j].length, ins[e.j].indexOf(e));
+      const y1 = spread(e.i, outs[e.i].length, outs[e.i].indexOf(e));
+      const y2 = spread(e.j, ins[e.j].length, ins[e.j].indexOf(e));
       const strict = e.j === BASE ? strictOverBase(e.i) : strictPair(e.i, e.j);
-      edge(x1, ypos(lay(e.i)) + 13, x2, ypos(lay(e.j)) - 13, strict, e.i + ">" + (e.j === BASE ? "base" : e.j));
+      edge(xpos(e.i) - wid(e.i) / 2, y1, xpos(e.j) + wid(e.j) / 2 + 2, y2, strict, e.i + ">" + (e.j === BASE ? "base" : e.j));
     });
-    const node = (x, y, text, key, cl) => {
-      const w = wid(key === "base" ? BASE : +key);
-      svgNodes += `<g class="sn ${cl}" data-k="${key}" tabindex="0" role="button" transform="translate(${x},${y})"><rect x="${-w / 2}" y="-13" width="${w}" height="26" rx="13"/><text text-anchor="middle" y="4.5">${text}</text></g>`;
+    const node = (k, key, cl) => {
+      const w = wid(k), h = hgt(k), ls = linesOf(k);
+      const text = ls.map((t, n) => `<tspan x="0" y="${4.5 + 17 * (n - (ls.length - 1) / 2)}">${t}</tspan>`).join("");
+      svgNodes += `<g class="sn ${cl}" data-k="${key}" tabindex="0" role="button" transform="translate(${xpos(k)},${ypos[k]})"><rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="13"/><text text-anchor="middle">${text}</text></g>`;
     };
-    node(xpos[BASE], ypos(0), baseText, "base", "basenode" + (strengthFocus === "base" ? " focus" : ""));
-    cls.forEach((c, i) => node(xpos[i], ypos(layer[i]), label(c), i, strengthFocus === c[0] ? "focus" : ""));
-    box.innerHTML = head + `<div class="sbox"><svg viewBox="0 0 ${W} ${H}" style="min-width:${Math.min(W, 900)}px"><defs>
+    node(BASE, "base", "basenode" + (strengthFocus === "base" ? " focus" : ""));
+    cls.forEach((c, i) => node(i, i, strengthFocus === c[0] ? "focus" : ""));
+    box.innerHTML = head + `<div class="sbox"><svg viewBox="0 0 ${W} ${H}" style="width:100%;min-width:${Math.min(W, 700)}px;max-width:${W}px"><defs>
       <marker id="sarr-strict" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="sm strict"/></marker>
       <marker id="sarr-unk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="sm unk"/></marker></defs>${svgEdges}${svgNodes}</svg></div><div id="sdetails" class="details"></div>`;
     box.querySelectorAll(".sn").forEach(g => {
