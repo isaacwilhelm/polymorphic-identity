@@ -232,6 +232,34 @@ window.LEANINDEX = {
   "PIBarcanModels.lean",
   391
  ],
+ "Al.MqHC_Hae": [
+  "PIModalX2.lean",
+  352
+ ],
+ "Al.MqHC_LLEqv": [
+  "PIModalX2.lean",
+  341
+ ],
+ "Al.MqHC_NDX": [
+  "PIModalX2.lean",
+  368
+ ],
+ "Al.MqHC_NIX": [
+  "PIModalX2.lean",
+  359
+ ],
+ "Al.MqHC_model": [
+  "PIModalX2.lean",
+  328
+ ],
+ "Al.MqHC_not_TCBF": [
+  "PIModalX2.lean",
+  382
+ ],
+ "Al.MqHC_not_TNec": [
+  "PIModalX2.lean",
+  395
+ ],
  "Al.MqH_Bool": [
   "PIHaeQs.lean",
   764
@@ -248,6 +276,10 @@ window.LEANINDEX = {
   "PIHaeQs.lean",
   735
  ],
+ "Al.MqH_NDX": [
+  "PIModalX2.lean",
+  279
+ ],
  "Al.MqH_NIEqv": [
   "PIHaeQs.lean",
   789
@@ -255,6 +287,10 @@ window.LEANINDEX = {
  "Al.MqH_NITeq": [
   "PIHaeQs.lean",
   798
+ ],
+ "Al.MqH_NIX": [
+  "PIModalX2.lean",
+  270
  ],
  "Al.MqH_TCBF": [
   "PIHaeQs.lean",
@@ -267,6 +303,10 @@ window.LEANINDEX = {
  "Al.MqH_not_Class": [
   "PIHaeQs.lean",
   821
+ ],
+ "Al.MqH_not_TBF": [
+  "PIModalX2.lean",
+  293
  ],
  "Al.Mq_Bool": [
   "PIBarcanModels.lean",
@@ -331,6 +371,10 @@ window.LEANINDEX = {
  "AlI.Mif_Class": [
   "PIClassModels.lean",
   28
+ ],
+ "AlI.Mif_Collapse": [
+  "PIModalX2.lean",
+  405
  ],
  "AlI.Mif_Disjoint": [
   "PIAlgIModels.lean",
@@ -2172,9 +2216,21 @@ window.LEANINDEX = {
   "PINew.lean",
   566
  ],
+ "Tg.Mht_NDX": [
+  "PIModalX2.lean",
+  46
+ ],
+ "Tg.Mht_NIX": [
+  "PIModalX2.lean",
+  40
+ ],
  "Tg.Mht_model": [
   "PINew.lean",
   563
+ ],
+ "Tg.Mht_not_IdId": [
+  "PIModalX2.lean",
+  52
  ],
  "Tg.Mht_not_PropExt": [
   "PINew.lean",
@@ -2336,6 +2392,14 @@ window.LEANINDEX = {
   "PINew.lean",
   439
  ],
+ "Tg.Mz_NDX": [
+  "PIModalX2.lean",
+  24
+ ],
+ "Tg.Mz_NIX": [
+  "PIModalX2.lean",
+  19
+ ],
  "Tg.Mz_PExt": [
   "PINew.lean",
   468
@@ -2351,6 +2415,10 @@ window.LEANINDEX = {
  "Tg.Mz_not_Bool": [
   "PIWorlds.lean",
   1257
+ ],
+ "Tg.Mz_not_IdId": [
+  "PIModalX2.lean",
+  30
  ],
  "Tg.Mz_not_PropExt": [
   "PINew.lean",
@@ -2428,6 +2496,58 @@ window.LEANINDEX = {
   "PIWorlds.lean",
   1138
  ],
+ "Wd.MhE_Hae": [
+  "PIModalX2.lean",
+  248
+ ],
+ "Wd.MhE_LLEqv": [
+  "PIModalX2.lean",
+  245
+ ],
+ "Wd.MhE_NDX": [
+  "PIModalX2.lean",
+  256
+ ],
+ "Wd.MhE_model": [
+  "PIModalX2.lean",
+  241
+ ],
+ "Wd.MhE_not_NIEqv": [
+  "PIModalX2.lean",
+  259
+ ],
+ "Wd.MhND_model": [
+  "PIModalX2.lean",
+  213
+ ],
+ "Wd.MhND_not_NDTeq": [
+  "PIModalX2.lean",
+  221
+ ],
+ "Wd.MhNI_model": [
+  "PIModalX2.lean",
+  212
+ ],
+ "Wd.MhNI_not_NITeq": [
+  "PIModalX2.lean",
+  215
+ ],
+ "Wd.MhT_Hae": [
+  "PIModalX2.lean",
+  189
+ ],
+ "Wd.MhT_LLEqv": [
+  "PIModalX2.lean",
+  185
+ ],
+ "Wd.MhT_NDX": [
+  "PIModalX2.lean",
+  202
+ ],
+ "Wd.MhT_NIX": [
+  "PIModalX2.lean",
+  200
+ ],
  "Wd.MhaeC_Class": [
   "PIClassModels.lean",
   420
@@ -2488,6 +2608,30 @@ window.LEANINDEX = {
   "PIModalX.lean",
   201
  ],
+ "Wd.MhieD_Class": [
+  "PIModalX2.lean",
+  148
+ ],
+ "Wd.MhieD_Hae": [
+  "PIModalX2.lean",
+  151
+ ],
+ "Wd.MhieD_LLEqv": [
+  "PIModalX2.lean",
+  146
+ ],
+ "Wd.MhieD_NIX": [
+  "PIModalX2.lean",
+  161
+ ],
+ "Wd.MhieD_model": [
+  "PIModalX2.lean",
+  142
+ ],
+ "Wd.MhieD_not_NDX": [
+  "PIModalX2.lean",
+  164
+ ],
  "Wd.MieC_Class": [
   "PIClassModels.lean",
   196
@@ -2536,13 +2680,33 @@ window.LEANINDEX = {
   "PIModalX.lean",
   605
  ],
+ "Wd.MieD_Cong": [
+  "PIModalX2.lean",
+  85
+ ],
+ "Wd.MieD_Disjoint": [
+  "PIModalX2.lean",
+  81
+ ],
  "Wd.MieD_LLEqv": [
   "PIModalX.lean",
   604
  ],
+ "Wd.MieD_NDTeq": [
+  "PIModalX2.lean",
+  109
+ ],
  "Wd.MieD_NIX": [
   "PIModalX.lean",
   608
+ ],
+ "Wd.MieD_PExt": [
+  "PIModalX2.lean",
+  98
+ ],
+ "Wd.MieD_TBF": [
+  "PIModalX2.lean",
+  110
  ],
  "Wd.MieD_model": [
   "PIModalX.lean",

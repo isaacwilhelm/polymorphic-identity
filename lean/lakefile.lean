@@ -101,3 +101,6 @@ lean_lib PIHaeQs
 
 @[default_target]
 lean_lib PIModalX
+
+@[default_target]
+lean_lib PIModalX2
