@@ -71,3 +71,6 @@ lean_lib PIBarcanModels
 
 @[default_target]
 lean_lib PIClass
+
+@[default_target]
+lean_lib PIClassModels
