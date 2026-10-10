@@ -71,12 +71,12 @@ const principles = [
   { id: "Cong", lean: "Cong", tag: "Cong", group: "Congruence",
     tex: String.raw`\TA\alpha\TA\beta\TA\gamma\TA\delta\,\forall_{\alpha\to\gamma}f\,\forall_{\beta\to\delta}g\,\forall_{\alpha}x\,\forall_{\beta}y\,\big((f\equiv_{\alpha\to\gamma,\beta\to\delta}g\wedge x\equiv_{\alpha,\beta}y)\rightarrow fx\equiv_{\gamma,\delta}gy\big)`,
     gloss: "Polymorphic Congruence: identified functions take identified values at identified arguments, whatever the types." },
-  { id: "PCong", lean: "PCong", tag: "PCong", group: "Congruence",
+  { id: "PCong", lean: "PCong", tag: "PCong→", group: "Congruence",
     tex: String.raw`\TA\alpha\TA\gamma\TA\delta\,\forall_{\alpha\to\gamma}f\,\forall_{\alpha\to\delta}g\,\forall_{\alpha}x\,\big(f\equiv_{\alpha\to\gamma,\alpha\to\delta}g\rightarrow fx\equiv_{\gamma,\delta}gx\big)`,
-    gloss: "Partial Polymorphic Congruence: identified functions with the same domain take identified values." },
-  { id: "PExt", lean: "PExt", tag: "PExt", group: "Congruence",
+    gloss: "Partial Polymorphic Congruence, from functions to values: identified functions with the same domain take identified values. Its converse is PCong←." },
+  { id: "PExt", lean: "PExt", tag: "PCong←", group: "Congruence",
     tex: String.raw`\TA\alpha\TA\gamma\TA\delta\,\forall_{\alpha\to\gamma}f\,\forall_{\alpha\to\delta}g\,\big(\forall_{\alpha}x\,(fx\equiv_{\gamma,\delta}gx)\rightarrow f\equiv_{\alpha\to\gamma,\alpha\to\delta}g\big)`,
-    gloss: "Extensionality for identification, the converse of PCong: functions with the same domain which take identified values at every argument are identified." },
+    gloss: "The converse of PCong→, from values to functions: functions with the same domain which take identified values at every argument are identified." },
   { id: "Inj", lean: "Inj", tag: "Inj≈", group: "Congruence",
     tex: String.raw`\TA\alpha\TA\beta\TA\gamma\TA\delta\,\big((\alpha\to\gamma)\approx(\beta\to\delta)\rightarrow(\alpha\approx\beta\wedge\gamma\approx\delta)\big)`,
     gloss: "A function type determines its domain and the type of its values." },
@@ -237,7 +237,7 @@ const rules = [
   { from: ["LLPoly"], to: "Disjoint", src: "Thm 11", lean: "Derive.d_Disjoint_of_LLPoly", note: "This direction uses only Ref≈ and LL≈, so it holds given PI⁻." },
   { from: ["Disjoint", "LLeq"], to: "LLPoly", src: "Thm 11", lean: "d_LLPoly_of_Disjoint", note: "This direction uses LL≡ ⊢ LL≡/≈, and so LL≡; that use cannot be avoided (see 𝔐_D)." },
   { from: ["Hae", "Cantor"], to: "Twin", src: "Thm 26", lean: "Derive.d_Twin", note: "The proof uses Haecceitism and the fact that no type is identical to the type of its properties, which follows from Cantor." },
-  { from: ["Cong"], to: "PCong", src: "Thm 27(a)", lean: "Derive.d_PCong", note: "PCong is the instance of Cong with α for β and x for y, given Ref≡." },
+  { from: ["Cong"], to: "PCong", src: "Thm 27(a)", lean: "Derive.d_PCong", note: "PCong→ is the instance of Cong with α for β and x for y, given Ref≡." },
   { from: ["Inj"], to: "Recovery", src: "remark after Thm 21", lean: "Derive.d_Recovery" },
   { from: ["LLeq", "LLPoly", "Recovery"], to: "Cong", src: "Thm 20", lean: "Derive.d_Cong_of_Recovery" },
   { from: ["LLPoly", "Cong"], to: "Recovery", src: "Thm 20", lean: "Derive.d_Recovery_of_Cong",
@@ -457,7 +457,7 @@ const models = [
   { id: "Mhp", lean: { Class: "Mhp_Class", model: "Mhp_model", LLeq: "Mhp_LLEqv", Hae: "Mhp_Hae", Twin: "Mhp_Twin", Inj: "Mhp_Inj", PCong: "Mhp_not_PCong", Ext: "Mhp_not_ExtT", Int: "Mhp_not_IntT" , PropExt: "Frame.PropExt_valid" , PExt: "Mhp_not_PExt" },
     leanNote: "E = 1, with a three-item base type D and a duplicate d of e. Each item gets a root: the haecceity of x has the root of x; the item of d, and the function g₀ : e→D with value 2, have the root of the entity; other items are their own roots. Items are identified just in case they have the same root.",
     name: "𝔐_hae,p",
-    desc: "A haecceitist model, as in 𝔐(HF⁺, ∼ₕ): each item is identified with its haecceity. In addition, e has a duplicate type whose item is identified with the entity, and a function from e to a three-item type D is identified with the entity's haecceity. Items of one type are identified only with themselves, so LL≡ holds. Haecceitism holds while PCong and Ext≈ fail. Checked in Lean.",
+    desc: "A haecceitist model, as in 𝔐(HF⁺, ∼ₕ): each item is identified with its haecceity. In addition, e has a duplicate type whose item is identified with the entity, and a function from e to a three-item type D is identified with the entity's haecceity. Items of one type are identified only with themselves, so LL≡ holds. Haecceitism holds while PCong→ and Ext≈ fail. Checked in Lean.",
     src: "observed",
     values: {
       Class: [true, "propositions are truth values, and functions are identified when they are equal, so PI-provably equivalent formulas denote identical items", true],
@@ -471,7 +471,7 @@ const models = [
   { id: "Mhm", lean: { model: "Mhm_model", LLeq: "Mhm_not_LLEqv", Hae: "Mhm_Hae", Twin: "Mhm_Twin", Inj: "Mhm_Inj", PCong: "Mhm_not_PCong", WCong: "Mhm_not_WCong" , PropExt: "Frame.PropExt_valid" },
     leanNote: "E = 1. As in 𝔐_hae,p, items are identified just in case they have the same root, and the haecceity of x has the root of x; here every property of the entity has the root of the entity.",
     name: "𝔐_hae⁻ (a model of PI⁻ only)",
-    desc: "A haecceitist model in which, in addition, both properties of the (one) entity are identified with it. Haecceitism holds while PCong and WCong fail. Checked in Lean.",
+    desc: "A haecceitist model in which, in addition, both properties of the (one) entity are identified with it. Haecceitism holds while PCong→ and WCong fail. Checked in Lean.",
     src: "observed",
     values: {
       PropExt: [true, "propositions are truth values, so materially equivalent propositions are the same, and identical by Ref≡", true],
@@ -819,7 +819,7 @@ const models = [
   { id: "Mtow", lean: { model: "Mtow_model", LLeq: "Mtow_LLEqv", Class: "Mtow_Class", Cong: "Mtow_Cong", PExt: "Mtow_PExt", Ext: "Mtow_ExtT", Disjoint: "Mtow_not_Disjoint" },
     leanNote: "In the semantics of lean/PIFoundation.lean (model in lean/PICongQs.lean). E = 1; ≈ is identity of types. The bottom item of a type A → e is its only item, and the bottom item of A → t is the constantly false property; each bottom item has a key, the type A → e. Items are identified just in case they are identical or have the same key.",
     name: "𝔐_tow (towers over the entity and ⊥)",
-    desc: "One entity, identified with ⊥; and, for every list of argument types A, the only function from A to e is identified with the constantly false function from A to t. Nothing else is identified across types. So Disjoint fails; but no two distinct types are each wholly identified with the other, so Ext≈ holds. Identified functions take identified values at identified arguments (Cong), and functions whose values are identified everywhere are identified (PExt). A model of PI and of Classicism. Checked in Lean.",
+    desc: "One entity, identified with ⊥; and, for every list of argument types A, the only function from A to e is identified with the constantly false function from A to t. Nothing else is identified across types. So Disjoint fails; but no two distinct types are each wholly identified with the other, so Ext≈ holds. Identified functions take identified values at identified arguments (Cong), and functions whose values are identified everywhere are identified (PCong←). A model of PI and of Classicism. Checked in Lean.",
     src: "observed",
     values: {
       LLeq: [true, "identity within a type is identity", true],
@@ -832,7 +832,7 @@ const models = [
   { id: "MKW1", lean: { model: "Kr.KW1_isModelAt", Cong: "Kr.KW1_Cong", PExt: "Kr.KW1_PExt", TopBot: "Kr.KW1_TopBot", TAx: "Kr.KW1_not_TAx" },
     leanNote: "In the Kripke semantics of lean/PIKripke.lean (model in lean/PICongQs.lean). Two worlds; the actual world sees both, the other only itself. E = 2. At both worlds, items of one type are identified just in case they are identical at the other world; ≈ is identity of types.",
     name: "𝔐_k,w1 (a model of PI⁻ only; a Kripke model)",
-    desc: "Two worlds: the actual world sees itself and the other, which sees only itself. Items of one type are identified just in case they are identical at the other world. So identified functions take identified values at identified arguments, and functions with identified values everywhere are identified: Cong and PExt hold. ⊤ and ⊥ differ at the other world, so ⊤ ≢ ⊥. But the proposition true only at the other world is identified with ⊤ and is false, so T fails. Checked in Lean.",
+    desc: "Two worlds: the actual world sees itself and the other, which sees only itself. Items of one type are identified just in case they are identical at the other world. So identified functions take identified values at identified arguments, and functions with identified values everywhere are identified: Cong and PCong← hold. ⊤ and ⊥ differ at the other world, so ⊤ ≢ ⊥. But the proposition true only at the other world is identified with ⊤ and is false, so T fails. Checked in Lean.",
     src: "observed",
     values: {
       Cong: [true, "identity at the other world is a congruence", true],
@@ -843,7 +843,7 @@ const models = [
   { id: "Mtbx", lean: { model: "Tg.Mtbx_model", PExt: "Tg.Mtbx_PExt", TAx: "Tg.Mtbx_TAx", Truth: "Tg.Mtbx_not_Truth" },
     leanNote: "In the tagged semantics of lean/PITagged.lean (model in lean/PICongQs.lean). As 𝔐_tb, with functions of one type identified just in case their values are identified at every argument.",
     name: "𝔐_tb,x (a model of PI⁻ only; propositions finer than truth values)",
-    desc: "As 𝔐_tb: all quantified propositions, true or false, are identified with each other, and ⊤ is identified only with itself. In addition, functions of one type are identified just in case their values are identified at every argument, so PExt holds. T holds, since only ⊤ is identified with ⊤; Truth fails. Checked in Lean.",
+    desc: "As 𝔐_tb: all quantified propositions, true or false, are identified with each other, and ⊤ is identified only with itself. In addition, functions of one type are identified just in case their values are identified at every argument, so PCong← holds. T holds, since only ⊤ is identified with ⊤; Truth fails. Checked in Lean.",
     src: "observed",
     values: {
       PExt: [true, "functions are identified when their values are identified everywhere", true],
@@ -853,7 +853,7 @@ const models = [
   { id: "MieX", lean: { model: "Wd.MieX_model", LLeq: "Wd.MieX_LLEqv", Class: "Wd.MieX_Class", Cong: "Wd.MieX_Cong", PExt: "Wd.MieX_PExt", Int: "Wd.MieX_IntT", Ext: "Wd.MieX_not_ExtT" },
     leanNote: "In the sets-of-worlds semantics of lean/PIWorlds.lean (model in lean/PICongQs.lean). As 𝔐_ie,c, and in addition, at the actual world, the only item of each type A → e is identified with the only item of each type with the same image, d put for e.",
     name: "𝔐_ie,c,x (PI + Classicism; propositions as sets of worlds)",
-    desc: "As 𝔐_ie,c: the entity is identified with the item of d, at the actual world only. In addition, at the actual world, the only function from A to e is identified with the only function from A′ to d, whenever A′ is A with d for some occurrences of e. So Cong and PExt hold. As before, Int≈ holds and Ext≈ fails. Checked in Lean.",
+    desc: "As 𝔐_ie,c: the entity is identified with the item of d, at the actual world only. In addition, at the actual world, the only function from A to e is identified with the only function from A′ to d, whenever A′ is A with d for some occurrences of e. So Cong and PCong← hold. As before, Int≈ holds and Ext≈ fails. Checked in Lean.",
     src: "observed",
     values: {
       LLeq: [true, "identity within a type is identity", true],
@@ -866,7 +866,7 @@ const models = [
   { id: "Mtow2", lean: { model: "Mtow2_model", LLeq: "Mtow2_LLEqv", Class: "Mtow2_Class", PCong: "Mtow2_PCong", PExt: "Mtow2_PExt", Cong: "Mtow2_not_Cong" },
     leanNote: "In the semantics of lean/PIFoundation.lean (model in lean/PICongQs.lean). As 𝔐_tow, with a second family of keys: λx:e.⊤ and the identity function on t have one key, and, for each list A of argument types, so do λA.λx:e.⊤ and λA.λp:t.p.",
     name: "𝔐_tow,2 (towers, and a second family)",
-    desc: "As 𝔐_tow: the entity is identified with ⊥, and the bottoms of types with the same arguments are identified. In addition, λx:e.⊤ is identified with the identity function on t, and the same holds after any list of further arguments. Identified functions with the same domain take identified values (PCong), and functions with identified values everywhere are identified (PExt). But λx:e.⊤ ≡ λp:t.p and the entity ≡ ⊥, while ⊤ ≢ ⊥: Cong fails. A model of PI and of Classicism. Checked in Lean.",
+    desc: "As 𝔐_tow: the entity is identified with ⊥, and the bottoms of types with the same arguments are identified. In addition, λx:e.⊤ is identified with the identity function on t, and the same holds after any list of further arguments. Identified functions with the same domain take identified values (PCong→), and functions with identified values everywhere are identified (PCong←). But λx:e.⊤ ≡ λp:t.p and the entity ≡ ⊥, while ⊤ ≢ ⊥: Cong fails. A model of PI and of Classicism. Checked in Lean.",
     src: "observed",
     values: {
       LLeq: [true, "identity within a type is identity", true],
@@ -878,7 +878,7 @@ const models = [
   { id: "Mif", lean: { model: "AlI.Mif_model", LLeq: "AlI.Mif_LLEqv", Class: "AlI.Mif_Class", Disjoint: "AlI.Mif_Disjoint", PExt: "AlI.Mif_not_PExt" },
     leanNote: "In a semantics with intensional functions (lean/PIAlgI.lean): an item of a function type is a function together with a tag, the value of λx.M has tag true, and application ignores the tag; the proof that PI is sound is repeated for this semantics. Here propositions are truth values, E = 1, ≈ is identity of types, and identity is identity.",
     name: "𝔐_if (intensional functions)",
-    desc: "Identity is identity, and nothing is identified across types, so LL≡ and Disjoint hold. But two items of a function type can take the same value at every argument and still be distinct (they differ in a tag), since PI has neither η-conversion nor an axiom of extensionality. So PExt fails. Checked in Lean.",
+    desc: "Identity is identity, and nothing is identified across types, so LL≡ and Disjoint hold. But two items of a function type can take the same value at every argument and still be distinct (they differ in a tag), since PI has neither η-conversion nor an axiom of extensionality. So PCong← fails. Checked in Lean.",
     src: "observed",
     values: {
       LLeq: [true, "identity is identity", true],
@@ -981,7 +981,7 @@ const models = [
   { id: "MEk", lean: { model: "MEk_model", PCong: "MEk_PCong", Bridge: "MEk_not_Bridge", Inj: "MEk_Inj", Disjoint: "MEk_Disjoint" , PropExt: "Frame.PropExt_valid" },
     leanNote: "𝔐_E (E = {0,1,2}, 0 ∼ 1) with k₁ = (0↦0, 1↦0, 2↦2) and k₂ = (0↦1, 1↦0, 2↦2) identified in e→e. LL≡/≈ fails for the predicate λγ.λz.∃f,g:γ→γ (f ≡ g ∧ f z ≐ z ∧ ¬ g z ≐ z), with ≐ Leibniz equality.",
     name: "𝔐_E,k (a model of PI⁻ only)",
-    desc: "As 𝔐_E (0 ∼ 1 at type e), and in addition two functions k₁, k₂ from e to e are identified, whose values at each argument are identified. So PCong holds. But 0 is a fixed point of k₁ and not of k₂, while 1 is a fixed point of neither; a predicate saying so holds of 0 and not of 1, though 0 ≡ 1. So LL≡/≈ fails. Checked in Lean.",
+    desc: "As 𝔐_E (0 ∼ 1 at type e), and in addition two functions k₁, k₂ from e to e are identified, whose values at each argument are identified. So PCong→ holds. But 0 is a fixed point of k₁ and not of k₂, while 1 is a fixed point of neither; a predicate saying so holds of 0 and not of 1, though 0 ≡ 1. So LL≡/≈ fails. Checked in Lean.",
     src: "observed",
     values: {
       PropExt: [true, "propositions are truth values, so materially equivalent propositions are the same, and identical by Ref≡", true],
@@ -1003,7 +1003,7 @@ const models = [
   { id: "Mz", lean: { TBF: "Tg.Mz_not_TBF", TNec: "Tg.Mz_not_TNec", model: "Tg.Mz_model", Bool: "Tg.Mz_not_Bool", LLeq: "Tg.Mz_LLEqv", Disjoint: "Tg.Mz_Disjoint", Ext: "Tg.Mz_ExtT", Int: "Tg.Mz_IntT", PropExt: "Tg.Mz_not_PropExt", Slogan: "Tg.Mz_Slogan", Cong: "Tg.Mz_Cong", PExt: "Tg.Mz_PExt" },
     leanNote: "In the broader semantics of lean/PITagged.lean. E = 1; ≈ is identity of types; nothing is identified with anything but itself.",
     name: "𝔐_int0 (propositions finer than truth values)",
-    desc: "The diagonal model, except that propositions are truth values with tags: nothing is identified with anything but itself. A true quantified proposition is materially equivalent to ⊤ but not identical to it, so PropExt≡ fails, while Disjoint, Ext≈, Int≈, Cong and PExt hold. Checked in Lean.",
+    desc: "The diagonal model, except that propositions are truth values with tags: nothing is identified with anything but itself. A true quantified proposition is materially equivalent to ⊤ but not identical to it, so PropExt≡ fails, while Disjoint, Ext≈, Int≈, Cong and PCong← hold. Checked in Lean.",
     src: "observed",
     values: {
       TBF: [false, "□⊤ holds at every type, but 𝔸α⊤ is quantified and so not identical to ⊤", true],
@@ -1017,7 +1017,7 @@ const models = [
   { id: "Mbt", lean: { Class: "Mbt_Class", model: "Mbt_model", LLeq: "Mbt_LLEqv", Cong: "Mbt_Cong", PExt: "Mbt_not_PExt", Ext: "Mbt_ExtT", Int: "Mbt_IntT", Slogan: "Mbt_Slogan", Inj: "Mbt_Inj" },
     leanNote: "E = 1, with a further base type d of two items; the entity is identified with the first of them; nothing else is identified with anything but itself.",
     name: "𝔐_bt",
-    desc: "E = 1, and a further type d has two items; the entity is identified with the first, and nothing else is identified with anything but itself. The constant functions on e with values the entity and that item take identified values but are not identified, so PExt fails; Cong holds, since no functions are identified across types. Checked in Lean.",
+    desc: "E = 1, and a further type d has two items; the entity is identified with the first, and nothing else is identified with anything but itself. The constant functions on e with values the entity and that item take identified values but are not identified, so PCong← fails; Cong holds, since no functions are identified across types. Checked in Lean.",
     src: "observed",
     values: {
       Class: [true, "propositions are truth values, and functions are identified when they are equal, so PI-provably equivalent formulas denote identical items", true],
@@ -1038,7 +1038,7 @@ const models = [
   { id: "Mhx", lean: { Class: "Mhx_Class", model: "Mhx_model", LLeq: "Mhx_LLEqv", Hae: "Mhx_Hae", PExt: "Mhx_PExt", Twin: "Mhx_Twin", Inj: "Mhx_Inj" },
     leanNote: "In lean/PINF.lean. E = 1. Each item has a normal form: a function's is the normal form of x, if its values have the normal forms of the values of x's haecceity, and otherwise the map from its domain to the normal forms of its values.",
     name: "𝔐_hae,x",
-    desc: "A haecceitist model in which identification is sameness of normal form, and the normal form of a function depends only on its domain and the normal forms of its values. So PExt holds; each item is identified with its haecceity; and items of one type only with themselves, so LL≡ holds. Checked in Lean.",
+    desc: "A haecceitist model in which identification is sameness of normal form, and the normal form of a function depends only on its domain and the normal forms of its values. So PCong← holds; each item is identified with its haecceity; and items of one type only with themselves, so LL≡ holds. Checked in Lean.",
     src: "observed",
     values: {
       Class: [true, "propositions are truth values, and functions are identified when they are equal, so PI-provably equivalent formulas denote identical items", true],
@@ -1049,7 +1049,7 @@ const models = [
   { id: "Mpb", lean: { model: "Mpb_model", PExt: "Mpb_PExt", Bridge: "Mpb_not_Bridge", Inj: "Mpb_Inj" },
     leanNote: "In lean/PINF.lean. E = {0,1,2} with 0 ∼ 1. Normal forms of functions are maps from their domains to the normal forms of their values, except that h₁ = (0↦2, 1↦0, 2↦0) gets the normal form of the constant function 0. LL≡/≈ fails for the predicate λγ.λz.∃f,g:γ→γ (f ≡ g ∧ ¬ fz ≡ gz).",
     name: "𝔐_pb (a model of PI⁻ only)",
-    desc: "E = {0,1,2}, with 0 and 1 identified; functions are identified when their values are, and in addition h₁ = (0↦2, 1↦0, 2↦0) is identified with the constant function 0. So PExt holds. But some identified functions take unidentified values at 0, and none do at 1, though 0 ≡ 1; so LL≡/≈ fails. Checked in Lean.",
+    desc: "E = {0,1,2}, with 0 and 1 identified; functions are identified when their values are, and in addition h₁ = (0↦2, 1↦0, 2↦0) is identified with the constant function 0. So PCong← holds. But some identified functions take unidentified values at 0, and none do at 1, though 0 ≡ 1; so LL≡/≈ fails. Checked in Lean.",
     src: "observed",
     values: {
       PExt: [true, "a function's normal form depends only on its domain and the normal forms of its values", true],
@@ -1118,7 +1118,7 @@ const models = [
   { id: "Mt2", lean: { Class: "Mt2_Class", model: "Mt2_model", LLeq: "Mt2_LLEqv", Twin: "Mt2_Twin", PCong: "Mt2_not_PCong", Inj: "Mt2_not_Inj", Recovery: "Mt2_not_Recovery", Disjoint: "Mt2_not_Disjoint" , PropExt: "Frame.PropExt_valid" , PExt: "Mt2_PExt" },
     leanNote: "By combining 𝔐_twin with the model for 𝔐_κ: e, t, and a second two-element type D each get a duplicate; ≈ identifies e→D with e→t; ≡ identifies each item with its copy in the duplicate type.",
     name: "𝔐_twin,κ",
-    desc: "e, t, and D each have a distinct duplicate with the very same items, and each item is identified with its copy; as in 𝔐_κ, e→t ≈ e→D but not t ≈ D. So Twin holds while PCong, Inj≈, and Recovery fail. Checked in Lean.",
+    desc: "e, t, and D each have a distinct duplicate with the very same items, and each item is identified with its copy; as in 𝔐_κ, e→t ≈ e→D but not t ≈ D. So Twin holds while PCong→, Inj≈, and Recovery fail. Checked in Lean.",
     src: "observed",
     values: {
       Class: [true, "propositions are truth values, and functions are identified when they are equal, so PI-provably equivalent formulas denote identical items", true],
@@ -1157,7 +1157,7 @@ const otherResults = [
     text: "Given PI⁻, PI, or PIᶜ, every single-principle question is now settled. The last ones to fall, given PI⁻, were settled by the theorem that no type is identical to the type of its properties, and by 𝔐_k,cong, a Kripke model with restricted function spaces in which Cong holds while LL≡/≈ fails." },
 
   { title: "PI with Classicism", src: "observed ◆",
-    text: "PIᶜ is PI plus the Classicist schema: whenever PI proves φ ↔ ψ, the universal closures of φ ≡ ψ and of λx.φ ≡ λx.ψ hold. Every standard model of PI is a model of PIᶜ, and so is the model with two worlds, in which some truths are not necessary. So PIᶜ is consistent, and it does not prove PropExt≡ or Collapse. PIᶜ proves Booleanism, the Identity Identity, NI≡, NI≈, the converse Barcan formula for types, and Type Necessitism (all checked in Lean). Given PIᶜ, every single-principle question is settled. Several of the independence results need models beyond the standard ones: 𝔐_if (intensional functions) for PExt; three models with two worlds, 𝔐_ie,c, 𝔐_twin,c and 𝔐_hae,c, for Ext≈, Collapse and PropExt≡; and Kripke models, 𝔐_k,nd, 𝔐_k,bf, 𝔐_k,nd,h and 𝔐_k,bf,h, for ND≈ and the Barcan formula for types (TBF). ND≈ and TBF hold in every model of PIᶜ in which identity of propositions is identity and every function between the relevant sets is an item: there, □φ holds just in case φ is the necessary proposition, NI≈ (a theorem of PIᶜ) makes each proposition α ≈ β necessary or impossible, and if each instance of φ is the necessary proposition, so is 𝔸αφ. In the Kripke models, by contrast, two propositions are identical at a world just in case they agree at every world it can see, and functions must respect this. So ND≈ fails when two types are distinct at the actual world but identical at a world it can see, and TBF fails when a world it can see has a type which the actual world lacks." },
+    text: "PIᶜ is PI plus the Classicist schema: whenever PI proves φ ↔ ψ, the universal closures of φ ≡ ψ and of λx.φ ≡ λx.ψ hold. Every standard model of PI is a model of PIᶜ, and so is the model with two worlds, in which some truths are not necessary. So PIᶜ is consistent, and it does not prove PropExt≡ or Collapse. PIᶜ proves Booleanism, the Identity Identity, NI≡, NI≈, the converse Barcan formula for types, and Type Necessitism (all checked in Lean). Given PIᶜ, every single-principle question is settled. Several of the independence results need models beyond the standard ones: 𝔐_if (intensional functions) for PCong←; three models with two worlds, 𝔐_ie,c, 𝔐_twin,c and 𝔐_hae,c, for Ext≈, Collapse and PropExt≡; and Kripke models, 𝔐_k,nd, 𝔐_k,bf, 𝔐_k,nd,h and 𝔐_k,bf,h, for ND≈ and the Barcan formula for types (TBF). ND≈ and TBF hold in every model of PIᶜ in which identity of propositions is identity and every function between the relevant sets is an item: there, □φ holds just in case φ is the necessary proposition, NI≈ (a theorem of PIᶜ) makes each proposition α ≈ β necessary or impossible, and if each instance of φ is the necessary proposition, so is 𝔸αφ. In the Kripke models, by contrast, two propositions are identical at a world just in case they agree at every world it can see, and functions must respect this. So ND≈ fails when two types are distinct at the actual world but identical at a world it can see, and TBF fails when a world it can see has a type which the actual world lacks." },
   { title: "Soundness and consistency", src: "Thm 1; Cor 2; Lemma 5",
     text: "PI is sound for its models, and consistent. Every identification on HF⁺ yields a model of PI. The same holds for PI⁻." },
   { title: "Identity within a type", src: "Prop 1",
@@ -1180,8 +1180,8 @@ const otherResults = [
     text: "No set of simply typed sentences has exactly the models of PI + Twin, or of PI + ¬Twin. No instance ∀σ x ∃τ y (x ≡ y) with ⟦σ⟧ ≠ ⟦τ⟧ follows from PI + Twin." },
   { title: "Phys", src: "Thm 10",
     text: "(Phys), that everything is identical to something physical of some type, is consistent with PI and independent of it, and no set of simply typed sentences (with 𝒫) has exactly the models of PI + Phys." },
-  { title: "Where PCong sits", src: "Thm 27(b); remark after Thm 28",
-    text: "Given PI, PCong is equivalent to Cong with α ≈ β added to the antecedent. The mirror-image weakening (Cong with γ ≈ δ added) is inconsistent with PI + Haecceitism." },
+  { title: "Where PCong→ sits", src: "Thm 27(b); remark after Thm 28",
+    text: "Given PI, PCong→ is equivalent to Cong with α ≈ β added to the antecedent. The mirror-image weakening (Cong with γ ≈ δ added) is inconsistent with PI + Haecceitism." },
   { title: "Infinite types", src: "§12",
     text: "Models of PI with infinite types (over a set type universe) exist just in case there is a strongly inaccessible cardinal; given one, every result here holds with an axiom of infinity added." },
 ];
