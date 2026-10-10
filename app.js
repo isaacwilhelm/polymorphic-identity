@@ -253,7 +253,9 @@
         state.focus = state.focus === id ? null : state.focus;
         update();
       }));
-      el.querySelector(".pname").addEventListener("click", () => openPrinciple(id));
+      el.querySelector(".pname").addEventListener("click", () => {
+        if (!$("#strength").hidden) { strengthFocus = id; renderStrength(); } else openPrinciple(id);
+      });
     });
   }
   function syncChecklist() {
@@ -558,9 +560,9 @@
 
   let strengthFocus = null;
   function renderStrength() {
-    const box = $("#strength");
+    const box = $("#strengthMain");
     const S = strengthData();
-    const head = `<div class="shead"><p>Each box is a principle, or a group of principles that are equivalent. An arrow from one box to another means that the first implies the second, given <b>${baseLabel()}</b> (the bottom box, which also contains every principle that follows from it outright). Change the base logic or the assumptions in the Explorer tab and this diagram updates.</p>
+    const head = `<div class="shead"><p>Each box is a principle, or a group of principles that are equivalent. An arrow from one box to another means that the first implies the second, given <b>${baseLabel()}</b> (the bottom box, which also contains every principle that follows from it outright). Change the base logic or the assumptions on the left and this diagram updates.</p>
       <p class="skey"><span><svg width="34" height="10"><line x1="1" y1="5" x2="31" y2="5" class="se strict" marker-end="url(#sarr-strict)"/></svg> strictly stronger: the converse is known to fail</span>
       <span><svg width="34" height="10"><line x1="1" y1="5" x2="31" y2="5" class="se unk" marker-end="url(#sarr-unk)"/></svg> stronger; whether the converse holds is open</span></p></div>`;
     if (S.inconsistent) { box.innerHTML = head + `<div class="bad">The current assumptions are inconsistent.</div>`; return; }
@@ -571,12 +573,19 @@
     const nL = Math.max(0, ...layer) + 1;
     const rows = Array.from({ length: nL }, () => []);
     cls.forEach((c, i) => rows[layer[i]].push(i));
-    const gapX = 26, rowH = 96, padY = 30;
+    const gapX = 26, rowH = 110, padY = 30;
     // order rows bottom-up by barycentre of what they cover
     const xpos = {}, BASE = -1;
     const baseText = baseLabel();
-    const rowWidth = r => r.reduce((s, i) => s + wOf(label(cls[i])) + gapX, -gapX);
-    const W = Math.max(640, wOf(baseText) + 40, ...rows.map(r => rowWidth(r) + 60));
+    // the edges, from each class down to the classes it covers (or to the base)
+    const E = [];
+    cls.forEach((c, i) => (covers[i].length ? covers[i] : [BASE]).forEach(j => E.push({ i, j })));
+    const indeg = {}, outdeg = {};
+    E.forEach(({ i, j }) => { outdeg[i] = (outdeg[i] || 0) + 1; indeg[j] = (indeg[j] || 0) + 1; });
+    // bubbles are wide enough for their lines to meet them apart
+    const wid = k => Math.max(wOf(k === BASE ? baseText : label(cls[k])), 14 * Math.max(indeg[k] || 0, outdeg[k] || 0) + 26);
+    const rowWidth = r => r.reduce((s, i) => s + wid(i) + gapX, -gapX);
+    const W = Math.max(640, wid(BASE) + 40, ...rows.map(r => rowWidth(r) + 60));
     xpos[BASE] = W / 2;
     for (let l = 1; l < nL; l++) {
       rows[l].sort((a, b) => {
@@ -584,7 +593,7 @@
         return bc(a) - bc(b);
       });
       let x = (W - rowWidth(rows[l])) / 2;
-      rows[l].forEach(i => { const w = wOf(label(cls[i])); xpos[i] = x + w / 2; x += w + gapX; });
+      rows[l].forEach(i => { const w = wid(i); xpos[i] = x + w / 2; x += w + gapX; });
     }
     const H = padY * 2 + (nL) * rowH - (rowH - 30);
     const ypos = l => H - padY - 15 - l * rowH;
@@ -597,20 +606,28 @@
     const strictOverBase = i => !!base.status[cls[i][0]].counter;
     // converse known to fail: some member of the upper class fails given the lower class
     const strictPair = (i, j) => { const s = given[cls[j][0]][cls[i][0]]; return !!(s && s.counter); };
-    cls.forEach((c, i) => {
-      const y = ypos(layer[i]);
-      if (covers[i].length === 0) edge(xpos[i], y + 13, xpos[BASE], ypos(0) - 13, strictOverBase(i), i + ">base");
-      covers[i].forEach(j => edge(xpos[i], y + 13, xpos[j], ypos(layer[j]) - 13, strictPair(i, j), i + ">" + j));
+    // spread the ends of the lines along the bottom of the source and the top of the target
+    const lay = k => (k === BASE ? 0 : layer[k]);
+    const spread = (k, n, idx) => { const span = Math.max(0, wid(k) - 30); return n <= 1 ? xpos[k] : xpos[k] - span / 2 + span * idx / (n - 1); };
+    const outs = {}, ins = {};
+    E.forEach(e => { (outs[e.i] = outs[e.i] || []).push(e); (ins[e.j] = ins[e.j] || []).push(e); });
+    Object.values(outs).forEach(l => l.sort((a, b) => xpos[a.j] - xpos[b.j]));
+    Object.values(ins).forEach(l => l.sort((a, b) => xpos[a.i] - xpos[b.i]));
+    E.forEach(e => {
+      const x1 = spread(e.i, outs[e.i].length, outs[e.i].indexOf(e));
+      const x2 = spread(e.j, ins[e.j].length, ins[e.j].indexOf(e));
+      const strict = e.j === BASE ? strictOverBase(e.i) : strictPair(e.i, e.j);
+      edge(x1, ypos(lay(e.i)) + 13, x2, ypos(lay(e.j)) - 13, strict, e.i + ">" + (e.j === BASE ? "base" : e.j));
     });
     const node = (x, y, text, key, cl) => {
-      const w = wOf(text);
+      const w = wid(key === "base" ? BASE : +key);
       svgNodes += `<g class="sn ${cl}" data-k="${key}" tabindex="0" role="button" transform="translate(${x},${y})"><rect x="${-w / 2}" y="-13" width="${w}" height="26" rx="13"/><text text-anchor="middle" y="4.5">${text}</text></g>`;
     };
     node(xpos[BASE], ypos(0), baseText, "base", "basenode" + (strengthFocus === "base" ? " focus" : ""));
     cls.forEach((c, i) => node(xpos[i], ypos(layer[i]), label(c), i, strengthFocus === c[0] ? "focus" : ""));
     box.innerHTML = head + `<div class="sbox"><svg viewBox="0 0 ${W} ${H}" style="min-width:${Math.min(W, 900)}px"><defs>
-      <marker id="sarr-strict" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="sm strict"/></marker>
-      <marker id="sarr-unk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="sm unk"/></marker></defs>${svgEdges}${svgNodes}</svg></div><div id="sdetails" class="details"></div>`;
+      <marker id="sarr-strict" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="sm strict"/></marker>
+      <marker id="sarr-unk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="sm unk"/></marker></defs>${svgEdges}${svgNodes}</svg></div><div id="sdetails" class="details"></div>`;
     box.querySelectorAll(".sn").forEach(g => {
       const go = () => { const k = g.dataset.k; strengthFocus = k === "base" ? null : cls[+k][0]; renderStrength(); };
       g.addEventListener("click", go);
@@ -756,7 +773,9 @@
     document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
       document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", x === b));
       document.querySelectorAll(".tabpanel").forEach(x => x.hidden = x.id !== b.dataset.tab);
-      if (b.dataset.tab === "strength") renderStrength();
+      const side = $("aside.side");
+      if (b.dataset.tab === "strength") { $("#strength .layout").prepend(side); renderStrength(); }
+      if (b.dataset.tab === "explorer") $("#explorer .layout").prepend(side);
     }));
     renderCatalogue();
     window.__pi = { analyse, analyseWith, state, update, models, strengthData };
