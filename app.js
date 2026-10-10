@@ -716,41 +716,6 @@
       .filter(sec => !sec.common && (onlyNew ? sec.level === key : L.levels.includes(sec.level)))
       .map(sec => secHTML(sec, sec.level !== "PI-" && !onlyNew ? "added in " + lvName(sec.level) : "")).join("");
   }
-  function thmLean(id) {
-    const t = D.pimTheorems.find(t => t.to === id);
-    if (t) return t.lean;
-    const r = D.rules.find(r => r.to === id && r.from.every(f => f === "LLeq" || f === "Class"));
-    return r ? r.lean : null;
-  }
-  function thmHTML(key) {
-    const order = ["PI-", "PI", "PIC"];
-    const upto = order.slice(0, order.indexOf(key) + 1).reverse();
-    const intro = `<p class="lblurb">Listed roughly from the most surprising to the least. ${key === "PI-" ? "" : "Each logic also proves the theorems of the weaker ones, listed after its own."} Click a theorem to see it in the explorer.</p>`;
-    return intro + upto.map(k => {
-      const L = D.theoremLists.find(l => l.logic === k);
-      const items = L.items.map((it, i) => {
-        const p = P[it.id];
-        return `<li><div class="thead"><span class="rank">${i + 1}.</span><a href="#" class="ttag" data-id="${it.id}">${p.tag}</a> ${leanBadge(thmLean(it.id))}</div>
-          ${tex(p.tex, true)}<div class="why">${it.why}</div></li>`;
-      }).join("");
-      return `<section class="lsec"><h4>${L.title}</h4><ol class="thmlist">${items}</ol></section>`;
-    }).join("");
-  }
-  function openThms(key) {
-    const dlg = $("#thmdlg");
-    const show = k => {
-      dlg.querySelectorAll(".ltabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.l === k));
-      $("#thmbody").innerHTML = thmHTML(k);
-      $("#thmbody").querySelectorAll(".ttag").forEach(a => a.addEventListener("click", e => {
-        e.preventDefault(); dlg.close();
-        if (!state.showThms) { state.showThms = true; try { localStorage.setItem("pi-showthms", "1"); } catch (err) {} }
-        openPrinciple(a.dataset.id);
-      }));
-    };
-    dlg.querySelectorAll(".ltabs button").forEach(b => b.onclick = () => show(b.dataset.l));
-    show(key);
-    if (!dlg.open) dlg.showModal();
-  }
   function syncThmToggle() {
     const b = $("#togglethms");
     b.setAttribute("aria-pressed", state.showThms);
@@ -778,9 +743,6 @@
       update();
     }));
     $("#showlogic").addEventListener("click", openCommon);
-    $("#showthmlist").addEventListener("click", () => openThms(state.logic));
-    $("#thmdlg .lclose").addEventListener("click", () => $("#thmdlg").close());
-    $("#thmdlg").addEventListener("click", e => { if (e.target.id === "thmdlg") e.target.close(); });
     $("#togglethms").addEventListener("click", () => {
       state.showThms = !state.showThms;
       try { localStorage.setItem("pi-showthms", state.showThms ? "1" : "0"); } catch (e) {}

@@ -247,11 +247,3 @@ a.mv { text-decoration: none; }
 .logicdlg .ltabs { display: flex; gap: 4px; }
 .logicdlg .ltabs button { font: inherit; padding: 4px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); cursor: pointer; }
 .logicdlg .ltabs button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--panel); }
-.thmlist { list-style: none; padding: 0; margin: 0; }
-.thmlist li { border-top: 1px solid var(--line); padding: 10px 0; }
-.thmlist .thead { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-.thmlist .rank { color: var(--muted); font-size: 0.85em; min-width: 1.5em; }
-.thmlist .ttag { font-weight: 600; }
-.thmlist .katex-display { margin: 4px 0; text-align: left; overflow-x: auto; overflow-y: hidden; }
-.thmlist .katex-display > .katex { text-align: left; }
-.thmlist .why { color: var(--ink); font-size: 0.95em; }

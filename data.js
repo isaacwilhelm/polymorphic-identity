@@ -195,34 +195,6 @@ const pimTheorems = [
   { to: "NoSelf", lean: "d_NoSelf", src: "observed", note: "A diagonal argument shows that no function from α→t to α is injective (in the sense of Leibniz identity); LL≈, applied to the property 'γ injects into α', then rules out α ≈ α→t. No LL≡ is needed." },
 ];
 
-// The theorems of each base logic, from the most surprising to the least. Each logic proves the
-// theorems listed for the weaker ones too.
-const theoremLists = [
-  { logic: "PI-", title: "Theorems of PI⁻", items: [
-    { id: "NoSelf", why: "No type is identical to the type of its properties. The proof needs no Leibniz's law for items: a diagonal argument shows that no function from α→t to α is injective, and LL≈, applied to the property 'γ injects into α', then rules out α ≈ α→t. So, for instance, Haecceitism already proves Twin, and is inconsistent with Disjoint." },
-    { id: "Link", why: "If two types are identical, each item of the one is identical to some item of the other. This needs only Ref≡ and LL≈." },
-    { id: "TransA", why: "Identity among types is transitive, by LL≈ with Q := λδ.(α ≈ δ)." },
-    { id: "SymA", why: "Identity among types is symmetric, by LL≈ with Q := λγ.(γ ≈ α) and Ref≈." },
-  ] },
-  { logic: "PI", title: "Also theorems of PI", items: [
-    { id: "Cantor", why: "Every type has a property that is identical to none of its items. The proof follows the Russell–Myhill paradox." },
-    { id: "WCong", why: "Identical functions, between identical types, take identical values at identical arguments: congruence comes for free within identical types." },
-    { id: "Bridge", why: "Identical items of identical types share every polymorphic property." },
-    { id: "TAx", why: "Whatever is necessary is true, where □φ is φ ≡ₜ ⊤: Leibniz's law at type t transfers truth from ⊤." },
-    { id: "Truth", why: "Identical propositions are materially equivalent: Leibniz's law at type t, with the identity property." },
-    { id: "TopBot", why: "The true and the false proposition are distinct." },
-  ] },
-  { logic: "PIC", title: "Also theorems of PIᶜ", items: [
-    { id: "NITeq", why: "Identity among types is necessary. Classicism makes α ≈ α identical to ⊤, and LL≈ carries this from α to any type identical to it." },
-    { id: "TCBF", why: "The converse Barcan formula for the type quantifier: if necessarily every type satisfies φ, every type necessarily does." },
-    { id: "TNec", why: "Every type is necessarily some type." },
-    { id: "NIEqv", why: "Identity among items is necessary: Quine's argument, from Classicism and Leibniz's law." },
-    { id: "IdId", why: "Identity is identical to Leibniz identity: the two are provably equivalent, so Classicism identifies them." },
-    { id: "Bool", why: "Tautologically equivalent propositions are identical: each instance is an instance of Classicism." },
-  ] },
-];
-
-
 // Derivations. Each says: PI^- + from ⊢ to.
 const rules = [
   { from: ["Class"], to: "Bool", src: "observed", added: true, lean: "d_Bool_of_Class", note: "Each instance of Booleanism is an instance of Classicism, since PI proves every tautology." },
@@ -1145,4 +1117,4 @@ const otherResults = [
     text: "Models of PI with infinite types (over a set type universe) exist just in case there is a strongly inaccessible cardinal; given one, every result here holds with an axiom of infinity added." },
 ];
 
-window.PIDATA = { SOURCE, principles, theoremLists, logicSpec, baseAxioms, pimTheorems, rules, inconsistent, models, otherResults };
+window.PIDATA = { SOURCE, principles, logicSpec, baseAxioms, pimTheorems, rules, inconsistent, models, otherResults };
