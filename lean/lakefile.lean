@@ -80,3 +80,6 @@ lean_lib PIKripke
 
 @[default_target]
 lean_lib PIKripkeModels
+
+@[default_target]
+lean_lib PIKripkeND
