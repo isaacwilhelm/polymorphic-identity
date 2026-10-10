@@ -424,9 +424,17 @@ window.LEANINDEX = {
   "PIKripkeHae.lean",
   319
  ],
+ "Kr.MbfH_NDTeq": [
+  "PICongQs.lean",
+  1050
+ ],
  "Kr.MbfH_isModelAt": [
   "PIKripkeHae.lean",
   313
+ ],
+ "Kr.MbfH_not_Collapse": [
+  "PICongQs.lean",
+  1076
  ],
  "Kr.MbfH_not_TBF": [
   "PIKripkeHae.lean",
@@ -496,9 +504,17 @@ window.LEANINDEX = {
   "PIKripkeHae.lean",
   392
  ],
+ "Kr.MndH_TBF": [
+  "PICongQs.lean",
+  1060
+ ],
  "Kr.MndH_isModelAt": [
   "PIKripkeHae.lean",
   380
+ ],
+ "Kr.MndH_not_Collapse": [
+  "PICongQs.lean",
+  1078
  ],
  "Kr.MndH_not_NDTeq": [
   "PIKripkeHae.lean",

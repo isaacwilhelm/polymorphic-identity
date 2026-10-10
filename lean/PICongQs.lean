@@ -1042,4 +1042,42 @@ theorem Mtow2_not_Cong : ¬ Mtow2.Valid Cong := fun h => by
 
 end Tow2c
 
+/-! ## The Kripke models with haecceities: ND≈, TBF, and Collapse -/
+
+namespace Kr
+open Tm
+
+theorem MbfH_NDTeq : MbfH.Valid NDTeq := by
+  intro ρ _ env _
+  have e1 : ρ = fun i => i.elim0 := funext fun i => i.elim0
+  subst e1
+  refine (MbfH.holdsAt_tall _ _ _ _).mpr fun a _ => (MbfH.holdsAt_tall _ _ _ _).mpr fun b _ => ?_
+  refine (MbfH.holdsAt_imp _ _ _ _ _).mpr fun hn => (MbfH.box_of MbfH_heq _ _ _ _).mpr fun v _ => ?_
+  refine (MbfH.holdsAt_neg _ _ _ _).mpr fun ht => (MbfH.holdsAt_neg _ _ _ _).mp hn ?_
+  have e : a = b := (MbfH.holdsAt_teq _ _ _ _ v).mp ht
+  exact (MbfH.holdsAt_teq _ _ _ _ _).mpr e
+
+theorem MndH_TBF : ∀ χ, TBFSch χ → MndH.Valid χ := by
+  rintro _ ⟨φ, rfl⟩ ρ _ env _
+  have e1 : ρ = fun i => i.elim0 := funext fun i => i.elim0
+  subst e1
+  refine (MndH.holdsAt_imp _ _ _ _ _).mpr fun h => (MndH.box_of MndH_heq _ _ _ _).mpr fun v hv => ?_
+  refine (MndH.holdsAt_tall _ _ _ _).mpr fun a _ => ?_
+  exact (MndH.box_of MndH_heq _ _ _ _).mp ((MndH.holdsAt_tall _ _ _ _).mp h a trivial) v hv
+
+theorem hae_not_Collapse {F : Frame} (heq : ∀ a x y w, F.eqv a a x y w ↔ F.U.rel a w x y)
+    (w1 : F.U.W) (hR : F.U.R F.U.w0 w1) (hne : w1 ≠ F.U.w0) : ¬ F.Valid Collapse := fun h => by
+  have h0 := h (fun i => i.elim0) (fun i => i.elim0) () trivial
+  have h1 := (F.holdsAt_all _ _ _ _ _).mp h0 (fun w => w = F.U.w0) (fun _ _ => Iff.rfl)
+  have hb := (F.holdsAt_imp _ _ _ _ _).mp h1 (show F.U.w0 = F.U.w0 from rfl)
+  have := (F.box_of heq _ _ _ _).mp hb w1 hR
+  exact hne this
+
+theorem MbfH_not_Collapse : ¬ MbfH.Valid Collapse :=
+  hae_not_Collapse MbfH_heq false (Or.inl rfl) Bool.false_ne_true
+theorem MndH_not_Collapse : ¬ MndH.Valid Collapse :=
+  hae_not_Collapse MndH_heq false (Or.inl rfl) Bool.false_ne_true
+
+end Kr
+
 end PIF
