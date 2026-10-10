@@ -361,7 +361,9 @@
       el("path", { d: "M0,0 L10,5 L0,10 z", fill: c }, m);
     });
     edgeLayer = el("g", { class: "edges" }, svg);
-    hubG = el("g", { class: "hub" }, svg);
+    hubG = el("g", { class: "hub", tabindex: 0, role: "button", "aria-label": "The central box: list its principles" }, svg);
+    hubG.addEventListener("click", () => openPrinciple("base"));
+    hubG.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPrinciple("base"); } });
     nodeLayer = el("g", { class: "nodes" }, svg);
     D.principles.forEach(p => {
       const g = el("g", { class: "node", tabindex: 0, role: "button", "aria-label": p.tag }, nodeLayer);
@@ -424,7 +426,7 @@
       .map(a => (a.why.base ? (state.logic === "PIC" ? "PIᶜ (= PI + Classicism)" : "PI (= PI⁻ + LL≡)") : litText(a.id, a.pos)));
     if (state.logic === "PI-") lines.unshift("PI⁻");
     const hb = hubBox(lines);
-    el("rect", { x: hb.x, y: hb.y, width: hb.w, height: hb.h, rx: 10, class: an.inconsistent ? "hubrect bad" : "hubrect" }, hubG);
+    el("rect", { x: hb.x, y: hb.y, width: hb.w, height: hb.h, rx: 10, class: (an.inconsistent ? "hubrect bad" : "hubrect") + (state.focus === "base" ? " focus" : "") }, hubG);
     lines.forEach((l, i) => {
       const t = el("text", { x: CX, y: hb.y + 22 + i * 19, "text-anchor": "middle", class: i === 0 ? "hubtitle" : "" }, hubG);
       t.textContent = l;
@@ -489,7 +491,7 @@
   function renderDetails(an) {
     const box = $("#details");
     box.innerHTML = "";
-    state.opened.forEach(id => box.appendChild(principleCard(an, id)));
+    state.opened.forEach(id => box.appendChild(id === "base" ? baseCard(an) : principleCard(an, id)));
     const lc = document.createElement("div");
     lc.className = "details logiccard";
     lc.innerHTML = (state.opened.length ? "" : `<div class="hint">Click any principle (in the list or the graph) to see its statement and <em>why</em> it has the status shown: the derivation, or the model that shows it does not follow. Each principle you click on gets its own box here.</div>`) +
@@ -497,6 +499,46 @@
       identityHTML(state.logic);
     lc.querySelector(".linkbtn").addEventListener("click", openCommon);
     box.appendChild(lc);
+  }
+  // The principles in the central box: the base logic, the assumptions, and what follows from them outright.
+  function boxListHTML(thms, linkThms) {
+    const lits = assumptions();
+    const item = (id, pos, link) => {
+      const p = P[id], t = pos ? p.tag : "¬" + p.tag;
+      return `<div class="sformula"><div class="stag">${link ? `<button class="plink" type="button" data-id="${id}">${t}</button>` : t}</div>` +
+        `<div class="formula">${tex(pos ? p.tex : "\\neg\\big(" + p.tex + "\\big)", true)}</div><p class="gloss">${p.gloss}</p></div>`;
+    };
+    const logicLits = lits.filter(a => isLocked(a.id)), sel = lits.filter(a => !isLocked(a.id));
+    const common = `<button class="linkbtn inl" type="button" data-common="1">the axioms and rules shared by all three logics</button>`;
+    let h = `<h4>The base logic, ${logicName()}</h4>`;
+    h += state.logic === "PI-" ? `<p>PI⁻ consists of ${common}.</p>`
+      : `<p>${logicName()} adds ${logicLits.length > 1 ? "these principles" : "this principle"} to ${common}:</p>` + logicLits.map(a => item(a.id, true, true)).join("");
+    if (sel.length) h += `<h4>Assumed</h4>` + sel.map(a => item(a.id, a.pos, true)).join("");
+    if (thms.length) h += `<h4>Also in this box, since they follow outright</h4>` + thms.map(id => item(id, true, linkThms)).join("");
+    return h;
+  }
+  function wireBoxList(root, onPick) {
+    root.querySelectorAll(".plink").forEach(b => b.addEventListener("click", () => onPick(b.dataset.id)));
+    root.querySelectorAll("[data-common]").forEach(b => b.addEventListener("click", openCommon));
+  }
+  function baseCard(an) {
+    const card = document.createElement("div");
+    card.className = "details" + (state.focus === "base" ? " current" : "");
+    // the theorems of the base logic sit in the central box unless they are drawn separately
+    let thms = [];
+    if (!state.showThms) {
+      const baseAn = analyseWith(an.A.filter(a => a.why.base));
+      if (!baseAn.inconsistent) thms = D.principles.map(p => p.id).filter(id => baseAn.status[id] && baseAn.status[id].kind === "follows" && !isLocked(id));
+    }
+    card.innerHTML = `<div class="dhead"><h3>${baseLabel()}</h3><span class="dgroup">the central box</span><button class="dclose" aria-label="Close" title="Close">✕</button></div>` +
+      (an.inconsistent ? `<p class="st">The selection is inconsistent.</p>` : "") + boxListHTML(thms, true);
+    wireBoxList(card, openPrinciple);
+    card.querySelector(".dclose").addEventListener("click", () => {
+      state.opened = state.opened.filter(x => x !== "base");
+      if (state.focus === "base") state.focus = state.opened[0] || null;
+      update();
+    });
+    return card;
   }
   function principleCard(an, id) {
     const card = document.createElement("div");
@@ -683,7 +725,7 @@
       <marker id="sarr-unk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="sm unk"/></marker></defs>${svgEdges}${svgNodes}</svg></div><div id="sdetails" class="details"></div>`;
     box.querySelectorAll(".sn").forEach(g => {
       const go = () => {
-        const k = g.dataset.k; strengthFocus = k === "base" ? null : cls[+k][0]; renderStrength();
+        const k = g.dataset.k; strengthFocus = k === "base" ? "base" : cls[+k][0]; renderStrength();
         // bring the statement below the graph into view
         const d = $("#sdetails"), r = d.getBoundingClientRect();
         if (strengthFocus && r.top > window.innerHeight - 120) d.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -697,6 +739,14 @@
   function renderStrengthDetails(S) {
     const box = $("#sdetails");
     const a = strengthFocus;
+    if (a === "base") {
+      // the leftmost box: the base, and every principle that follows from it outright
+      const lits = new Set(assumptions().map(l => l.id));
+      const thms = D.principles.map(p => p.id).filter(id => !lits.has(id) && S.base.status[id] && S.base.status[id].kind === "follows");
+      box.innerHTML = `<div class="dhead"><h3>${baseLabel()}</h3><span class="dgroup">the leftmost box</span></div>` + boxListHTML(thms, false);
+      wireBoxList(box, () => {});
+      return;
+    }
     if (!a || S.clsOf[a] === undefined) {
       const ref = S.refutedByBase.length ? `<p>Inconsistent with the base, so not shown: ${S.refutedByBase.map(tag).join(", ")}.</p>` : "";
       box.innerHTML = `<div class="hint">Click a box to see exactly where it sits: what it implies and what implies it (and whether strictly), and what it is incomparable with.</div>${ref}`;
@@ -796,9 +846,8 @@
       .map(sec => secHTML(sec, sec.level !== "PI-" && !onlyNew ? "added in " + lvName(sec.level) : "")).join("");
   }
   function syncThmToggle() {
-    const b = $("#togglethms");
-    b.setAttribute("aria-pressed", state.showThms);
-    b.textContent = (state.showThms ? "Hide" : "Show") + " theorems of " + logicName();
+    $("#togglethms").checked = !!state.showThms;
+    $("#thmlabel").textContent = "Show theorems of " + logicName();
   }
   function openCommon() { $("#logicbody").innerHTML = commonHTML(); $("#logicdlg").showModal(); }
 
@@ -880,8 +929,8 @@
       update();
     }));
     $("#showlogic").addEventListener("click", openCommon);
-    $("#togglethms").addEventListener("click", () => {
-      state.showThms = !state.showThms;
+    $("#togglethms").addEventListener("change", () => {
+      state.showThms = $("#togglethms").checked;
       try { localStorage.setItem("pi-showthms", state.showThms ? "1" : "0"); } catch (e) {}
       update();
     });
