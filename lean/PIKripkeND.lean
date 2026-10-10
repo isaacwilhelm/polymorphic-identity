@@ -439,5 +439,22 @@ theorem Mnd_IntT : MndK.Valid IntT := by
   have e := Mnd_sub_eq _ _ a b h1
   exact (MndK.holdsAt_teq _ _ _ _ _).mpr ⟨fun _ => e, congrArg img e⟩
 
+/-- With constant domains of types, the Barcan formula for types holds. -/
+theorem Mnd_TBF : ∀ χ, TBFSch χ → MndK.Valid χ := by
+  rintro _ ⟨φ, rfl⟩
+  refine Mnd_Valid_of ?_
+  refine (MndK.holdsAt_imp _ _ _ _ _).mpr fun h => (MndK.box_of MndK_heq _ _ _ _).mpr fun v hv => ?_
+  refine (MndK.holdsAt_tall _ _ _ _).mpr fun a _ => ?_
+  exact (MndK.box_of MndK_heq _ _ _ _).mp ((MndK.holdsAt_tall _ _ _ _).mp h a trivial) v hv
+
+/-- Where `≈` is identity of types at every world, Necessity of Distinctness holds. -/
+theorem Mbf_NDTeq : MbfK.Valid NDTeq := by
+  refine Frame.simple_Valid_of UBF ?_
+  refine (MbfK.holdsAt_tall _ _ _ _).mpr fun a _ => (MbfK.holdsAt_tall _ _ _ _).mpr fun b _ => ?_
+  refine (MbfK.holdsAt_imp _ _ _ _ _).mpr fun hn => (Frame.simple_box UBF _ _ _ _).mpr fun v _ => ?_
+  refine (MbfK.holdsAt_neg _ _ _ _).mpr fun ht => (MbfK.holdsAt_neg _ _ _ _).mp hn ?_
+  have e : a = b := (MbfK.holdsAt_teq _ _ _ _ v).mp ht
+  exact (MbfK.holdsAt_teq _ _ _ _ _).mpr e
+
 end Kr
 end PIF

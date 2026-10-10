@@ -388,6 +388,10 @@ window.LEANINDEX = {
   "PIKripkeModels.lean",
   107
  ],
+ "Kr.Mbf_NDTeq": [
+  "PIKripkeND.lean",
+  451
+ ],
  "Kr.Mbf_Recovery": [
   "PIKripkeModels.lean",
   113
@@ -443,6 +447,10 @@ window.LEANINDEX = {
  "Kr.Mnd_Slogan": [
   "PIWorlds.lean",
   1034
+ ],
+ "Kr.Mnd_TBF": [
+  "PIBarcanModels.lean",
+  55
  ],
  "Kr.Mnd_not_NDTeq": [
   "PIWorlds.lean",
