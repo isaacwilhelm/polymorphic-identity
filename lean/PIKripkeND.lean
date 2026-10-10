@@ -230,5 +230,214 @@ theorem shape : ∀ k : Code Unit,
         exact R2 a2 b2 a2 ha2 hb2 ha2 v _ _ _ g1
           (R2 b2 b2 a2 hb2 hb2 ha2 v _ _ _ (hg v hv _ _ hTxx) (S2 a2 b2 ha2 hb2 v _ _ g2))
 
+theorem CR_symm {a b : Code Unit} (h : img a = img b) {w : Bool} {x : UND.El a} {y : UND.El b}
+    (hxy : CR a b w x y) : CR b a w y x := (shape (img a)).1 a b rfl h.symm w x y hxy
+
+theorem CR_trans {a b c : Code Unit} (h1 : img a = img b) (h2 : img b = img c) {w : Bool} {x : UND.El a}
+    {y : UND.El b} {z : UND.El c} (hxy : CR a b w x y) (hyz : CR b c w y z) : CR a c w x z :=
+  (shape (img a)).2.1 a b c rfl h1.symm (h1.trans h2).symm w x y z hxy hyz
+
+/-- Identity at a world in `𝔐_k,nd`. -/
+def eqvND (a b : Code Unit) (x : UND.El a) (y : UND.El b) (w : Bool) : Prop :=
+  (w = true → a = b) ∧ img a = img b ∧ CR a b w x y
+
+theorem eqvND_iff {a a' b b' : Code Unit} {u : Bool} {x : UND.El a} {x' : UND.El a'} {y : UND.El b} {y' : UND.El b'}
+    (ia : img a = img a') (ib : img b = img b') (ca : u = true → a = a') (cb : u = true → b = b')
+    (hx : CR a a' u x x') (hy : CR b b' u y y') : eqvND a b x y u ↔ eqvND a' b' x' y' u := by
+  constructor
+  · rintro ⟨h1, h2, h3⟩
+    refine ⟨fun hu => (ca hu).symm.trans ((h1 hu).trans (cb hu)), ia.symm.trans (h2.trans ib), ?_⟩
+    exact CR_trans (ia.symm.trans h2) ib (CR_trans ia.symm h2 (CR_symm ia hx) h3) hy
+  · rintro ⟨h1, h2, h3⟩
+    refine ⟨fun hu => (ca hu).trans ((h1 hu).trans (cb hu).symm), ia.trans (h2.trans ib.symm), ?_⟩
+    exact CR_trans ia (h2.trans ib.symm) hx (CR_trans h2 ib.symm h3 (CR_symm ib hy))
+
+def MndK : Frame where
+  U := UND
+  eqv := eqvND
+  teq := fun a b w => (w = true → a = b) ∧ img a = img b
+  eqv_resp := fun u a b x x' y y' hx hy => eqvND_iff rfl rfl (fun _ => rfl) (fun _ => rfl)
+    ((CR_diag a u x x').mp hx) ((CR_diag b u y y').mp hy)
+
+theorem MndK_heq : ∀ a x y w, MndK.eqv a a x y w ↔ MndK.U.rel a w x y := fun a x y w =>
+  ⟨fun h => (CR_diag a w x y).mpr h.2.2, fun h => ⟨fun _ => rfl, rfl, (CR_diag a w x y).mp h⟩⟩
+
+theorem R_true {w v : Bool} (h : UND.R w v) (hv : v = true) : w = true := by
+  rcases h with h | h
+  · exact h
+  · subst hv; exact Bool.noConfusion h
+
+/-- The admissible relations of `𝔐_k,nd`: identity between types of one shape, at the worlds at which
+the two types are not told apart. -/
+def ndInv : KInv MndK where
+  Adm := fun w a a' S => img a = img a' ∧ (∀ v, UND.R w v → v = true → a = a') ∧ ∀ u x y, S u x y ↔ CR a a' u x y
+  amono := fun ⟨h1, h2, h3⟩ hv => ⟨h1, fun u hu => h2 u (UND.Rtrans _ _ _ hv hu), h3⟩
+  smono := fun ⟨_, _, h3⟩ u u' x x' _ hu h => (h3 u' x x').mpr (CR_mono _ _ u u' x x' hu ((h3 u x x').mp h))
+  refl := fun _ a => ⟨rfl, fun _ _ _ => rfl, fun u x y => CR_diag a u x y⟩
+  arrow := by
+    intro w a a' c c' S T hS hT
+    obtain ⟨h1, h2, h3⟩ := hS
+    obtain ⟨k1, k2, k3⟩ := hT
+    refine ⟨by show Code.arr (img a) (img c) = Code.arr (img a') (img c'); rw [h1, k1],
+      fun v hv hv' => by rw [h2 v hv hv', k2 v hv hv'], fun u f f' => ?_⟩
+    exact forall_congr' fun v => imp_congr Iff.rfl (forall_congr' fun x => forall_congr' fun x' =>
+      imp_congr (h3 v x x') (k3 v _ _))
+  total := by
+    intro w a a' S hS u _ x hx
+    obtain ⟨h1, _, h3⟩ := hS
+    obtain ⟨hxT, hTT⟩ := (shape (img a)).2.2.1 a a' rfl h1.symm u x ((CR_diag a u x x).mp hx)
+    exact ⟨Tf a a' x, (CR_diag a' u _ _).mpr hTT, (h3 u x _).mpr hxT⟩
+  onto := by
+    intro w a a' S hS u _ y hy
+    obtain ⟨h1, _, h3⟩ := hS
+    obtain ⟨hTy, hTT⟩ := (shape (img a)).2.2.2 a a' rfl h1.symm u y ((CR_diag a' u y y).mp hy)
+    exact ⟨Tg a a' y, (CR_diag a u _ _).mpr hTT, (h3 u _ y).mpr hTy⟩
+  teq := by
+    intro w a a' b b' S T hS hT u hu
+    obtain ⟨h1, h2, _⟩ := hS
+    obtain ⟨k1, k2, _⟩ := hT
+    constructor
+    · rintro ⟨e1, e2⟩
+      exact ⟨fun hv => (h2 u hu hv).symm.trans ((e1 hv).trans (k2 u hu hv)), h1.symm.trans (e2.trans k1)⟩
+    · rintro ⟨e1, e2⟩
+      exact ⟨fun hv => (h2 u hu hv).trans ((e1 hv).trans (k2 u hu hv).symm), h1.trans (e2.trans k1.symm)⟩
+  eqv := by
+    intro w a a' b b' S T hS hT u hu x x' y y' hx hy
+    obtain ⟨h1, h2, h3⟩ := hS
+    obtain ⟨k1, k2, k3⟩ := hT
+    exact eqvND_iff h1 k1 (h2 u hu) (k2 u hu) ((h3 u x x').mp hx) ((k3 u y y').mp hy)
+
+theorem MndK_isModelAt : MndK.IsModelAt where
+  refEqv := by
+    intro w ρ _ env _
+    refine MndK.holdsAt_tall _ _ _ w |>.mpr fun a _ => (MndK.holdsAt_all _ _ _ _ w).mpr fun x hx => ?_
+    exact (MndK.holdsAt_eqv _ _ _ _ _ _ w).mpr ((MndK_heq _ _ _ w).mpr hx)
+  symEqv := by
+    intro w ρ _ env _
+    refine MndK.holdsAt_tall _ _ _ w |>.mpr fun a _ => MndK.holdsAt_tall _ _ _ w |>.mpr fun b _ => ?_
+    refine (MndK.holdsAt_all _ _ _ _ w).mpr fun x _ => (MndK.holdsAt_all _ _ _ _ w).mpr fun y _ => ?_
+    refine (MndK.holdsAt_imp _ _ _ _ w).mpr fun h => ?_
+    obtain ⟨h1, h2, h3⟩ := (MndK.holdsAt_eqv _ _ _ _ _ _ w).mp h
+    exact (MndK.holdsAt_eqv _ _ _ _ _ _ w).mpr ⟨fun hw => (h1 hw).symm, h2.symm, CR_symm h2 h3⟩
+  transEqv := by
+    intro w ρ _ env _
+    refine MndK.holdsAt_tall _ _ _ w |>.mpr fun a _ => MndK.holdsAt_tall _ _ _ w |>.mpr fun b _ =>
+      MndK.holdsAt_tall _ _ _ w |>.mpr fun c _ => ?_
+    refine (MndK.holdsAt_all _ _ _ _ w).mpr fun x _ => (MndK.holdsAt_all _ _ _ _ w).mpr fun y _ =>
+      (MndK.holdsAt_all _ _ _ _ w).mpr fun z _ => ?_
+    refine (MndK.holdsAt_imp _ _ _ _ w).mpr fun h => ?_
+    have hc := (MndK.holdsAt_conj _ _ _ _ w).mp h
+    obtain ⟨h1, h2, h3⟩ := (MndK.holdsAt_eqv (Γ := (((Ctx.nil.text.text.text).ext tv2).ext tv1).ext tv0) tv2 tv1
+      (.var (.there (.there .here))) (.var (.there .here)) (scons c (scons b (scons a ρ))) (((env, x), y), z) w).mp hc.1
+    obtain ⟨k1, k2, k3⟩ := (MndK.holdsAt_eqv (Γ := (((Ctx.nil.text.text.text).ext tv2).ext tv1).ext tv0) tv1 tv0
+      (.var (.there .here)) (.var .here) (scons c (scons b (scons a ρ))) (((env, x), y), z) w).mp hc.2
+    exact (MndK.holdsAt_eqv _ _ _ _ _ _ w).mpr ⟨fun hw => (h1 hw).trans (k1 hw), h2.trans k2, CR_trans h2 k2 h3 k3⟩
+  refTeq := by
+    intro w ρ _ env _
+    exact MndK.holdsAt_tall _ _ _ w |>.mpr fun a _ => (MndK.holdsAt_teq _ _ _ _ w).mpr ⟨fun _ => rfl, rfl⟩
+  llTeq := by
+    intro n Γ Q w ρ _ env henv
+    refine MndK.holdsAt_tall _ _ _ w |>.mpr fun a _ => MndK.holdsAt_tall _ _ _ w |>.mpr fun b _ => ?_
+    refine (MndK.holdsAt_imp _ _ _ _ w).mpr fun hab => ?_
+    obtain ⟨e1, e2⟩ := (MndK.holdsAt_teq (Γ := Γ.text.text) tv1 tv0 (scons b (scons a ρ)) env w).mp hab
+    refine (MndK.holdsAt_imp _ _ _ _ w).mpr fun hq => ?_
+    exact ndInv.llTeq_at Q w ρ env henv a b (CR a b) ⟨e2, fun v hv hv' => e1 (R_true hv hv'), fun _ _ _ => Iff.rfl⟩ hq
+
+theorem Mnd_LLEqv : MndK.Valid LLEqv := fun ρ hρ env henv => MndK.LLEqv_of MndK_heq _ ρ hρ env henv
+theorem Mnd_Class : ∀ χ, ClassSch χ → MndK.Valid χ :=
+  MndK.Class_valid MndK_isModelAt (MndK.LLEqv_of MndK_heq) MndK_heq
+
+theorem Mnd_not_NDTeq : ¬ MndK.Valid NDTeq := fun h => by
+  have h0 := h (fun i => i.elim0) (fun i => i.elim0) () trivial
+  have h1 := (MndK.holdsAt_tall _ _ _ _).mp ((MndK.holdsAt_tall _ _ _ _).mp h0 .e trivial) (.base ()) trivial
+  have h2 := (MndK.holdsAt_imp _ _ _ _ _).mp h1 ((MndK.holdsAt_neg _ _ _ _).mpr fun ht =>
+    nomatch ((MndK.holdsAt_teq _ _ _ _ _).mp ht).1 rfl)
+  have h3 := (MndK.box_of MndK_heq _ _ _ _).mp h2 false (Or.inl rfl)
+  exact (MndK.holdsAt_neg _ _ _ _).mp h3 ((MndK.holdsAt_teq _ _ _ _ _).mpr ⟨(fun h => nomatch h), rfl⟩)
+
+theorem Mnd_Valid_of {φ : Fm Ctx.nil} (h : MndK.HoldsAt φ (fun i => i.elim0) () true) : MndK.Valid φ := by
+  intro ρ _ env _
+  have e1 : ρ = fun i => i.elim0 := funext fun i => i.elim0
+  subst e1
+  exact h
+
+theorem Mnd_Disjoint : MndK.Valid Disjoint := by
+  refine Mnd_Valid_of ?_
+  refine (MndK.holdsAt_tall _ _ _ _).mpr fun a _ => (MndK.holdsAt_tall _ _ _ _).mpr fun b _ => ?_
+  refine (MndK.holdsAt_imp _ _ _ _ _).mpr fun hn => ?_
+  refine (MndK.holdsAt_all _ _ _ _ _).mpr fun x _ => (MndK.holdsAt_all _ _ _ _ _).mpr fun y _ => ?_
+  refine (MndK.holdsAt_neg _ _ _ _).mpr fun hxy => ?_
+  obtain ⟨h1, h2, _⟩ := (MndK.holdsAt_eqv _ _ _ _ _ _ _).mp hxy
+  exact (MndK.holdsAt_neg _ _ _ _).mp hn ((MndK.holdsAt_teq _ _ _ _ _).mpr ⟨fun _ => h1 rfl, h2⟩)
+
+theorem Mnd_Slogan : MndK.Valid Slogan := by
+  refine Mnd_Valid_of ?_
+  refine (MndK.holdsAt_all _ _ _ _ _).mpr fun x _ => (MndK.holdsAt_tall _ _ _ _).mpr fun b _ => ?_
+  refine (MndK.holdsAt_all _ _ _ _ _).mpr fun y _ => (MndK.holdsAt_neg _ _ _ _).mpr fun hxy => ?_
+  obtain ⟨h1, _, _⟩ := (MndK.holdsAt_eqv _ _ _ _ _ _ _).mp hxy
+  exact nomatch h1 rfl
+
+theorem Mnd_cong {a b c d : Code Unit} {f : UND.El (.arr a c)} {g : UND.El (.arr b d)} {x : UND.El a} {y : UND.El b}
+    (h1 : eqvND (.arr a c) (.arr b d) f g true) (h2 : eqvND a b x y true) : eqvND c d (f x) (g y) true := by
+  obtain ⟨e1, _, r1⟩ := h1
+  obtain ⟨e2, _, r2⟩ := h2
+  have e := e1 rfl
+  injection e with ea ec
+  subst ea; subst ec
+  exact ⟨fun _ => rfl, rfl, r1 true (UND.Rrefl true) x y r2⟩
+
+theorem Mnd_Cong : MndK.Valid Cong := by
+  refine Mnd_Valid_of ?_
+  refine (MndK.holdsAt_tall _ _ _ _).mpr fun a _ => (MndK.holdsAt_tall _ _ _ _).mpr fun b _ =>
+    (MndK.holdsAt_tall _ _ _ _).mpr fun c _ => (MndK.holdsAt_tall _ _ _ _).mpr fun d _ => ?_
+  refine (MndK.holdsAt_all _ _ _ _ _).mpr fun f _ => (MndK.holdsAt_all _ _ _ _ _).mpr fun g _ =>
+    (MndK.holdsAt_all _ _ _ _ _).mpr fun x _ => (MndK.holdsAt_all _ _ _ _ _).mpr fun y _ => ?_
+  refine (MndK.holdsAt_imp _ _ _ _ _).mpr fun h => ?_
+  have hc := (MndK.holdsAt_conj _ _ _ _ _).mp h
+  have h1 := (MndK.holdsAt_eqv _ _ _ _ _ _ _).mp hc.1
+  have h2 := (MndK.holdsAt_eqv _ _ _ _ _ _ _).mp hc.2
+  have h3 := Mnd_cong h1 h2
+  exact (MndK.holdsAt_eqv _ _ _ _ _ _ _).mpr h3
+
+theorem Mnd_Inj : MndK.Valid Inj := by
+  refine Mnd_Valid_of ?_
+  refine (MndK.holdsAt_tall _ _ _ _).mpr fun a _ => (MndK.holdsAt_tall _ _ _ _).mpr fun b _ =>
+    (MndK.holdsAt_tall _ _ _ _).mpr fun c _ => (MndK.holdsAt_tall _ _ _ _).mpr fun d _ => ?_
+  refine (MndK.holdsAt_imp _ _ _ _ _).mpr fun h => ?_
+  have e : (Code.arr a c : Code Unit) = .arr b d := ((MndK.holdsAt_teq _ _ _ _ _).mp h).1 rfl
+  exact (MndK.holdsAt_conj _ _ _ _ _).mpr ⟨(MndK.holdsAt_teq _ _ _ _ _).mpr ⟨fun _ => (Code.arr.inj e).1,
+    congrArg img (Code.arr.inj e).1⟩, (MndK.holdsAt_teq _ _ _ _ _).mpr ⟨fun _ => (Code.arr.inj e).2,
+    congrArg img (Code.arr.inj e).2⟩⟩
+
+theorem Mnd_Recovery : MndK.Valid Recovery := by
+  refine Mnd_Valid_of ?_
+  refine (MndK.holdsAt_tall _ _ _ _).mpr fun a _ => (MndK.holdsAt_tall _ _ _ _).mpr fun b _ =>
+    (MndK.holdsAt_tall _ _ _ _).mpr fun c _ => (MndK.holdsAt_tall _ _ _ _).mpr fun d _ => ?_
+  refine (MndK.holdsAt_imp _ _ _ _ _).mpr fun h => ?_
+  have e : (Code.arr a c : Code Unit) = .arr b d :=
+    ((MndK.holdsAt_teq _ _ _ _ _).mp ((MndK.holdsAt_conj _ _ _ _ _).mp h).1).1 rfl
+  exact (MndK.holdsAt_teq _ _ _ _ _).mpr ⟨fun _ => (Code.arr.inj e).2, congrArg img (Code.arr.inj e).2⟩
+
+theorem Mnd_sub_eq {n : Nat} {Γ : Ctx n} (ρ : UND.TEnv n) (env : UND.Env Γ ρ) (a b : Code Unit)
+    (h : MndK.HoldsAt (subT : Fm (Γ.text.text)) (scons b (scons a ρ)) env true) : a = b := by
+  obtain ⟨x, hx⟩ := UND.adm_nonempty a
+  obtain ⟨y, _, hy⟩ := (MndK.holdsAt_ex _ _ _ _ _).mp ((MndK.holdsAt_all _ _ _ _ _).mp h x (hx true))
+  exact ((MndK.holdsAt_eqv _ _ _ _ _ _ _).mp hy).1 rfl
+
+theorem Mnd_ExtT : MndK.Valid ExtT := by
+  refine Mnd_Valid_of ?_
+  refine (MndK.holdsAt_tall _ _ _ _).mpr fun a _ => (MndK.holdsAt_tall _ _ _ _).mpr fun b _ => ?_
+  refine (MndK.holdsAt_imp _ _ _ _ _).mpr fun h => ?_
+  have e := Mnd_sub_eq _ _ a b ((MndK.holdsAt_conj _ _ _ _ _).mp h).1
+  exact (MndK.holdsAt_teq _ _ _ _ _).mpr ⟨fun _ => e, congrArg img e⟩
+
+theorem Mnd_IntT : MndK.Valid IntT := by
+  refine Mnd_Valid_of ?_
+  refine (MndK.holdsAt_tall _ _ _ _).mpr fun a _ => (MndK.holdsAt_tall _ _ _ _).mpr fun b _ => ?_
+  refine (MndK.holdsAt_imp _ _ _ _ _).mpr fun h => ?_
+  have h1 := (MndK.box_of MndK_heq _ _ _ _).mp ((MndK.holdsAt_conj _ _ _ _ _).mp h).1 true (UND.Rrefl true)
+  have e := Mnd_sub_eq _ _ a b h1
+  exact (MndK.holdsAt_teq _ _ _ _ _).mpr ⟨fun _ => e, congrArg img e⟩
+
 end Kr
 end PIF

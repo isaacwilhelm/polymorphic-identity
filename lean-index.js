@@ -404,6 +404,50 @@ window.LEANINDEX = {
   "PIKripkeModels.lean",
   104
  ],
+ "Kr.MndK_isModelAt": [
+  "PIKripkeND.lean",
+  310
+ ],
+ "Kr.Mnd_Class": [
+  "PIKripkeND.lean",
+  347
+ ],
+ "Kr.Mnd_Cong": [
+  "PIWorlds.lean",
+  1035
+ ],
+ "Kr.Mnd_Disjoint": [
+  "PIWorlds.lean",
+  1038
+ ],
+ "Kr.Mnd_ExtT": [
+  "PIKripkeND.lean",
+  427
+ ],
+ "Kr.Mnd_Inj": [
+  "PIWorlds.lean",
+  1037
+ ],
+ "Kr.Mnd_IntT": [
+  "PIKripkeND.lean",
+  434
+ ],
+ "Kr.Mnd_LLEqv": [
+  "PIWorlds.lean",
+  1039
+ ],
+ "Kr.Mnd_Recovery": [
+  "PIKripkeND.lean",
+  412
+ ],
+ "Kr.Mnd_Slogan": [
+  "PIWorlds.lean",
+  1034
+ ],
+ "Kr.Mnd_not_NDTeq": [
+  "PIWorlds.lean",
+  1045
+ ],
  "LLEqv": [
   "PIFoundation.lean",
   945

@@ -1328,5 +1328,80 @@ theorem simple_IntT : (S U).Valid IntT := by
 
 end Frame
 
+/-! ## Facts for frames in which identity within a type is identity -/
+
+namespace KInv
+variable {F : Frame}
+
+theorem Rel_simple (I J : KInv F) {n : Nat} (K : Cat n) : ∀ (_ : K.Simple) (ρ ρ' : F.U.TEnv n) (Rs : RelV ρ ρ')
+    (w : F.U.W) x y, I.Rel K ρ ρ' Rs w x y ↔ J.Rel K ρ ρ' Rs w x y := by
+  induction K with
+  | e => intros; exact Iff.rfl
+  | t => intros; exact Iff.rfl
+  | var i => intros; exact Iff.rfl
+  | arr a b iha ihb =>
+    intro hK ρ ρ' Rs w f g
+    exact forall_congr' fun v => imp_congr Iff.rfl (forall_congr' fun x => forall_congr' fun y =>
+      imp_congr (iha hK.1 ρ ρ' Rs v x y) (ihb hK.2 ρ ρ' Rs v _ _))
+  | pi _ _ => intro hK; exact hK.elim
+
+theorem EnvRel_indep (I J : KInv F) {n : Nat} (Γ : Ctx n) : ∀ (ρ ρ' : F.U.TEnv n) (Rs : RelV ρ ρ') (w : F.U.W) env env',
+    I.EnvRel Γ ρ ρ' Rs w env env' → J.EnvRel Γ ρ ρ' Rs w env env' := by
+  induction Γ with
+  | nil => intros; trivial
+  | ext Γ σ ih => intro ρ ρ' Rs w env env' h; exact ⟨ih ρ ρ' Rs w _ _ h.1, (Rel_simple I J σ.1 σ.2 ρ ρ' Rs w _ _).mp h.2⟩
+  | text Γ ih => intro ρ ρ' Rs w env env' h; exact ih _ _ _ w env env' h
+
+/-- LL≈ holds at a world for two types related there by an admissible relation. -/
+theorem llTeq_at (I : KInv F) {n : Nat} {Γ : Ctx n} (Q : Tm Γ (.pi .t)) (w : F.U.W) (ρ : F.U.TEnv n)
+    (env : F.U.Env Γ ρ) (henv : F.EnvAdm Γ ρ w env) (a b : Code F.U.Base)
+    (S : F.U.W → F.U.El a → F.U.El b → Prop) (hS : I.Adm w a b S)
+    (hq : F.HoldsAt (Tm.tapp Q.twk.twk tv1) (scons b (scons a ρ)) env w) :
+    F.HoldsAt (Tm.tapp Q.twk.twk tv0) (scons b (scons a ρ)) env w := by
+  have hrel := I.fundamental Q ρ ρ (F.homRs ρ) w (fun i => I.refl w (ρ i)) env env
+    (EnvRel_indep F.hom I Γ ρ ρ _ w env env henv) w (F.U.Rrefl w) a b S hS w (F.U.Rrefl w)
+  have hG : HEq (F.eval Q.twk.twk (scons b (scons a ρ)) env) (F.eval Q ρ env) :=
+    (F.eval_twk Q.twk b (scons a ρ) env).trans (F.eval_twk Q a ρ env)
+  have h1 : HEq (F.eval (Tm.tapp Q.twk.twk tv1) (scons b (scons a ρ)) env) (F.eval Q ρ env a) :=
+    (F.heq_eval_tapp (K := Cat.t) Q.twk.twk tv1 (scons b (scons a ρ)) env).trans
+      (heq_dapp (P := fun _ => F.U.W → Prop) (Q := fun _ => F.U.W → Prop) (fun _ => rfl) hG rfl)
+  have h0 : HEq (F.eval (Tm.tapp Q.twk.twk tv0) (scons b (scons a ρ)) env) (F.eval Q ρ env b) :=
+    (F.heq_eval_tapp (K := Cat.t) Q.twk.twk tv0 (scons b (scons a ρ)) env).trans
+      (heq_dapp (P := fun _ => F.U.W → Prop) (Q := fun _ => F.U.W → Prop) (fun _ => rfl) hG rfl)
+  have e1 := congrFun (eq_of_heq h1) w
+  have e0 := congrFun (eq_of_heq h0) w
+  show F.U.ap (F.eval (Tm.tapp Q.twk.twk tv0) (scons b (scons a ρ)) env) w
+  unfold Univ.ap
+  rw [e0]
+  have hq' : F.eval Q ρ env a w := by rw [← e1]; exact hq
+  exact hrel.mp hq'
+
+end KInv
+
+namespace Frame
+variable (F : Frame)
+
+theorem LLEqv_of (heq : ∀ a x y w, F.eqv a a x y w ↔ F.U.rel a w x y) : F.ValidAt LLEqv := by
+  intro w ρ _ env _
+  refine F.holdsAt_tall _ _ _ w |>.mpr fun a _ => ?_
+  refine (F.holdsAt_all _ _ _ _ w).mpr fun x _ => (F.holdsAt_all _ _ _ _ w).mpr fun y _ => ?_
+  refine (F.holdsAt_imp _ _ _ _ w).mpr fun hxy => ?_
+  refine (F.holdsAt_all _ _ _ _ w).mpr fun G hG => (F.holdsAt_imp _ _ _ _ w).mpr fun hGx => ?_
+  have hxy' : F.U.rel a w x y := (heq _ _ _ w).mp ((F.holdsAt_eqv _ _ _ _ _ _ w).mp hxy)
+  have hG' : F.U.rel (.arr a .t) w G G := hG
+  exact (hG' w (F.U.Rrefl w) x y hxy' w (F.U.Rrefl w)).mp hGx
+
+theorem box_of (heq : ∀ a x y w, F.eqv a a x y w ↔ F.U.rel a w x y) {n : Nat} {Γ : Ctx n} (φ : Fm Γ)
+    (ρ : F.U.TEnv n) (env : F.U.Env Γ ρ) (w : F.U.W) :
+    F.HoldsAt (boxF φ) ρ env w ↔ ∀ v, F.U.R w v → F.HoldsAt φ ρ env v := by
+  refine (F.holdsAt_eqv tyT tyT φ topF ρ env w).trans ((heq _ _ _ w).trans ?_)
+  show (∀ v, F.U.R w v → (F.eval φ ρ env v ↔ F.eval topF ρ env v)) ↔ _
+  have e := F.eval_topF ρ env
+  refine forall_congr' fun v => imp_congr Iff.rfl ?_
+  rw [e]
+  exact ⟨fun h => h.mpr trivial, fun h => ⟨fun _ => trivial, fun _ => h⟩⟩
+
+end Frame
+
 end Kr
 end PIF
