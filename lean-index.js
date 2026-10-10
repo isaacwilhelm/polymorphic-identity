@@ -8,13 +8,45 @@ window.LEANINDEX = {
   "PIOQ_Small.lean",
   104
  ],
+ "Al.MBH_Cantor": [
+  "PIOQ_P_MBH.lean",
+  216
+ ],
  "Al.MBH_Collapse": [
   "PIOQ_Small.lean",
   97
  ],
+ "Al.MBH_ExtT": [
+  "PIOQ_P_MBH.lean",
+  260
+ ],
  "Al.MBH_Hae": [
   "PIHaeQs.lean",
   1138
+ ],
+ "Al.MBH_Inj": [
+  "PIOQ_P_MBH.lean",
+  241
+ ],
+ "Al.MBH_IntT": [
+  "PIOQ_P_MBH.lean",
+  272
+ ],
+ "Al.MBH_PCong": [
+  "PIOQ_P_MBH.lean",
+  227
+ ],
+ "Al.MBH_Recovery": [
+  "PIOQ_P_MBH.lean",
+  251
+ ],
+ "Al.MBH_TBF": [
+  "PIOQ_P_MBH.lean",
+  436
+ ],
+ "Al.MBH_TCBF": [
+  "PIOQ_P_MBH.lean",
+  444
  ],
  "Al.MBH_TopBot": [
   "PIHaeQs.lean",
@@ -28,29 +60,117 @@ window.LEANINDEX = {
   "PIOQ_F3c.lean",
   41
  ],
+ "Al.MBH_not_Bool": [
+  "PIOQ_P_MBH.lean",
+  540
+ ],
+ "Al.MBH_not_Bridge": [
+  "PIOQ_P_MBH.lean",
+  555
+ ],
+ "Al.MBH_not_Class": [
+  "PIOQ_P_MBH.lean",
+  542
+ ],
+ "Al.MBH_not_Cong": [
+  "PIOQ_P_MBH.lean",
+  477
+ ],
+ "Al.MBH_not_IdId": [
+  "PIOQ_P_MBH.lean",
+  516
+ ],
+ "Al.MBH_not_PExt": [
+  "PIOQ_P_MBH.lean",
+  501
+ ],
  "Al.MBH_not_TAx": [
   "PIHaeQs.lean",
   1149
+ ],
+ "Al.MBH_not_WCong": [
+  "PIOQ_P_MBH.lean",
+  461
  ],
  "Al.MCc_BF": [
   "PIOQ_F3c.lean",
   110
  ],
+ "Al.MCc_Cantor": [
+  "PIOQ_P_MCc.lean",
+  241
+ ],
+ "Al.MCc_Choice": [
+  "PIOQ_P_MCc.lean",
+  382
+ ],
  "Al.MCc_Collapse": [
   "PIOQ_F3c.lean",
   84
+ ],
+ "Al.MCc_ExtT": [
+  "PIOQ_P_MCc.lean",
+  208
  ],
  "Al.MCc_Hae": [
   "PIOQ_F3c.lean",
   81
  ],
+ "Al.MCc_IdId": [
+  "PIOQ_P_MCc.lean",
+  374
+ ],
+ "Al.MCc_Inj": [
+  "PIOQ_P_MCc.lean",
+  187
+ ],
+ "Al.MCc_PCong": [
+  "PIOQ_P_MCc.lean",
+  290
+ ],
+ "Al.MCc_Recovery": [
+  "PIOQ_P_MCc.lean",
+  197
+ ],
+ "Al.MCc_TBF": [
+  "PIOQ_P_MCc.lean",
+  521
+ ],
+ "Al.MCc_TCBF": [
+  "PIOQ_P_MCc.lean",
+  529
+ ],
  "Al.MCc_model": [
   "PIOQ_F3c.lean",
   80
  ],
+ "Al.MCc_not_Bool": [
+  "PIOQ_P_MCc.lean",
+  361
+ ],
+ "Al.MCc_not_Bridge": [
+  "PIOQ_P_MCc.lean",
+  346
+ ],
  "Al.MCc_not_CBF": [
   "PIOQ_F3c.lean",
   121
+ ],
+ "Al.MCc_not_Class": [
+  "PIOQ_P_MCc.lean",
+  370
+ ],
+ "Al.MCc_not_Cong": [
+  "PIOQ_P_MCc.lean",
+  256
+ ],
+ "Al.MCc_not_IntT": [
+  "PIOQ_P_MCc.lean",
+  231
+ ],
+ "Al.MCc_not_PExt": [
+  "PIOQ_P_MCc.lean",
+  306
  ],
  "Al.MCc_not_TAx": [
   "PIOQ_F3c.lean",
@@ -59,6 +179,10 @@ window.LEANINDEX = {
  "Al.MCc_not_TopBot": [
   "PIOQ_F3c.lean",
   92
+ ],
+ "Al.MCc_not_WCong": [
+  "PIOQ_P_MCc.lean",
+  272
  ],
  "Al.MIdB_CBF": [
   "PIOQ_MIdB.lean",
@@ -352,21 +476,117 @@ window.LEANINDEX = {
   "PIOQ_MId.lean",
   310
  ],
+ "Al.MTH_BF": [
+  "PIOQ_P_MTH.lean",
+  462
+ ],
+ "Al.MTH_Cantor": [
+  "PIOQ_P_MTH.lean",
+  274
+ ],
+ "Al.MTH_ExtT": [
+  "PIOQ_P_MTH.lean",
+  246
+ ],
  "Al.MTH_Hae": [
   "PIHaeQs.lean",
   1102
+ ],
+ "Al.MTH_Inj": [
+  "PIOQ_P_MTH.lean",
+  204
+ ],
+ "Al.MTH_IntT": [
+  "PIOQ_P_MTH.lean",
+  258
+ ],
+ "Al.MTH_NDTeq": [
+  "PIOQ_P_MTH.lean",
+  417
+ ],
+ "Al.MTH_NDX": [
+  "PIOQ_P_MTH.lean",
+  406
+ ],
+ "Al.MTH_NIEqv": [
+  "PIOQ_P_MTH.lean",
+  394
+ ],
+ "Al.MTH_NITeq": [
+  "PIOQ_P_MTH.lean",
+  412
+ ],
+ "Al.MTH_NIX": [
+  "PIOQ_P_MTH.lean",
+  400
+ ],
+ "Al.MTH_Nec": [
+  "PIOQ_P_MTH.lean",
+  480
+ ],
+ "Al.MTH_PCong": [
+  "PIOQ_P_MTH.lean",
+  331
+ ],
+ "Al.MTH_Recovery": [
+  "PIOQ_P_MTH.lean",
+  214
  ],
  "Al.MTH_TAx": [
   "PIHaeQs.lean",
   1104
  ],
+ "Al.MTH_TBF": [
+  "PIOQ_P_MTH.lean",
+  452
+ ],
+ "Al.MTH_TCBF": [
+  "PIOQ_P_MTH.lean",
+  664
+ ],
+ "Al.MTH_TNec": [
+  "PIOQ_P_MTH.lean",
+  457
+ ],
  "Al.MTH_model": [
   "PIHaeQs.lean",
   1101
  ],
+ "Al.MTH_not_Bool": [
+  "PIOQ_P_MTH.lean",
+  434
+ ],
+ "Al.MTH_not_Bridge": [
+  "PIOQ_P_MTH.lean",
+  511
+ ],
+ "Al.MTH_not_CBF": [
+  "PIOQ_P_MTH.lean",
+  469
+ ],
+ "Al.MTH_not_Class": [
+  "PIOQ_P_MTH.lean",
+  436
+ ],
+ "Al.MTH_not_Cong": [
+  "PIOQ_P_MTH.lean",
+  359
+ ],
+ "Al.MTH_not_IdId": [
+  "PIOQ_P_MTH.lean",
+  441
+ ],
+ "Al.MTH_not_PExt": [
+  "PIOQ_P_MTH.lean",
+  376
+ ],
  "Al.MTH_not_Truth": [
   "PIHaeQs.lean",
   1115
+ ],
+ "Al.MTH_not_WCong": [
+  "PIOQ_P_MTH.lean",
+  341
  ],
  "Al.Mb_LLEqv": [
   "PIBarcanModels.lean",
@@ -920,9 +1140,153 @@ window.LEANINDEX = {
   "PIBarcanModels.lean",
   539
  ],
+ "Al.MhwA_BF": [
+  "PIOQ_P_MhwA.lean",
+  141
+ ],
+ "Al.MhwA_ExtT": [
+  "PIOQ_P_MhwA.lean",
+  262
+ ],
+ "Al.MhwA_Inj": [
+  "PIOQ_P_MhwA.lean",
+  47
+ ],
+ "Al.MhwA_IntT": [
+  "PIOQ_P_MhwA.lean",
+  284
+ ],
+ "Al.MhwA_NDX": [
+  "PIOQ_P_MhwA.lean",
+  80
+ ],
+ "Al.MhwA_PCong": [
+  "PIOQ_P_MhwA.lean",
+  235
+ ],
+ "Al.MhwA_Recovery": [
+  "PIOQ_P_MhwA.lean",
+  57
+ ],
+ "Al.MhwA_TCBF": [
+  "PIOQ_P_MhwA.lean",
+  127
+ ],
+ "Al.MhwA_TNec": [
+  "PIOQ_P_MhwA.lean",
+  133
+ ],
+ "Al.MhwA_not_Bool": [
+  "PIOQ_P_MhwA.lean",
+  113
+ ],
+ "Al.MhwA_not_CBF": [
+  "PIOQ_P_MhwA.lean",
+  150
+ ],
+ "Al.MhwA_not_Class": [
+  "PIOQ_P_MhwA.lean",
+  122
+ ],
+ "Al.MhwA_not_IdId": [
+  "PIOQ_P_MhwA.lean",
+  115
+ ],
+ "Al.MhwA_not_NDTeq": [
+  "PIOQ_P_MhwA.lean",
+  96
+ ],
+ "Al.MhwA_not_NIEqv": [
+  "PIOQ_P_MhwA.lean",
+  68
+ ],
+ "Al.MhwA_not_NITeq": [
+  "PIOQ_P_MhwA.lean",
+  88
+ ],
+ "Al.MhwA_not_NIX": [
+  "PIOQ_P_MhwA.lean",
+  74
+ ],
+ "Al.MhwA_not_Nec": [
+  "PIOQ_P_MhwA.lean",
+  161
+ ],
+ "Al.MhwA_not_PExt": [
+  "PIOQ_P_MhwA.lean",
+  248
+ ],
  "Al.MhwA_not_TBF": [
   "PIBarcanModels.lean",
   458
+ ],
+ "Al.MhwC_BF": [
+  "PIOQ_P_MhwC.lean",
+  192
+ ],
+ "Al.MhwC_ExtT": [
+  "PIOQ_P_MhwC.lean",
+  135
+ ],
+ "Al.MhwC_Inj": [
+  "PIOQ_P_MhwC.lean",
+  116
+ ],
+ "Al.MhwC_IntT": [
+  "PIOQ_P_MhwC.lean",
+  153
+ ],
+ "Al.MhwC_NDX": [
+  "PIOQ_P_MhwC.lean",
+  167
+ ],
+ "Al.MhwC_PCong": [
+  "PIOQ_P_MhwC.lean",
+  108
+ ],
+ "Al.MhwC_Recovery": [
+  "PIOQ_P_MhwC.lean",
+  126
+ ],
+ "Al.MhwC_TBF": [
+  "PIOQ_P_MhwC.lean",
+  179
+ ],
+ "Al.MhwC_not_Bool": [
+  "PIOQ_P_MhwC.lean",
+  260
+ ],
+ "Al.MhwC_not_CBF": [
+  "PIOQ_P_MhwC.lean",
+  271
+ ],
+ "Al.MhwC_not_IdId": [
+  "PIOQ_P_MhwC.lean",
+  262
+ ],
+ "Al.MhwC_not_NDTeq": [
+  "PIOQ_P_MhwC.lean",
+  242
+ ],
+ "Al.MhwC_not_NIEqv": [
+  "PIOQ_P_MhwC.lean",
+  218
+ ],
+ "Al.MhwC_not_NITeq": [
+  "PIOQ_P_MhwC.lean",
+  232
+ ],
+ "Al.MhwC_not_NIX": [
+  "PIOQ_P_MhwC.lean",
+  225
+ ],
+ "Al.MhwC_not_Nec": [
+  "PIOQ_P_MhwC.lean",
+  286
+ ],
+ "Al.MhwC_not_PExt": [
+  "PIOQ_P_MhwC.lean",
+  211
  ],
  "Al.MhwC_not_TCBF": [
   "PIBarcanModels.lean",
@@ -944,13 +1308,49 @@ window.LEANINDEX = {
   "PIBarcanModels.lean",
   427
  ],
+ "Al.Mhw_BF": [
+  "PIOQ_P_Mhw.lean",
+  239
+ ],
+ "Al.Mhw_ExtT": [
+  "PIOQ_P_Mhw.lean",
+  159
+ ],
  "Al.Mhw_Hae": [
   "PIAlgModels.lean",
   384
  ],
+ "Al.Mhw_Inj": [
+  "PIOQ_P_Mhw.lean",
+  140
+ ],
+ "Al.Mhw_IntT": [
+  "PIOQ_P_Mhw.lean",
+  178
+ ],
  "Al.Mhw_LLEqv": [
   "PIAlgModels.lean",
   389
+ ],
+ "Al.Mhw_NDX": [
+  "PIOQ_P_Mhw.lean",
+  191
+ ],
+ "Al.Mhw_PCong": [
+  "PIOQ_P_Mhw.lean",
+  203
+ ],
+ "Al.Mhw_Recovery": [
+  "PIOQ_P_Mhw.lean",
+  150
+ ],
+ "Al.Mhw_TBF": [
+  "PIOQ_P_Mhw.lean",
+  232
+ ],
+ "Al.Mhw_TCBF": [
+  "PIOQ_P_Mhw.lean",
+  409
  ],
  "Al.Mhw_TNec": [
   "PIBarcanModels.lean",
@@ -963,6 +1363,10 @@ window.LEANINDEX = {
  "Al.Mhw_not_Bool": [
   "PIAlgModels.lean",
   446
+ ],
+ "Al.Mhw_not_CBF": [
+  "PIOQ_P_Mhw.lean",
+  249
  ],
  "Al.Mhw_not_Collapse": [
   "PIAlgModels.lean",
@@ -983,6 +1387,14 @@ window.LEANINDEX = {
  "Al.Mhw_not_NITeq": [
   "PIAlgModels.lean",
   413
+ ],
+ "Al.Mhw_not_Nec": [
+  "PIOQ_P_Mhw.lean",
+  259
+ ],
+ "Al.Mhw_not_PExt": [
+  "PIOQ_P_Mhw.lean",
+  218
  ],
  "Al.Mii_CBF": [
   "PIOQ_P_Mii.lean",
@@ -1112,25 +1524,81 @@ window.LEANINDEX = {
   "PIBarcanModels.lean",
   391
  ],
+ "Al.MqHC_BF": [
+  "PIOQ_P_MqHC.lean",
+  228
+ ],
+ "Al.MqHC_Bool": [
+  "PIOQ_P_MqHC.lean",
+  188
+ ],
+ "Al.MqHC_CBF": [
+  "PIOQ_P_MqHC.lean",
+  243
+ ],
+ "Al.MqHC_ExtT": [
+  "PIOQ_P_MqHC.lean",
+  138
+ ],
  "Al.MqHC_Hae": [
   "PIModalX2.lean",
   352
+ ],
+ "Al.MqHC_IdId": [
+  "PIOQ_P_MqHC.lean",
+  195
+ ],
+ "Al.MqHC_Inj": [
+  "PIOQ_P_MqHC.lean",
+  121
+ ],
+ "Al.MqHC_IntT": [
+  "PIOQ_P_MqHC.lean",
+  142
  ],
  "Al.MqHC_LLEqv": [
   "PIModalX2.lean",
   341
  ],
+ "Al.MqHC_NDTeq": [
+  "PIOQ_P_MqHC.lean",
+  165
+ ],
  "Al.MqHC_NDX": [
   "PIModalX2.lean",
   368
+ ],
+ "Al.MqHC_NITeq": [
+  "PIOQ_P_MqHC.lean",
+  157
  ],
  "Al.MqHC_NIX": [
   "PIModalX2.lean",
   359
  ],
+ "Al.MqHC_Nec": [
+  "PIOQ_P_MqHC.lean",
+  258
+ ],
+ "Al.MqHC_PCong": [
+  "PIOQ_P_MqHC.lean",
+  113
+ ],
+ "Al.MqHC_Recovery": [
+  "PIOQ_P_MqHC.lean",
+  130
+ ],
+ "Al.MqHC_TBF": [
+  "PIOQ_P_MqHC.lean",
+  215
+ ],
  "Al.MqHC_model": [
   "PIModalX2.lean",
   328
+ ],
+ "Al.MqHC_not_PExt": [
+  "PIOQ_P_MqHC.lean",
+  270
  ],
  "Al.MqHC_not_TCBF": [
   "PIModalX2.lean",
@@ -1140,9 +1608,21 @@ window.LEANINDEX = {
   "PIModalX2.lean",
   395
  ],
+ "Al.MqH_BF": [
+  "PIOQ_P_MqH.lean",
+  183
+ ],
  "Al.MqH_Bool": [
   "PIHaeQs.lean",
   764
+ ],
+ "Al.MqH_CBF": [
+  "PIOQ_P_MqH.lean",
+  198
+ ],
+ "Al.MqH_ExtT": [
+  "PIOQ_P_MqH.lean",
+  139
  ],
  "Al.MqH_Hae": [
   "PIHaeQs.lean",
@@ -1152,9 +1632,21 @@ window.LEANINDEX = {
   "PIHaeQs.lean",
   771
  ],
+ "Al.MqH_Inj": [
+  "PIOQ_P_MqH.lean",
+  122
+ ],
+ "Al.MqH_IntT": [
+  "PIOQ_P_MqH.lean",
+  143
+ ],
  "Al.MqH_LLEqv": [
   "PIHaeQs.lean",
   735
+ ],
+ "Al.MqH_NDTeq": [
+  "PIOQ_P_MqH.lean",
+  158
  ],
  "Al.MqH_NDX": [
   "PIModalX2.lean",
@@ -1172,9 +1664,25 @@ window.LEANINDEX = {
   "PIModalX2.lean",
   270
  ],
+ "Al.MqH_Nec": [
+  "PIOQ_P_MqH.lean",
+  213
+ ],
+ "Al.MqH_PCong": [
+  "PIOQ_P_MqH.lean",
+  114
+ ],
+ "Al.MqH_Recovery": [
+  "PIOQ_P_MqH.lean",
+  131
+ ],
  "Al.MqH_TCBF": [
   "PIHaeQs.lean",
   806
+ ],
+ "Al.MqH_TNec": [
+  "PIOQ_P_MqH.lean",
+  171
  ],
  "Al.MqH_model": [
   "PIHaeQs.lean",
@@ -1183,6 +1691,10 @@ window.LEANINDEX = {
  "Al.MqH_not_Class": [
   "PIHaeQs.lean",
   821
+ ],
+ "Al.MqH_not_PExt": [
+  "PIOQ_P_MqH.lean",
+  225
  ],
  "Al.MqH_not_TBF": [
   "PIModalX2.lean",
@@ -1656,13 +2168,137 @@ window.LEANINDEX = {
   "PIOQ_P_MKC.lean",
   67
  ],
+ "Kr.MKW1_BF": [
+  "PIOQ_P_MKW1.lean",
+  220
+ ],
+ "Kr.MKW1_Bool": [
+  "PIOQ_P_MKW1.lean",
+  407
+ ],
+ "Kr.MKW1_Bridge": [
+  "PIOQ_P_MKW1.lean",
+  797
+ ],
+ "Kr.MKW1_CBF": [
+  "PIOQ_P_MKW1.lean",
+  211
+ ],
+ "Kr.MKW1_Cantor": [
+  "PIOQ_P_MKW1.lean",
+  94
+ ],
+ "Kr.MKW1_Class": [
+  "PIOQ_P_MKW1.lean",
+  400
+ ],
+ "Kr.MKW1_Disjoint": [
+  "PIOQ_P_MKW1.lean",
+  58
+ ],
+ "Kr.MKW1_ExtT": [
+  "PIOQ_P_MKW1.lean",
+  127
+ ],
+ "Kr.MKW1_IdId": [
+  "PIOQ_P_MKW1.lean",
+  409
+ ],
+ "Kr.MKW1_Inj": [
+  "PIOQ_P_MKW1.lean",
+  103
+ ],
+ "Kr.MKW1_IntT": [
+  "PIOQ_P_MKW1.lean",
+  133
+ ],
+ "Kr.MKW1_LLPoly": [
+  "PIOQ_P_MKW1.lean",
+  810
+ ],
+ "Kr.MKW1_NDTeq": [
+  "PIOQ_P_MKW1.lean",
+  178
+ ],
+ "Kr.MKW1_NDX": [
+  "PIOQ_P_MKW1.lean",
+  164
+ ],
+ "Kr.MKW1_NIEqv": [
+  "PIOQ_P_MKW1.lean",
+  150
+ ],
+ "Kr.MKW1_NITeq": [
+  "PIOQ_P_MKW1.lean",
+  172
+ ],
+ "Kr.MKW1_NIX": [
+  "PIOQ_P_MKW1.lean",
+  157
+ ],
+ "Kr.MKW1_Nec": [
+  "PIOQ_P_MKW1.lean",
+  190
+ ],
+ "Kr.MKW1_Recovery": [
+  "PIOQ_P_MKW1.lean",
+  112
+ ],
+ "Kr.MKW1_Slogan": [
+  "PIOQ_P_MKW1.lean",
+  68
+ ],
+ "Kr.MKW1_TBF": [
+  "PIOQ_P_MKW1.lean",
+  198
+ ],
+ "Kr.MKW1_TCBF": [
+  "PIOQ_P_MKW1.lean",
+  205
+ ],
+ "Kr.MKW1_TNec": [
+  "PIOQ_P_MKW1.lean",
+  185
+ ],
+ "Kr.MKW1_not_Choice": [
+  "PIOQ_P_MKW1.lean",
+  252
+ ],
+ "Kr.MKW1_not_Collapse": [
+  "PIOQ_P_MKW1.lean",
+  143
+ ],
+ "Kr.MKW1_not_Hae": [
+  "PIOQ_P_MKW1.lean",
+  86
+ ],
+ "Kr.MKW1_not_Twin": [
+  "PIOQ_P_MKW1.lean",
+  76
+ ],
+ "Kr.MbfH_BF": [
+  "PIOQ_P_MbfH.lean",
+  234
+ ],
  "Kr.MbfH_Class": [
   "PIKripkeHae.lean",
   320
  ],
+ "Kr.MbfH_ExtT": [
+  "PIOQ_P_MbfH.lean",
+  177
+ ],
  "Kr.MbfH_Hae": [
   "PIKripkeHae.lean",
   321
+ ],
+ "Kr.MbfH_Inj": [
+  "PIOQ_P_MbfH.lean",
+  138
+ ],
+ "Kr.MbfH_IntT": [
+  "PIOQ_P_MbfH.lean",
+  184
  ],
  "Kr.MbfH_LLEqv": [
   "PIKripkeHae.lean",
@@ -1672,13 +2308,37 @@ window.LEANINDEX = {
   "PICongQs.lean",
   1050
  ],
+ "Kr.MbfH_PCong": [
+  "PIOQ_P_MbfH.lean",
+  112
+ ],
+ "Kr.MbfH_Recovery": [
+  "PIOQ_P_MbfH.lean",
+  147
+ ],
  "Kr.MbfH_isModelAt": [
   "PIKripkeHae.lean",
   313
  ],
+ "Kr.MbfH_not_Choice": [
+  "PIOQ_P_MbfH.lean",
+  267
+ ],
  "Kr.MbfH_not_Collapse": [
   "PICongQs.lean",
   1076
+ ],
+ "Kr.MbfH_not_NDX": [
+  "PIOQ_P_MbfH.lean",
+  222
+ ],
+ "Kr.MbfH_not_NIX": [
+  "PIOQ_P_MbfH.lean",
+  195
+ ],
+ "Kr.MbfH_not_PExt": [
+  "PIOQ_P_MbfH.lean",
+  122
  ],
  "Kr.MbfH_not_TBF": [
   "PIKripkeHae.lean",
@@ -1752,13 +2412,41 @@ window.LEANINDEX = {
   "PIOQ_KBF.lean",
   195
  ],
+ "Kr.MbkH_ExtT": [
+  "PIOQ_P_MbkH.lean",
+  161
+ ],
  "Kr.MbkH_Hae": [
   "PIOQ_KBF.lean",
   197
  ],
+ "Kr.MbkH_Inj": [
+  "PIOQ_P_MbkH.lean",
+  111
+ ],
+ "Kr.MbkH_IntT": [
+  "PIOQ_P_MbkH.lean",
+  168
+ ],
  "Kr.MbkH_LLEqv": [
   "PIOQ_KBF.lean",
   194
+ ],
+ "Kr.MbkH_NDTeq": [
+  "PIOQ_P_MbkH.lean",
+  129
+ ],
+ "Kr.MbkH_PCong": [
+  "PIOQ_P_MbkH.lean",
+  179
+ ],
+ "Kr.MbkH_Recovery": [
+  "PIOQ_P_MbkH.lean",
+  120
+ ],
+ "Kr.MbkH_TBF": [
+  "PIOQ_P_MbkH.lean",
+  138
  ],
  "Kr.MbkH_isModelAt": [
   "PIOQ_KBF.lean",
@@ -1768,9 +2456,17 @@ window.LEANINDEX = {
   "PIOQ_KBF.lean",
   199
  ],
+ "Kr.MbkH_not_Choice": [
+  "PIOQ_P_MbkH.lean",
+  242
+ ],
  "Kr.MbkH_not_NDX": [
   "PIOQ_KBF.lean",
   211
+ ],
+ "Kr.MbkH_not_NIX": [
+  "PIOQ_P_MbkH.lean",
+  204
  ],
  "Kr.Mbk_Class": [
   "PIOQ_KBF.lean",
@@ -1832,17 +2528,49 @@ window.LEANINDEX = {
   "PIOQ_KBF.lean",
   136
  ],
+ "Kr.MchH_BF": [
+  "PIOQ_P_MchH.lean",
+  237
+ ],
  "Kr.MchH_Class": [
   "PIModalX.lean",
   482
+ ],
+ "Kr.MchH_ExtT": [
+  "PIOQ_P_MchH.lean",
+  159
  ],
  "Kr.MchH_Hae": [
   "PIModalX.lean",
   483
  ],
+ "Kr.MchH_Inj": [
+  "PIOQ_P_MchH.lean",
+  109
+ ],
+ "Kr.MchH_IntT": [
+  "PIOQ_P_MchH.lean",
+  166
+ ],
  "Kr.MchH_LLEqv": [
   "PIModalX.lean",
   481
+ ],
+ "Kr.MchH_NDTeq": [
+  "PIOQ_P_MchH.lean",
+  127
+ ],
+ "Kr.MchH_PCong": [
+  "PIOQ_P_MchH.lean",
+  177
+ ],
+ "Kr.MchH_Recovery": [
+  "PIOQ_P_MchH.lean",
+  118
+ ],
+ "Kr.MchH_TBF": [
+  "PIOQ_P_MchH.lean",
+  136
  ],
  "Kr.MchH_isModelAt": [
   "PIModalX.lean",
@@ -1855,6 +2583,14 @@ window.LEANINDEX = {
  "Kr.MchH_not_NDX": [
   "PIModalX.lean",
   507
+ ],
+ "Kr.MchH_not_NIX": [
+  "PIOQ_P_MchH.lean",
+  221
+ ],
+ "Kr.MchH_not_PExt": [
+  "PIOQ_P_MchH.lean",
+  201
  ],
  "Kr.Mch_Class": [
   "PIModalX.lean",
@@ -2064,17 +2800,41 @@ window.LEANINDEX = {
   "PIOQ_KIE.lean",
   516
  ],
+ "Kr.MndH_BF": [
+  "PIOQ_P_MndH.lean",
+  255
+ ],
  "Kr.MndH_Class": [
   "PIKripkeHae.lean",
   393
+ ],
+ "Kr.MndH_ExtT": [
+  "PIOQ_P_MndH.lean",
+  181
  ],
  "Kr.MndH_Hae": [
   "PIKripkeHae.lean",
   394
  ],
+ "Kr.MndH_Inj": [
+  "PIOQ_P_MndH.lean",
+  35
+ ],
+ "Kr.MndH_IntT": [
+  "PIOQ_P_MndH.lean",
+  189
+ ],
  "Kr.MndH_LLEqv": [
   "PIKripkeHae.lean",
   392
+ ],
+ "Kr.MndH_PCong": [
+  "PIOQ_P_MndH.lean",
+  102
+ ],
+ "Kr.MndH_Recovery": [
+  "PIOQ_P_MndH.lean",
+  45
  ],
  "Kr.MndH_TBF": [
   "PICongQs.lean",
@@ -2084,6 +2844,10 @@ window.LEANINDEX = {
   "PIKripkeHae.lean",
   380
  ],
+ "Kr.MndH_not_Choice": [
+  "PIOQ_P_MndH.lean",
+  294
+ ],
  "Kr.MndH_not_Collapse": [
   "PICongQs.lean",
   1078
@@ -2091,6 +2855,18 @@ window.LEANINDEX = {
  "Kr.MndH_not_NDTeq": [
   "PIKripkeHae.lean",
   396
+ ],
+ "Kr.MndH_not_NDX": [
+  "PIOQ_P_MndH.lean",
+  227
+ ],
+ "Kr.MndH_not_NIX": [
+  "PIOQ_P_MndH.lean",
+  214
+ ],
+ "Kr.MndH_not_PExt": [
+  "PIOQ_P_MndH.lean",
+  241
  ],
  "Kr.MndK_isModelAt": [
   "PIKripkeND.lean",
@@ -4408,37 +5184,145 @@ window.LEANINDEX = {
   "PIModalX.lean",
   112
  ],
+ "Tg.MhtT_BF": [
+  "PIOQ_P_MhtT.lean",
+  224
+ ],
+ "Tg.MhtT_ExtT": [
+  "PIOQ_P_MhtT.lean",
+  130
+ ],
  "Tg.MhtT_Hae": [
   "PIBF.lean",
   843
+ ],
+ "Tg.MhtT_IdId": [
+  "PIOQ_P_MhtT.lean",
+  198
+ ],
+ "Tg.MhtT_Inj": [
+  "PIOQ_P_MhtT.lean",
+  122
+ ],
+ "Tg.MhtT_IntT": [
+  "PIOQ_P_MhtT.lean",
+  152
  ],
  "Tg.MhtT_LLEqv": [
   "PIBF.lean",
   844
  ],
+ "Tg.MhtT_NDTeq": [
+  "PIOQ_P_MhtT.lean",
+  170
+ ],
+ "Tg.MhtT_NDX": [
+  "PIOQ_P_MhtT.lean",
+  181
+ ],
+ "Tg.MhtT_NIEqv": [
+  "PIOQ_P_MhtT.lean",
+  159
+ ],
+ "Tg.MhtT_NITeq": [
+  "PIOQ_P_MhtT.lean",
+  165
+ ],
+ "Tg.MhtT_NIX": [
+  "PIOQ_P_MhtT.lean",
+  175
+ ],
+ "Tg.MhtT_Nec": [
+  "PIOQ_P_MhtT.lean",
+  231
+ ],
+ "Tg.MhtT_PCong": [
+  "PIOQ_P_MhtT.lean",
+  100
+ ],
+ "Tg.MhtT_Recovery": [
+  "PIOQ_P_MhtT.lean",
+  125
+ ],
+ "Tg.MhtT_TCBF": [
+  "PIOQ_P_MhtT.lean",
+  214
+ ],
  "Tg.MhtT_model": [
   "PIBF.lean",
   841
+ ],
+ "Tg.MhtT_not_Bool": [
+  "PIOQ_P_MhtT.lean",
+  196
  ],
  "Tg.MhtT_not_CBF": [
   "PIBF.lean",
   849
  ],
+ "Tg.MhtT_not_PExt": [
+  "PIOQ_P_MhtT.lean",
+  110
+ ],
+ "Tg.MhtT_not_TBF": [
+  "PIOQ_P_MhtT.lean",
+  208
+ ],
+ "Tg.MhtT_not_TNec": [
+  "PIOQ_P_MhtT.lean",
+  219
+ ],
+ "Tg.Mht_CBF": [
+  "PIOQ_P_Mht.lean",
+  201
+ ],
+ "Tg.Mht_ExtT": [
+  "PIOQ_P_Mht.lean",
+  134
+ ],
  "Tg.Mht_Hae": [
   "PINew.lean",
   565
+ ],
+ "Tg.Mht_Inj": [
+  "PIOQ_P_Mht.lean",
+  126
+ ],
+ "Tg.Mht_IntT": [
+  "PIOQ_P_Mht.lean",
+  151
  ],
  "Tg.Mht_LLEqv": [
   "PINew.lean",
   566
  ],
+ "Tg.Mht_NDTeq": [
+  "PIOQ_P_Mht.lean",
+  165
+ ],
  "Tg.Mht_NDX": [
   "PIModalX2.lean",
   46
  ],
+ "Tg.Mht_NITeq": [
+  "PIOQ_P_Mht.lean",
+  160
+ ],
  "Tg.Mht_NIX": [
   "PIModalX2.lean",
   40
+ ],
+ "Tg.Mht_PCong": [
+  "PIOQ_P_Mht.lean",
+  104
+ ],
+ "Tg.Mht_Recovery": [
+  "PIOQ_P_Mht.lean",
+  129
+ ],
+ "Tg.Mht_TCBF": [
+  "PIOQ_P_Mht.lean",
+  190
  ],
  "Tg.Mht_model": [
   "PINew.lean",
@@ -4448,6 +5332,10 @@ window.LEANINDEX = {
   "PIBF.lean",
   817
  ],
+ "Tg.Mht_not_Bool": [
+  "PIOQ_P_Mht.lean",
+  179
+ ],
  "Tg.Mht_not_IdId": [
   "PIModalX2.lean",
   52
@@ -4456,9 +5344,21 @@ window.LEANINDEX = {
   "PIBF.lean",
   827
  ],
+ "Tg.Mht_not_PExt": [
+  "PIOQ_P_Mht.lean",
+  114
+ ],
  "Tg.Mht_not_PropExt": [
   "PINew.lean",
   568
+ ],
+ "Tg.Mht_not_TBF": [
+  "PIOQ_P_Mht.lean",
+  184
+ ],
+ "Tg.Mht_not_TNec": [
+  "PIOQ_P_Mht.lean",
+  195
  ],
  "Tg.Mi_Cong": [
   "PINew.lean",
@@ -5152,49 +6052,177 @@ window.LEANINDEX = {
   "PIModalX.lean",
   112
  ],
+ "Wd.ME2_BF": [
+  "PIOQ_P_ME2.lean",
+  134
+ ],
  "Wd.ME2_Class": [
   "PIModalX.lean",
   681
+ ],
+ "Wd.ME2_Cong": [
+  "PIOQ_P_ME2.lean",
+  94
  ],
  "Wd.ME2_ExtT": [
   "PIModalX.lean",
   688
  ],
+ "Wd.ME2_Inj": [
+  "PIOQ_P_ME2.lean",
+  113
+ ],
  "Wd.ME2_LLEqv": [
   "PIModalX.lean",
   680
+ ],
+ "Wd.ME2_NDTeq": [
+  "PIOQ_P_ME2.lean",
+  120
+ ],
+ "Wd.ME2_NDX": [
+  "PIOQ_P_ME2.lean",
+  126
+ ],
+ "Wd.ME2_PCong": [
+  "PIOQ_P_ME2.lean",
+  98
+ ],
+ "Wd.ME2_Recovery": [
+  "PIOQ_P_ME2.lean",
+  115
+ ],
+ "Wd.ME2_Slogan": [
+  "PIOQ_P_ME2.lean",
+  59
+ ],
+ "Wd.ME2_TBF": [
+  "PIOQ_P_ME2.lean",
+  132
  ],
  "Wd.ME2_model": [
   "PIModalX.lean",
   676
  ],
+ "Wd.ME2_not_Hae": [
+  "PIOQ_P_ME2.lean",
+  66
+ ],
  "Wd.ME2_not_NIX": [
   "PIModalX.lean",
   684
+ ],
+ "Wd.ME2_not_PExt": [
+  "PIOQ_P_ME2.lean",
+  104
+ ],
+ "Wd.ME2_not_Twin": [
+  "PIOQ_P_ME2.lean",
+  73
  ],
  "Wd.MNec_BF": [
   "PIBF.lean",
   930
  ],
+ "Wd.MNec_Bool": [
+  "PIOQ_P_MNec.lean",
+  154
+ ],
  "Wd.MNec_CBF": [
   "PIBF.lean",
   931
+ ],
+ "Wd.MNec_Cong": [
+  "PIOQ_P_MNec.lean",
+  86
+ ],
+ "Wd.MNec_Disjoint": [
+  "PIOQ_P_MNec.lean",
+  36
+ ],
+ "Wd.MNec_ExtT": [
+  "PIOQ_P_MNec.lean",
+  108
+ ],
+ "Wd.MNec_Inj": [
+  "PIOQ_P_MNec.lean",
+  125
+ ],
+ "Wd.MNec_IntT": [
+  "PIOQ_P_MNec.lean",
+  114
  ],
  "Wd.MNec_LLEqv": [
   "PIBF.lean",
   902
  ],
+ "Wd.MNec_LLPoly": [
+  "PIOQ_P_MNec.lean",
+  59
+ ],
+ "Wd.MNec_NDTeq": [
+  "PIOQ_P_MNec.lean",
+  144
+ ],
+ "Wd.MNec_NITeq": [
+  "PIOQ_P_MNec.lean",
+  136
+ ],
  "Wd.MNec_Nec": [
   "PIBF.lean",
   916
+ ],
+ "Wd.MNec_PCong": [
+  "PIOQ_P_MNec.lean",
+  94
+ ],
+ "Wd.MNec_PExt": [
+  "PIOQ_P_MNec.lean",
+  100
+ ],
+ "Wd.MNec_Recovery": [
+  "PIOQ_P_MNec.lean",
+  130
+ ],
+ "Wd.MNec_Slogan": [
+  "PIOQ_P_MNec.lean",
+  39
+ ],
+ "Wd.MNec_TBF": [
+  "PIOQ_P_MNec.lean",
+  168
+ ],
+ "Wd.MNec_TCBF": [
+  "PIOQ_P_MNec.lean",
+  170
+ ],
+ "Wd.MNec_TNec": [
+  "PIOQ_P_MNec.lean",
+  177
  ],
  "Wd.MNec_model": [
   "PIBF.lean",
   898
  ],
+ "Wd.MNec_not_Hae": [
+  "PIOQ_P_MNec.lean",
+  54
+ ],
+ "Wd.MNec_not_IdId": [
+  "PIOQ_P_MNec.lean",
+  161
+ ],
+ "Wd.MNec_not_NDX": [
+  "PIOQ_P_MNec.lean",
+  149
+ ],
  "Wd.MNec_not_NIEqv": [
   "PIBF.lean",
   925
+ ],
+ "Wd.MNec_not_Twin": [
+  "PIOQ_P_MNec.lean",
+  46
  ],
  "Wd.Mcol_Bool": [
   "PIWorlds.lean",
@@ -5220,25 +6248,73 @@ window.LEANINDEX = {
   "PIBF.lean",
   409
  ],
+ "Wd.MhE_Bool": [
+  "PIOQ_P_MhE.lean",
+  145
+ ],
  "Wd.MhE_CBF": [
   "PIBF.lean",
   410
+ ],
+ "Wd.MhE_ExtT": [
+  "PIOQ_P_MhE.lean",
+  123
  ],
  "Wd.MhE_Hae": [
   "PIModalX2.lean",
   248
  ],
+ "Wd.MhE_Inj": [
+  "PIOQ_P_MhE.lean",
+  113
+ ],
+ "Wd.MhE_IntT": [
+  "PIOQ_P_MhE.lean",
+  128
+ ],
  "Wd.MhE_LLEqv": [
   "PIModalX2.lean",
   245
+ ],
+ "Wd.MhE_NDTeq": [
+  "PIOQ_P_MhE.lean",
+  143
  ],
  "Wd.MhE_NDX": [
   "PIModalX2.lean",
   256
  ],
+ "Wd.MhE_NITeq": [
+  "PIOQ_P_MhE.lean",
+  137
+ ],
+ "Wd.MhE_PCong": [
+  "PIOQ_P_MhE.lean",
+  105
+ ],
+ "Wd.MhE_Recovery": [
+  "PIOQ_P_MhE.lean",
+  118
+ ],
+ "Wd.MhE_TBF": [
+  "PIOQ_P_MhE.lean",
+  147
+ ],
+ "Wd.MhE_TCBF": [
+  "PIOQ_P_MhE.lean",
+  149
+ ],
+ "Wd.MhE_TNec": [
+  "PIOQ_P_MhE.lean",
+  156
+ ],
  "Wd.MhE_model": [
   "PIModalX2.lean",
   241
+ ],
+ "Wd.MhE_not_IdId": [
+  "PIOQ_P_MhE.lean",
+  174
  ],
  "Wd.MhE_not_NIEqv": [
   "PIModalX2.lean",
@@ -5248,13 +6324,133 @@ window.LEANINDEX = {
   "PIBF.lean",
   411
  ],
+ "Wd.MhE_not_PExt": [
+  "PIOQ_P_MhE.lean",
+  165
+ ],
+ "Wd.MhND_BF": [
+  "PIOQ_P_MhND.lean",
+  206
+ ],
+ "Wd.MhND_Bool": [
+  "PIOQ_P_MhND.lean",
+  181
+ ],
+ "Wd.MhND_CBF": [
+  "PIOQ_P_MhND.lean",
+  207
+ ],
+ "Wd.MhND_ExtT": [
+  "PIOQ_P_MhND.lean",
+  157
+ ],
+ "Wd.MhND_IdId": [
+  "PIOQ_P_MhND.lean",
+  186
+ ],
+ "Wd.MhND_Inj": [
+  "PIOQ_P_MhND.lean",
+  147
+ ],
+ "Wd.MhND_IntT": [
+  "PIOQ_P_MhND.lean",
+  160
+ ],
+ "Wd.MhND_NITeq": [
+  "PIOQ_P_MhND.lean",
+  173
+ ],
+ "Wd.MhND_Nec": [
+  "PIOQ_P_MhND.lean",
+  208
+ ],
+ "Wd.MhND_PCong": [
+  "PIOQ_P_MhND.lean",
+  118
+ ],
+ "Wd.MhND_Recovery": [
+  "PIOQ_P_MhND.lean",
+  154
+ ],
+ "Wd.MhND_TBF": [
+  "PIOQ_P_MhND.lean",
+  193
+ ],
+ "Wd.MhND_TCBF": [
+  "PIOQ_P_MhND.lean",
+  195
+ ],
+ "Wd.MhND_TNec": [
+  "PIOQ_P_MhND.lean",
+  201
+ ],
  "Wd.MhND_model": [
   "PIModalX2.lean",
   213
  ],
+ "Wd.MhND_not_Class": [
+  "PIOQ_P_MhND.lean",
+  225
+ ],
  "Wd.MhND_not_NDTeq": [
   "PIModalX2.lean",
   221
+ ],
+ "Wd.MhND_not_PExt": [
+  "PIOQ_P_MhND.lean",
+  139
+ ],
+ "Wd.MhNI_BF": [
+  "PIOQ_P_MhNI.lean",
+  203
+ ],
+ "Wd.MhNI_Bool": [
+  "PIOQ_P_MhNI.lean",
+  128
+ ],
+ "Wd.MhNI_CBF": [
+  "PIOQ_P_MhNI.lean",
+  204
+ ],
+ "Wd.MhNI_ExtT": [
+  "PIOQ_P_MhNI.lean",
+  155
+ ],
+ "Wd.MhNI_IdId": [
+  "PIOQ_P_MhNI.lean",
+  178
+ ],
+ "Wd.MhNI_Inj": [
+  "PIOQ_P_MhNI.lean",
+  141
+ ],
+ "Wd.MhNI_IntT": [
+  "PIOQ_P_MhNI.lean",
+  158
+ ],
+ "Wd.MhNI_NDTeq": [
+  "PIOQ_P_MhNI.lean",
+  170
+ ],
+ "Wd.MhNI_Nec": [
+  "PIOQ_P_MhNI.lean",
+  205
+ ],
+ "Wd.MhNI_PCong": [
+  "PIOQ_P_MhNI.lean",
+  133
+ ],
+ "Wd.MhNI_Recovery": [
+  "PIOQ_P_MhNI.lean",
+  150
+ ],
+ "Wd.MhNI_TBF": [
+  "PIOQ_P_MhNI.lean",
+  195
+ ],
+ "Wd.MhNI_TCBF": [
+  "PIOQ_P_MhNI.lean",
+  197
  ],
  "Wd.MhNI_model": [
   "PIModalX2.lean",
@@ -5263,6 +6459,14 @@ window.LEANINDEX = {
  "Wd.MhNI_not_NITeq": [
   "PIModalX2.lean",
   215
+ ],
+ "Wd.MhNI_not_PExt": [
+  "PIOQ_P_MhNI.lean",
+  211
+ ],
+ "Wd.MhNI_not_TNec": [
+  "PIOQ_P_MhNI.lean",
+  219
  ],
  "Wd.MhT_Hae": [
   "PIModalX2.lean",
@@ -5292,13 +6496,29 @@ window.LEANINDEX = {
   "PIClassModels.lean",
   420
  ],
+ "Wd.MhaeC_ExtT": [
+  "PIOQ_P_MhaeC.lean",
+  154
+ ],
  "Wd.MhaeC_Hae": [
   "PIClassModels.lean",
   423
  ],
+ "Wd.MhaeC_Inj": [
+  "PIOQ_P_MhaeC.lean",
+  98
+ ],
+ "Wd.MhaeC_IntT": [
+  "PIOQ_P_MhaeC.lean",
+  165
+ ],
  "Wd.MhaeC_LLEqv": [
   "PIClassModels.lean",
   418
+ ],
+ "Wd.MhaeC_NDTeq": [
+  "PIOQ_P_MhaeC.lean",
+  108
  ],
  "Wd.MhaeC_NDX": [
   "PIModalX.lean",
@@ -5308,6 +6528,18 @@ window.LEANINDEX = {
   "PIModalX.lean",
   185
  ],
+ "Wd.MhaeC_PCong": [
+  "PIOQ_P_MhaeC.lean",
+  121
+ ],
+ "Wd.MhaeC_Recovery": [
+  "PIOQ_P_MhaeC.lean",
+  103
+ ],
+ "Wd.MhaeC_TBF": [
+  "PIOQ_P_MhaeC.lean",
+  112
+ ],
  "Wd.MhaeC_model": [
   "PIClassModels.lean",
   414
@@ -5315,6 +6547,14 @@ window.LEANINDEX = {
  "Wd.MhaeC_not_Collapse": [
   "PIClassModels.lean",
   433
+ ],
+ "Wd.MhaeC_not_PExt": [
+  "PIOQ_P_MhaeC.lean",
+  145
+ ],
+ "Wd.MhieC_BF": [
+  "PIOQ_P_MhieC.lean",
+  48
  ],
  "Wd.MhieC_Class": [
   "PIHaeQs.lean",
@@ -5324,6 +6564,10 @@ window.LEANINDEX = {
   "PIHaeQs.lean",
   530
  ],
+ "Wd.MhieC_Inj": [
+  "PIOQ_P_MhieC.lean",
+  32
+ ],
  "Wd.MhieC_IntT": [
   "PIHaeQs.lean",
   572
@@ -5332,9 +6576,25 @@ window.LEANINDEX = {
   "PIHaeQs.lean",
   525
  ],
+ "Wd.MhieC_NDTeq": [
+  "PIOQ_P_MhieC.lean",
+  42
+ ],
  "Wd.MhieC_NDX": [
   "PIModalX.lean",
   204
+ ],
+ "Wd.MhieC_PCong": [
+  "PIOQ_P_MhieC.lean",
+  103
+ ],
+ "Wd.MhieC_Recovery": [
+  "PIOQ_P_MhieC.lean",
+  37
+ ],
+ "Wd.MhieC_TBF": [
+  "PIOQ_P_MhieC.lean",
+  46
  ],
  "Wd.MhieC_model": [
   "PIHaeQs.lean",
@@ -5348,21 +6608,57 @@ window.LEANINDEX = {
   "PIModalX.lean",
   201
  ],
+ "Wd.MhieC_not_PExt": [
+  "PIOQ_P_MhieC.lean",
+  126
+ ],
+ "Wd.MhieD_BF": [
+  "PIOQ_P_MhieD.lean",
+  49
+ ],
  "Wd.MhieD_Class": [
   "PIModalX2.lean",
   148
+ ],
+ "Wd.MhieD_ExtT": [
+  "PIOQ_P_MhieD.lean",
+  108
  ],
  "Wd.MhieD_Hae": [
   "PIModalX2.lean",
   151
  ],
+ "Wd.MhieD_Inj": [
+  "PIOQ_P_MhieD.lean",
+  33
+ ],
+ "Wd.MhieD_IntT": [
+  "PIOQ_P_MhieD.lean",
+  124
+ ],
  "Wd.MhieD_LLEqv": [
   "PIModalX2.lean",
   146
  ],
+ "Wd.MhieD_NDTeq": [
+  "PIOQ_P_MhieD.lean",
+  43
+ ],
  "Wd.MhieD_NIX": [
   "PIModalX2.lean",
   161
+ ],
+ "Wd.MhieD_PCong": [
+  "PIOQ_P_MhieD.lean",
+  73
+ ],
+ "Wd.MhieD_Recovery": [
+  "PIOQ_P_MhieD.lean",
+  38
+ ],
+ "Wd.MhieD_TBF": [
+  "PIOQ_P_MhieD.lean",
+  47
  ],
  "Wd.MhieD_model": [
   "PIModalX2.lean",
@@ -5371,6 +6667,10 @@ window.LEANINDEX = {
  "Wd.MhieD_not_NDX": [
   "PIModalX2.lean",
   164
+ ],
+ "Wd.MhieD_not_PExt": [
+  "PIOQ_P_MhieD.lean",
+  98
  ],
  "Wd.MieC_BF": [
   "PIOQ_P_MieC.lean",
@@ -6036,13 +7336,29 @@ window.LEANINDEX = {
   "PIOQ_Mtt.lean",
   217
  ],
+ "Wd.MtwC_BF": [
+  "PIOQ_P_MtwC.lean",
+  123
+ ],
  "Wd.MtwC_Class": [
   "PIClassModels.lean",
   290
  ],
+ "Wd.MtwC_Cong": [
+  "PIOQ_P_MtwC.lean",
+  60
+ ],
+ "Wd.MtwC_Inj": [
+  "PIOQ_P_MtwC.lean",
+  107
+ ],
  "Wd.MtwC_LLEqv": [
   "PIClassModels.lean",
   288
+ ],
+ "Wd.MtwC_NDTeq": [
+  "PIOQ_P_MtwC.lean",
+  117
  ],
  "Wd.MtwC_NDX": [
   "PIModalX.lean",
@@ -6051,6 +7367,22 @@ window.LEANINDEX = {
  "Wd.MtwC_NIX": [
   "PIModalX.lean",
   183
+ ],
+ "Wd.MtwC_PCong": [
+  "PIOQ_P_MtwC.lean",
+  68
+ ],
+ "Wd.MtwC_Recovery": [
+  "PIOQ_P_MtwC.lean",
+  112
+ ],
+ "Wd.MtwC_Slogan": [
+  "PIOQ_P_MtwC.lean",
+  31
+ ],
+ "Wd.MtwC_TBF": [
+  "PIOQ_P_MtwC.lean",
+  121
  ],
  "Wd.MtwC_Twin": [
   "PIClassModels.lean",
@@ -6063,6 +7395,22 @@ window.LEANINDEX = {
  "Wd.MtwC_not_Collapse": [
   "PIClassModels.lean",
   299
+ ],
+ "Wd.MtwC_not_ExtT": [
+  "PIOQ_P_MtwC.lean",
+  82
+ ],
+ "Wd.MtwC_not_Hae": [
+  "PIOQ_P_MtwC.lean",
+  39
+ ],
+ "Wd.MtwC_not_IntT": [
+  "PIOQ_P_MtwC.lean",
+  96
+ ],
+ "Wd.MtwC_not_PExt": [
+  "PIOQ_P_MtwC.lean",
+  74
  ],
  "Wd.MtwNI_BF": [
   "PIOQ_MtwNI.lean",
