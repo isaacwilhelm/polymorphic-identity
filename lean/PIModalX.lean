@@ -1,5 +1,7 @@
 import PIHaeQs
 import PICongQs
+import PIKripkeHae
+import PIKripkeND
 
 /-!
 # Necessity of identity across types, and Functional Choice
@@ -433,5 +435,284 @@ end Al
 namespace Kr
 theorem Mbf_NIX : MbfK.Valid NIX := Frame.simple_NIX UBF
 end Kr
+
+namespace Kr
+
+theorem Mch_Slogan : MchK.Valid Slogan := Frame.simple_Slogan UCh
+theorem Mch_Recovery : MchK.Valid Recovery := Frame.simple_Recovery UCh
+theorem Mch_IntT : MchK.Valid IntT := Frame.simple_IntT UCh
+
+theorem Mch_NDTeq : MchK.Valid NDTeq := by
+  refine Frame.simple_Valid_of UCh ?_
+  refine (MchK.holdsAt_tall _ _ _ _).mpr fun a _ => (MchK.holdsAt_tall _ _ _ _).mpr fun b _ => ?_
+  refine (MchK.holdsAt_imp _ _ _ _ _).mpr fun hn => (Frame.simple_box UCh _ _ _ _).mpr fun v _ => ?_
+  refine (MchK.holdsAt_neg _ _ _ _).mpr fun ht => (MchK.holdsAt_neg _ _ _ _).mp hn ?_
+  have e : a = b := (MchK.holdsAt_teq _ _ _ _ v).mp ht
+  exact (MchK.holdsAt_teq _ _ _ _ _).mpr e
+
+theorem Mch_TBF : ∀ χ, TBFSch χ → MchK.Valid χ := by
+  rintro _ ⟨φ, rfl⟩
+  refine Frame.simple_Valid_of UCh ?_
+  refine (MchK.holdsAt_imp _ _ _ _ _).mpr fun h => (Frame.simple_box UCh _ _ _ _).mpr fun v hv => ?_
+  refine (MchK.holdsAt_tall _ _ _ _).mpr fun a _ => ?_
+  exact (Frame.simple_box UCh _ _ _ _).mp ((MchK.holdsAt_tall _ _ _ _).mp h a trivial) v hv
+
+theorem Mch_PExt : MchK.Valid PExt :=
+  MchK.PExt_of (fun a x y w => Frame.simple_eqv_same UCh a x y w) (fun _ _ _ _ h => h.1) fun v _ a x hx => by
+    cases v with
+    | true => exact ⟨x, hx, hx⟩
+    | false => exact UCh.dense true false (fun _ _ => Or.inr rfl) (fun _ _ => Or.inr rfl) a x hx
+
+/-! ### `𝔐_k,ch,h`: as `𝔐_k,ch`, with haecceities added at the actual world -/
+
+abbrev MchH : Frame := MchK.hae
+
+theorem UCh_all : ∀ v, UCh.R UCh.w0 v := fun _ => Or.inl rfl
+
+theorem MchH_heq : ∀ a x y w, MchH.eqv a a x y w ↔ MchH.U.rel a w x y :=
+  MchK.hae_heq UCh_all (fun a x y w => Frame.simple_eqv_same UCh a x y w)
+
+theorem MchH_isModelAt : MchH.IsModelAt := by
+  obtain ⟨h1, h2, h3⟩ := MchH.idAx_of (fun a x w hx => (MchH_heq a x x w).mpr hx)
+    (MchK.hae_symm fun _ _ _ _ _ h => Frame.simple_symm UCh h)
+    (MchK.hae_trans fun _ _ _ _ _ _ _ h1 h2 => Frame.simple_trans UCh h1 h2)
+  exact ⟨h1, h2, h3, MchH.refTeq_of fun _ _ => rfl, fun Q => MchH.llTeq_of_eq (fun _ _ _ h => h) Q⟩
+
+theorem MchH_LLEqv : MchH.Valid LLEqv := fun ρ hρ env henv => MchH.LLEqv_of MchH_heq _ ρ hρ env henv
+theorem MchH_Class : ∀ χ, ClassSch χ → MchH.Valid χ := MchH.Class_valid MchH_isModelAt (MchH.LLEqv_of MchH_heq) MchH_heq
+theorem MchH_Hae : MchH.Valid Hae := MchK.hae_Hae UCh_all (fun a x y w => Frame.simple_eqv_same UCh a x y w)
+
+theorem MchH_not_Choice : ¬ MchH.Valid Choice := fun hv => by
+  have h := hv (fun i => i.elim0) (fun i => i.elim0) () trivial
+  have h1 := (MchH.holdsAt_tall _ _ _ _).mp h .e trivial
+  have h2 := (MchH.holdsAt_tall _ _ _ _).mp h1 .e trivial
+  have h3 := (MchH.holdsAt_all _ _ _ _ _).mp h2 RCh RCh_adm
+  have h4 := (MchH.holdsAt_imp _ _ _ _ _).mp h3 ((MchH.holdsAt_all _ _ _ _ _).mpr fun x _ =>
+    (MchH.holdsAt_ex _ _ _ _ _).mpr ⟨gCh x, Or.inl rfl, Or.inr rfl⟩)
+  obtain ⟨f, hf, hfx⟩ := (MchH.holdsAt_ex _ _ _ _ _).mp h4
+  have hall := (MchH.holdsAt_all _ _ _ _ _).mp hfx
+  have f0 : (f : Fin 4 → Fin 4) (0 : Fin 4) = gCh (0 : Fin 4) :=
+    (show true = false ∨ (f : Fin 4 → Fin 4) (0 : Fin 4) = gCh (0 : Fin 4) from
+      hall (0 : Fin 4) (Or.inl rfl)).resolve_left (fun h => Bool.noConfusion h)
+  have f1 : (f : Fin 4 → Fin 4) (1 : Fin 4) = gCh (1 : Fin 4) :=
+    (show true = false ∨ (f : Fin 4 → Fin 4) (1 : Fin 4) = gCh (1 : Fin 4) from
+      hall (1 : Fin 4) (Or.inl rfl)).resolve_left (fun h => Bool.noConfusion h)
+  have hr : UCh.re false ((f : Fin 4 → Fin 4) (0 : Fin 4)) ((f : Fin 4 → Fin 4) (1 : Fin 4)) :=
+    hf false (Or.inr rfl) (0 : Fin 4) (1 : Fin 4) (Or.inr ⟨rfl, by decide, by decide⟩)
+  rw [f0, f1] at hr
+  rcases hr with e | ⟨_, _, h3⟩
+  · exact absurd e (by decide)
+  · exact absurd h3 (by decide)
+
+theorem MchH_not_NDX : ¬ MchH.Valid NDX := fun hv => by
+  have h := hv (fun i => i.elim0) (fun i => i.elim0) () trivial
+  have h1 := (MchH.holdsAt_tall _ _ _ _).mp ((MchH.holdsAt_tall _ _ _ _).mp h .e trivial) .e trivial
+  have h2 := (MchH.holdsAt_all _ _ _ _ _).mp ((MchH.holdsAt_all _ _ _ _ _).mp h1 (show Fin 4 from 0) (Or.inl rfl))
+    (show Fin 4 from 1) (Or.inl rfl)
+  refine (MchH.holdsAt_neg _ _ _ _).mp ((MchH.box_of MchH_heq _ _ _ _).mp ((MchH.holdsAt_imp _ _ _ _ _).mp h2
+    ((MchH.holdsAt_neg _ _ _ _).mpr fun he => ?_)) false (Or.inr rfl)) ?_
+  · have he' := (MchH_heq .e (show Fin 4 from 0) (show Fin 4 from 1) true).mp ((MchH.holdsAt_eqv _ _ _ _ _ _ _).mp he)
+    rcases he' with e | ⟨hw, _⟩
+    · exact absurd e (by decide)
+    · exact absurd hw (by decide)
+  · exact (MchH.holdsAt_eqv _ _ _ _ _ _ _).mpr
+      ((MchH_heq .e (show Fin 4 from 0) (show Fin 4 from 1) false).mpr (Or.inr ⟨rfl, by decide, by decide⟩))
+
+end Kr
+
+namespace Wd
+namespace Frame
+variable (F : Frame)
+
+theorem tr_ExtT : F.Tr ExtT ↔ ∀ a b, ((∀ x : F.U.El a, ∃ y : F.U.El b, F.eqv a b x y F.U.w0) ∧
+    (∀ y : F.U.El b, ∃ x : F.U.El a, F.eqv a b x y F.U.w0)) → F.teq a b F.U.w0 := Iff.rfl
+
+theorem Inj_of (hT : ∀ a b w, F.teq a b w ↔ a = b) : F.Valid Inj :=
+  (F.valid_iff_tr _).mpr <| F.tr_Inj.mpr fun a b c d h => by
+    have e : Code.arr a c = Code.arr b d := (hT _ _ _).mp h
+    injection e with e1 e2
+    exact ⟨(hT _ _ _).mpr e1, (hT _ _ _).mpr e2⟩
+
+theorem tr_NDTeq : F.Tr NDTeq ↔ ∀ a b, ¬ F.teq a b F.U.w0 →
+    F.eqv .t .t (fun w => ¬ F.teq a b w) (F.eval (topF : Fm Ctx.nil) (fun i => i.elim0) ()) F.U.w0 := Iff.rfl
+
+theorem NDTeq_of (hr : ∀ p, F.eqv .t .t p p F.U.w0) (hT : ∀ a b w, F.teq a b w ↔ a = b) : F.Valid NDTeq :=
+  (F.valid_iff_tr _).mpr <| F.tr_NDTeq.mpr fun a b h => by
+    have e : (fun w => ¬ F.teq a b w) = F.eval (topF : Fm Ctx.nil) (fun i => i.elim0) () := by
+      refine Eq.trans ?_ (F.eval_topF (Γ := Ctx.nil) _ _).symm
+      funext w
+      exact propext ⟨fun _ => trivial, fun _ hw => h ((hT _ _ _).mpr ((hT _ _ _).mp hw))⟩
+    rw [e]; exact hr _
+
+/-- Where identity of propositions is identity, and the types are the same at every world, TBF holds. -/
+theorem TBF_of (hb : ∀ p q, F.eqv .t .t p q F.U.w0 ↔ p = q) : ∀ χ, TBFSch χ → F.Valid χ := by
+  rintro _ ⟨φ, rfl⟩ ρ env
+  refine (F.holds_imp _ _ _ _).mpr fun h => ?_
+  have e : ∀ a, F.eval φ (scons a ρ) env = fun _ => True := fun a =>
+    ((hb _ _).mp ((F.holdsAt_eqv_t _ _ _ _ _).mp ((F.holds_tall _ _ _).mp h a))).trans (F.eval_topF _ _)
+  refine (F.holdsAt_eqv_t _ _ _ _ _).mpr ((hb _ _).mpr ?_)
+  refine Eq.trans ?_ (F.eval_topF _ _).symm
+  funext w
+  exact propext ⟨fun _ => trivial, fun _ a => cast (congrFun (e a) w).symm trivial⟩
+
+end Frame
+
+theorem MieC_Inj : MieCF.Valid Inj := MieCF.Inj_of fun _ _ _ => Iff.rfl
+theorem MieC_NDTeq : MieCF.Valid NDTeq := MieCF.NDTeq_of (fun _ => Or.inl ⟨rfl, HEq.rfl⟩) fun _ _ _ => Iff.rfl
+theorem MieC_TBF : ∀ χ, TBFSch χ → MieCF.Valid χ :=
+  MieCF.TBF_of fun _ _ => ⟨fun h => MieC_eq _ _ _ _ h, fun h => h ▸ Or.inl ⟨rfl, HEq.rfl⟩⟩
+theorem MieC_Slogan : MieCF.Valid Slogan :=
+  (MieCF.valid_iff_tr _).mpr <| MieCF.tr_Slogan.mpr fun _ b _ h =>
+    h.elim (fun h => nomatch h.1) (fun h => crossIE_ne h.2 (by
+      rcases h.2 with ⟨_, h2⟩ | ⟨h1, _⟩
+      · exact nomatch h2
+      · exact nomatch h1))
+
+/-! ### `𝔐_ie,d`: as `𝔐_ie,c`, but with the entity and the item of `d` identified at the other world only -/
+
+def MieDF : Frame where
+  U := univIE
+  eqv := fun a b x y w => (a = b ∧ HEq x y) ∨ (w = false ∧ crossIE a b)
+  teq := fun a b _ => a = b
+
+theorem MieD_trans : ∀ a b c x y z w, MieDF.eqv a b x y w → MieDF.eqv b c y z w → MieDF.eqv a c x z w := by
+  intro a b c x y z w h1 h2
+  rcases h1 with ⟨rfl, h1⟩ | ⟨hw, hx⟩
+  · rcases h2 with ⟨rfl, h2⟩ | ⟨hw, hx⟩
+    · exact Or.inl ⟨rfl, h1.trans h2⟩
+    · exact Or.inr ⟨hw, hx⟩
+  · rcases h2 with ⟨rfl, _⟩ | ⟨_, hy⟩
+    · exact Or.inr ⟨hw, hx⟩
+    · refine Or.inl ?_
+      rcases hx with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;> rcases hy with ⟨h, rfl⟩ | ⟨h, rfl⟩ <;> cases h
+      · exact ⟨rfl, by cases x; cases z; rfl⟩
+      · exact ⟨rfl, by cases x; cases z; rfl⟩
+
+theorem MieD_symm : ∀ a b x y w, MieDF.eqv a b x y w → MieDF.eqv b a y x w := fun _ _ _ _ _ h =>
+  h.elim (fun h => Or.inl ⟨h.1.symm, h.2.symm⟩) (fun h => Or.inr ⟨h.1, crossIE_symm h.2⟩)
+
+theorem MieD_isModelAt : MieDF.IsModelAt :=
+  MieDF.isModelAt_of (fun _ _ _ => Or.inl ⟨rfl, HEq.rfl⟩) MieD_symm MieD_trans (fun _ _ _ => Iff.rfl)
+
+theorem MieD_eq : ∀ a x y w, MieDF.eqv a a x y w → x = y := fun _ _ _ _ h =>
+  h.elim (fun h => eq_of_heq h.2) (fun h => (crossIE_ne h.2 rfl).elim)
+
+theorem MieD_model : MieDF.IsModelPIm :=
+  MieDF.model_of_equiv (fun _ _ => Iff.rfl) (fun _ _ => Or.inl ⟨rfl, HEq.rfl⟩)
+    (fun a b x y h => MieD_symm a b x y _ h) (fun a b c x y z h1 h2 => MieD_trans a b c x y z _ h1 h2)
+
+theorem MieD_LLEqv : MieDF.Valid LLEqv := fun ρ env => MieDF.LLEqv_validAt_of MieD_eq _ ρ env
+theorem MieD_Class : ∀ χ, ClassSch χ → MieDF.Valid χ :=
+  MieDF.Class_valid_of MieD_isModelAt (MieDF.LLEqv_validAt_of MieD_eq) fun _ _ => Or.inl ⟨rfl, HEq.rfl⟩
+
+theorem MieD_NIX : MieDF.Valid NIX :=
+  MieDF.NIX_of (fun _ => Or.inl ⟨rfl, HEq.rfl⟩) fun _ _ _ _ h _ =>
+    h.elim Or.inl (fun h => absurd h.1 (fun e => Bool.noConfusion e))
+theorem MieD_not_NDX : ¬ MieDF.Valid NDX :=
+  MieDF.not_NDX_of (fun _ _ h => MieD_eq _ _ _ _ h) (a := .e) (b := .base ()) () ()
+    (fun h => h.elim (fun h => nomatch h.1) (fun h => Bool.noConfusion h.1)) false (Or.inr ⟨rfl, Or.inl ⟨rfl, rfl⟩⟩)
+
+end Wd
+
+namespace Wd
+
+/-! ### `𝔐_ie,2`: Ext≈ without NI×, in PIᶜ
+
+As `𝔐_ie,c`, except that `d` has two items, and the entity is identified, at the actual world
+only, with one of them. So `e` and `d` are never coextensive, and Ext≈ holds; but NI× fails. -/
+
+def univE2 : Univ where
+  W := Bool
+  w0 := true
+  E := Unit
+  Base := Unit
+  B := fun _ => Bool
+  neE := ⟨()⟩
+  neB := fun _ => ⟨true⟩
+
+abbrev RE2 := Σ c : Code Unit, univE2.El c
+
+/-- The entity, and the item `true` of `d`. -/
+def XE (r s : RE2) : Prop :=
+  (r.1 = .e ∧ s = ⟨.base (), (true : Bool)⟩) ∨ (s.1 = .e ∧ r = ⟨.base (), (true : Bool)⟩)
+
+def ME2F : Frame where
+  U := univE2
+  eqv := fun a b x y w => (a = b ∧ HEq x y) ∨ (w = true ∧ XE ⟨a, x⟩ ⟨b, y⟩)
+  teq := fun a b _ => a = b
+
+theorem XE_ne {r s : RE2} (h : XE r s) : r.1 ≠ s.1 := by
+  rcases h with ⟨h1, rfl⟩ | ⟨h1, rfl⟩ <;> rw [h1] <;> intro h <;> cases h
+
+theorem sig_e2 : ∀ r : RE2, r.1 = .e → r = ⟨.e, ()⟩
+  | ⟨_, _⟩, rfl => rfl
+
+theorem XE_trans {r s u : RE2} (h1 : XE r s) (h2 : XE s u) : r = u := by
+  rcases h1 with ⟨a1, a2⟩ | ⟨a1, a2⟩ <;> rcases h2 with ⟨b1, b2⟩ | ⟨b1, b2⟩
+  · rw [a2] at b1; cases b1
+  · rw [sig_e2 r a1, sig_e2 u b1]
+  · rw [a2, b2]
+  · rw [b2] at a1; cases a1
+
+theorem ME2_symm : ∀ a b x y w, ME2F.eqv a b x y w → ME2F.eqv b a y x w := fun _ _ _ _ _ h =>
+  h.elim (fun h => Or.inl ⟨h.1.symm, h.2.symm⟩)
+    (fun h => Or.inr ⟨h.1, h.2.elim (fun h => Or.inr h) (fun h => Or.inl h)⟩)
+
+theorem ME2_trans : ∀ a b c x y z w, ME2F.eqv a b x y w → ME2F.eqv b c y z w → ME2F.eqv a c x z w := by
+  intro a b c x y z w h1 h2
+  rcases h1 with ⟨rfl, h1⟩ | ⟨hw, h1⟩ <;> rcases h2 with ⟨rfl, h2⟩ | ⟨_, h2⟩
+  · exact Or.inl ⟨rfl, h1.trans h2⟩
+  · cases h1; exact Or.inr ⟨by assumption, h2⟩
+  · cases h2; exact Or.inr ⟨hw, h1⟩
+  · have e := XE_trans h1 h2
+    exact Or.inl ⟨congrArg Sigma.fst e, (Sigma.mk.inj e).2⟩
+
+theorem ME2_eq : ∀ a x y w, ME2F.eqv a a x y w → x = y := fun _ _ _ _ h =>
+  h.elim (fun h => eq_of_heq h.2) (fun h => (XE_ne h.2 rfl).elim)
+
+theorem ME2_isModelAt : ME2F.IsModelAt :=
+  ME2F.isModelAt_of (fun _ _ _ => Or.inl ⟨rfl, HEq.rfl⟩) ME2_symm ME2_trans (fun _ _ _ => Iff.rfl)
+
+theorem ME2_model : ME2F.IsModelPIm :=
+  ME2F.model_of_equiv (fun _ _ => Iff.rfl) (fun _ _ => Or.inl ⟨rfl, HEq.rfl⟩)
+    (fun a b x y h => ME2_symm a b x y _ h) (fun a b c x y z h1 h2 => ME2_trans a b c x y z _ h1 h2)
+
+theorem ME2_LLEqv : ME2F.Valid LLEqv := fun ρ env => ME2F.LLEqv_validAt_of ME2_eq _ ρ env
+theorem ME2_Class : ∀ χ, ClassSch χ → ME2F.Valid χ :=
+  ME2F.Class_valid_of ME2_isModelAt (ME2F.LLEqv_validAt_of ME2_eq) fun _ _ => Or.inl ⟨rfl, HEq.rfl⟩
+
+theorem ME2_not_NIX : ¬ ME2F.Valid NIX :=
+  ME2F.not_NIX_of (fun _ _ h => ME2_eq _ _ _ _ h) (a := .e) (b := .base ()) () (true : Bool)
+    (Or.inr ⟨rfl, Or.inl ⟨rfl, rfl⟩⟩) false (fun h => h.elim (fun h => nomatch h.1) (fun h => Bool.noConfusion h.1))
+
+theorem ME2_ExtT : ME2F.Valid ExtT :=
+  (ME2F.valid_iff_tr _).mpr <| ME2F.tr_ExtT.mpr fun a b ⟨h1, h2⟩ => by
+    show a = b
+    refine Classical.byContradiction fun hab => ?_
+    have x0 := Classical.choice (Univ.El_nonempty (U := univE2) a)
+    obtain ⟨y0, hy0⟩ := h1 x0
+    rcases hy0 with ⟨e, _⟩ | ⟨_, hx⟩
+    · exact hab e
+    rcases hx with ⟨ha, hb⟩ | ⟨hb, ha⟩
+    · have ha' : a = .e := ha
+      have hb' : b = .base () := congrArg Sigma.fst hb
+      subst ha'; subst hb'
+      obtain ⟨x, hx⟩ := h2 (false : Bool)
+      rcases hx with ⟨e, _⟩ | ⟨_, hx⟩
+      · exact hab e
+      · rcases hx with ⟨_, h⟩ | ⟨h, _⟩
+        · exact Bool.noConfusion (eq_of_heq (Sigma.mk.inj h).2)
+        · exact nomatch h
+    · have hb' : b = .e := hb
+      have ha' : a = .base () := congrArg Sigma.fst ha
+      subst ha'; subst hb'
+      obtain ⟨y, hy⟩ := h1 (false : Bool)
+      rcases hy with ⟨e, _⟩ | ⟨_, hy⟩
+      · exact hab e
+      · rcases hy with ⟨h, _⟩ | ⟨_, h⟩
+        · exact nomatch h
+        · exact Bool.noConfusion (eq_of_heq (Sigma.mk.inj h).2)
+
+end Wd
 
 end PIF

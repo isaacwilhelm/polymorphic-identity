@@ -2,7 +2,7 @@
 window.LEANINDEX = {
  "Al.Frame.Choice_valid": [
   "PIModalX.lean",
-  110
+  112
  ],
  "Al.MBH_Hae": [
   "PIHaeQs.lean",
@@ -298,7 +298,7 @@ window.LEANINDEX = {
  ],
  "Al.Mq_NDX": [
   "PIModalX.lean",
-  416
+  418
  ],
  "Al.Mq_NIEqv": [
   "PIBarcanModels.lean",
@@ -310,7 +310,7 @@ window.LEANINDEX = {
  ],
  "Al.Mq_NIX": [
   "PIModalX.lean",
-  406
+  408
  ],
  "Al.Mq_PExt": [
   "PIBarcanModels.lean",
@@ -326,7 +326,7 @@ window.LEANINDEX = {
  ],
  "AlI.Frame.Choice_valid": [
   "PIModalX.lean",
-  110
+  112
  ],
  "AlI.Mif_Class": [
   "PIClassModels.lean",
@@ -362,7 +362,7 @@ window.LEANINDEX = {
  ],
  "Choice": [
   "PIModalX.lean",
-  28
+  30
  ],
  "ClassSch": [
   "PIClass.lean",
@@ -462,11 +462,11 @@ window.LEANINDEX = {
  ],
  "Frame.Choice_valid": [
   "PIModalX.lean",
-  110
+  112
  ],
  "Frame.Collapse_valid": [
   "PIModalX.lean",
-  105
+  107
  ],
  "Frame.PropExt_valid": [
   "PINew.lean",
@@ -590,7 +590,7 @@ window.LEANINDEX = {
  ],
  "Kr.Mbf_NIX": [
   "PIModalX.lean",
-  434
+  436
  ],
  "Kr.Mbf_PExt": [
   "PIKripkeND.lean",
@@ -612,45 +612,93 @@ window.LEANINDEX = {
   "PIKripkeModels.lean",
   104
  ],
+ "Kr.MchH_Class": [
+  "PIModalX.lean",
+  482
+ ],
+ "Kr.MchH_Hae": [
+  "PIModalX.lean",
+  483
+ ],
+ "Kr.MchH_LLEqv": [
+  "PIModalX.lean",
+  481
+ ],
+ "Kr.MchH_isModelAt": [
+  "PIModalX.lean",
+  475
+ ],
+ "Kr.MchH_not_Choice": [
+  "PIModalX.lean",
+  485
+ ],
+ "Kr.MchH_not_NDX": [
+  "PIModalX.lean",
+  507
+ ],
  "Kr.Mch_Class": [
-  "PIModalX.lean",
-  390
- ],
- "Kr.Mch_Cong": [
-  "PIModalX.lean",
-  394
- ],
- "Kr.Mch_Disjoint": [
-  "PIModalX.lean",
-  393
- ],
- "Kr.Mch_ExtT": [
-  "PIModalX.lean",
-  396
- ],
- "Kr.Mch_Inj": [
-  "PIModalX.lean",
-  395
- ],
- "Kr.Mch_LLEqv": [
-  "PIModalX.lean",
-  391
- ],
- "Kr.Mch_NIX": [
-  "PIModalX.lean",
-  389
- ],
- "Kr.Mch_isModelAt": [
   "PIModalX.lean",
   392
  ],
+ "Kr.Mch_Cong": [
+  "PIModalX.lean",
+  396
+ ],
+ "Kr.Mch_Disjoint": [
+  "PIModalX.lean",
+  395
+ ],
+ "Kr.Mch_ExtT": [
+  "PIModalX.lean",
+  398
+ ],
+ "Kr.Mch_Inj": [
+  "PIModalX.lean",
+  397
+ ],
+ "Kr.Mch_IntT": [
+  "PIModalX.lean",
+  443
+ ],
+ "Kr.Mch_LLEqv": [
+  "PIModalX.lean",
+  393
+ ],
+ "Kr.Mch_NDTeq": [
+  "PIModalX.lean",
+  445
+ ],
+ "Kr.Mch_NIX": [
+  "PIModalX.lean",
+  391
+ ],
+ "Kr.Mch_PExt": [
+  "PIModalX.lean",
+  460
+ ],
+ "Kr.Mch_Recovery": [
+  "PIModalX.lean",
+  442
+ ],
+ "Kr.Mch_Slogan": [
+  "PIModalX.lean",
+  441
+ ],
+ "Kr.Mch_TBF": [
+  "PIModalX.lean",
+  453
+ ],
+ "Kr.Mch_isModelAt": [
+  "PIModalX.lean",
+  394
+ ],
  "Kr.Mch_not_Choice": [
   "PIModalX.lean",
-  351
+  353
  ],
  "Kr.Mch_not_NDX": [
   "PIModalX.lean",
-  373
+  375
  ],
  "Kr.MndH_Class": [
   "PIKripkeHae.lean",
@@ -2054,7 +2102,7 @@ window.LEANINDEX = {
  ],
  "NDX": [
   "PIModalX.lean",
-  23
+  25
  ],
  "NIEqv": [
   "PIModal.lean",
@@ -2066,7 +2114,7 @@ window.LEANINDEX = {
  ],
  "NIX": [
   "PIModalX.lean",
-  18
+  20
  ],
  "NoSelf": [
   "PINoSelf.lean",
@@ -2114,7 +2162,7 @@ window.LEANINDEX = {
  ],
  "Tg.Frame.Choice_valid": [
   "PIModalX.lean",
-  110
+  112
  ],
  "Tg.Mht_Hae": [
   "PINew.lean",
@@ -2338,7 +2386,27 @@ window.LEANINDEX = {
  ],
  "Wd.Frame.Choice_valid": [
   "PIModalX.lean",
-  110
+  112
+ ],
+ "Wd.ME2_Class": [
+  "PIModalX.lean",
+  681
+ ],
+ "Wd.ME2_ExtT": [
+  "PIModalX.lean",
+  688
+ ],
+ "Wd.ME2_LLEqv": [
+  "PIModalX.lean",
+  680
+ ],
+ "Wd.ME2_model": [
+  "PIModalX.lean",
+  676
+ ],
+ "Wd.ME2_not_NIX": [
+  "PIModalX.lean",
+  684
  ],
  "Wd.Mcol_Bool": [
   "PIWorlds.lean",
@@ -2374,11 +2442,11 @@ window.LEANINDEX = {
  ],
  "Wd.MhaeC_NDX": [
   "PIModalX.lean",
-  184
+  186
  ],
  "Wd.MhaeC_NIX": [
   "PIModalX.lean",
-  183
+  185
  ],
  "Wd.MhaeC_model": [
   "PIClassModels.lean",
@@ -2406,7 +2474,7 @@ window.LEANINDEX = {
  ],
  "Wd.MhieC_NDX": [
   "PIModalX.lean",
-  202
+  204
  ],
  "Wd.MhieC_model": [
   "PIHaeQs.lean",
@@ -2418,11 +2486,15 @@ window.LEANINDEX = {
  ],
  "Wd.MhieC_not_NIX": [
   "PIModalX.lean",
-  199
+  201
  ],
  "Wd.MieC_Class": [
   "PIClassModels.lean",
   196
+ ],
+ "Wd.MieC_Inj": [
+  "PIModalX.lean",
+  560
  ],
  "Wd.MieC_IntT": [
   "PIClassModels.lean",
@@ -2432,9 +2504,21 @@ window.LEANINDEX = {
   "PIClassModels.lean",
   194
  ],
+ "Wd.MieC_NDTeq": [
+  "PIModalX.lean",
+  561
+ ],
  "Wd.MieC_NDX": [
   "PIModalX.lean",
-  189
+  191
+ ],
+ "Wd.MieC_Slogan": [
+  "PIModalX.lean",
+  564
+ ],
+ "Wd.MieC_TBF": [
+  "PIModalX.lean",
+  562
  ],
  "Wd.MieC_model": [
   "PIClassModels.lean",
@@ -2446,7 +2530,27 @@ window.LEANINDEX = {
  ],
  "Wd.MieC_not_NIX": [
   "PIModalX.lean",
-  186
+  188
+ ],
+ "Wd.MieD_Class": [
+  "PIModalX.lean",
+  605
+ ],
+ "Wd.MieD_LLEqv": [
+  "PIModalX.lean",
+  604
+ ],
+ "Wd.MieD_NIX": [
+  "PIModalX.lean",
+  608
+ ],
+ "Wd.MieD_model": [
+  "PIModalX.lean",
+  600
+ ],
+ "Wd.MieD_not_NDX": [
+  "PIModalX.lean",
+  611
  ],
  "Wd.MieX_Class": [
   "PICongQs.lean",
@@ -2466,7 +2570,7 @@ window.LEANINDEX = {
  ],
  "Wd.MieX_NDX": [
   "PIModalX.lean",
-  196
+  198
  ],
  "Wd.MieX_PExt": [
   "PICongQs.lean",
@@ -2482,7 +2586,7 @@ window.LEANINDEX = {
  ],
  "Wd.MieX_not_NIX": [
   "PIModalX.lean",
-  192
+  194
  ],
  "Wd.Mie_Bool": [
   "PIWorlds.lean",
@@ -2510,7 +2614,7 @@ window.LEANINDEX = {
  ],
  "Wd.Mie_NDX": [
   "PIModalX.lean",
-  174
+  176
  ],
  "Wd.Mie_NITeq": [
   "PIWorlds.lean",
@@ -2578,7 +2682,7 @@ window.LEANINDEX = {
  ],
  "Wd.Mnd_NDX": [
   "PIModalX.lean",
-  171
+  173
  ],
  "Wd.Mnd_NIEqv": [
   "PIWorlds.lean",
@@ -2590,7 +2694,7 @@ window.LEANINDEX = {
  ],
  "Wd.Mnd_NIX": [
   "PIModalX.lean",
-  170
+  172
  ],
  "Wd.Mnd_PExt": [
   "PIWorlds.lean",
@@ -2654,7 +2758,7 @@ window.LEANINDEX = {
  ],
  "Wd.Mni_NDX": [
   "PIModalX.lean",
-  173
+  175
  ],
  "Wd.Mni_NIEqv": [
   "PIWorlds.lean",
@@ -2662,7 +2766,7 @@ window.LEANINDEX = {
  ],
  "Wd.Mni_NIX": [
   "PIModalX.lean",
-  172
+  174
  ],
  "Wd.Mni_PExt": [
   "PIWorlds.lean",
@@ -2698,11 +2802,11 @@ window.LEANINDEX = {
  ],
  "Wd.Mtt_NDX": [
   "PIModalX.lean",
-  178
+  180
  ],
  "Wd.Mtt_NIX": [
   "PIModalX.lean",
-  176
+  178
  ],
  "Wd.Mtt_TopBot": [
   "PIWorlds.lean",
@@ -2726,11 +2830,11 @@ window.LEANINDEX = {
  ],
  "Wd.MtwC_NDX": [
   "PIModalX.lean",
-  182
+  184
  ],
  "Wd.MtwC_NIX": [
   "PIModalX.lean",
-  181
+  183
  ],
  "Wd.MtwC_Twin": [
   "PIClassModels.lean",
@@ -2778,7 +2882,7 @@ window.LEANINDEX = {
  ],
  "Wd.Mw_NDX": [
   "PIModalX.lean",
-  169
+  171
  ],
  "Wd.Mw_NIEqv": [
   "PIWorlds.lean",
@@ -2790,7 +2894,7 @@ window.LEANINDEX = {
  ],
  "Wd.Mw_NIX": [
   "PIModalX.lean",
-  168
+  170
  ],
  "Wd.Mw_PExt": [
   "PIWorlds.lean",
@@ -2890,7 +2994,7 @@ window.LEANINDEX = {
  ],
  "d_NDX_of_Collapse": [
   "PIModalX.lean",
-  51
+  53
  ],
  "d_NIEqv_of_Class": [
   "PIClass.lean",
@@ -2902,7 +3006,7 @@ window.LEANINDEX = {
  ],
  "d_NIEqv_of_NIX": [
   "PIModalX.lean",
-  58
+  60
  ],
  "d_NITeq_of_Class": [
   "PIClass.lean",
@@ -2914,11 +3018,11 @@ window.LEANINDEX = {
  ],
  "d_NIX_of_Collapse": [
   "PIModalX.lean",
-  44
+  46
  ],
  "d_NIX_of_Disjoint": [
   "PIModalX.lean",
-  66
+  68
  ],
  "d_NoSelf": [
   "PIDerivations.lean",
