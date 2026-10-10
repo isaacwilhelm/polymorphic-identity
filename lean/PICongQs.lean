@@ -662,4 +662,384 @@ theorem MieX_IntT : MieXF.Valid IntT := by
 
 end Wd
 
+/-! ## `𝔐_tow,2`: towers, and a second kind of tower, without Cong
+
+As `𝔐_tow`, together with a second family: `λx:e.⊤` is identified with the identity function on `t`,
+and, for every list `A` of argument types, `λA.λx:e.⊤` with `λA.λp:t.p`. Since the entity is
+identified with `⊥`, Cong would require `⊤ ≡ ⊥`; but PCong and PExt hold. -/
+
+section Tow2
+open Classical
+
+/-- Lifting keys through one more argument. -/
+noncomputable def liftK {A : Type} (a : Code Empty) (g : A → Option (Bool × Code Empty)) : Option (Bool × Code Empty) :=
+  if h : ∃ K, ∀ z, g z = some K then some ((Classical.choose h).1, .arr a (Classical.choose h).2) else none
+
+/-- The second family, at the bottom: `λx:e.⊤` and `λp:t.p`. -/
+noncomputable def seedK : (a c : Code Empty) → unitUniv.El (.arr a c) → Option (Bool × Code Empty)
+  | .e, .t, f => if ∀ z, f z then some (true, .e) else none
+  | .t, .t, f => if ∀ p, (f p ↔ p) then some (true, .e) else none
+  | _, _, _ => none
+
+/-- The key of a special item: `(false, A → e)` for a bottom, `(true, A → e)` for the second family. -/
+noncomputable def skey : (c : Code Empty) → unitUniv.El c → Option (Bool × Code Empty)
+  | .e, _ => some (false, .e)
+  | .t, p => (bkeyT p).map (fun K => (false, K))
+  | .base b, _ => b.elim
+  | .arr a c, f => (liftK a (fun z => skey c (f z))).orElse (fun _ => seedK a c f)
+
+theorem liftK_some {A : Type} [Nonempty A] {a : Code Empty} {g : A → Option (Bool × Code Empty)} {k : Bool × Code Empty}
+    (h : ∀ z, g z = some k) : liftK a g = some (k.1, .arr a k.2) := by
+  have h' : ∃ K, ∀ z, g z = some K := ⟨k, h⟩
+  unfold liftK
+  split
+  · rename_i h''
+    obtain ⟨x0⟩ := ‹Nonempty A›
+    have := (Classical.choose_spec h'' x0).symm.trans (h x0)
+    injection this with e
+    rw [e]
+  · exact absurd h' ‹_›
+
+theorem liftK_eq {A : Type} [Nonempty A] {a : Code Empty} {g : A → Option (Bool × Code Empty)} {k : Bool × Code Empty}
+    (h : liftK a g = some k) : ∃ K, k = (k.1, .arr a K) ∧ ∀ z, g z = some (k.1, K) := by
+  unfold liftK at h
+  split at h
+  · rename_i h'
+    injection h with e
+    subst e
+    exact ⟨(Classical.choose h').2, rfl, fun z => Classical.choose_spec h' z⟩
+  · cases h
+
+theorem liftK_none {A : Type} {a : Code Empty} {g : A → Option (Bool × Code Empty)}
+    (h : ¬ ∃ K, ∀ z, g z = some K) : liftK a g = none := by
+  unfold liftK; split
+  · exact absurd ‹_› h
+  · rfl
+
+theorem seedK_eq {a c : Code Empty} {f : unitUniv.El (.arr a c)} {k : Bool × Code Empty}
+    (h : seedK a c f = some k) : k = (true, .e) ∧ c = .t ∧ (a = .e ∨ a = .t) := by
+  cases a <;> cases c <;> simp only [seedK] at h <;> (try cases h) <;> (split at h <;> cases h) <;>
+    exact ⟨rfl, rfl, by simp⟩
+
+theorem skey_arr {a c : Code Empty} {f : unitUniv.El (.arr a c)} {k : Bool × Code Empty}
+    (h : skey (.arr a c) f = some k) :
+    (∃ K, k = (k.1, .arr a K) ∧ ∀ z, skey c (f z) = some (k.1, K)) ∨
+    (liftK a (fun z => skey c (f z)) = none ∧ seedK a c f = some k) := by
+  have e : skey (.arr a c) f = (liftK a (fun z => skey c (f z))).orElse (fun _ => seedK a c f) := rfl
+  rw [e] at h
+  have : Nonempty (unitUniv.El a) := Univ.El_nonempty (U := unitUniv) a
+  cases hl : liftK a (fun z => skey c (f z)) with
+  | some k' =>
+    rw [hl] at h
+    injection h with h; subst h
+    exact Or.inl (liftK_eq hl)
+  | none =>
+    rw [hl] at h
+    exact Or.inr ⟨rfl, h⟩
+
+theorem skey_t {p : Prop} {k : Bool × Code Empty} (h : skey .t p = some k) : ¬ p ∧ k = (false, .e) := by
+  change (bkeyT p).map (fun K => (false, K)) = some k at h
+  cases hb : bkeyT p with
+  | none => rw [hb] at h; cases h
+  | some K =>
+    rw [hb] at h
+    injection h with h; subst h
+    obtain ⟨hp, e⟩ := bkey_t (p := p) (K := K) hb
+    subst e
+    exact ⟨hp, rfl⟩
+
+end Tow2
+
+
+section Tow2b
+open Classical
+
+/-- `A → e → t` and `A → t → t`, for `A → e`. -/
+def sE : Code Empty → Code Empty
+  | .arr a K => .arr a (sE K)
+  | .e => .arr .e .t
+  | c => c
+def sT : Code Empty → Code Empty
+  | .arr a K => .arr a (sT K)
+  | .e => .arr .t .t
+  | c => c
+
+/-- Codes of the form `A → e`. -/
+def isE : Code Empty → Prop
+  | .arr _ K => isE K
+  | .e => True
+  | _ => False
+
+theorem seedK_e {f : unitUniv.El (.arr .e .t)} {k : Bool × Code Empty} (h : seedK .e .t f = some k) : ∀ z, f z := by
+  simp only [seedK] at h; split at h
+  · assumption
+  · cases h
+theorem seedK_t {f : unitUniv.El (.arr .t .t)} {k : Bool × Code Empty} (h : seedK .t .t f = some k) : ∀ p, (f p ↔ p) := by
+  simp only [seedK] at h; split at h
+  · assumption
+  · cases h
+
+theorem skey_isE : ∀ (c : Code Empty) (x : unitUniv.El c) (k : Bool × Code Empty), skey c x = some k → isE k.2
+  | .e, _, k, h => by injection h with h; subst h; trivial
+  | .t, _, _, h => by rw [(skey_t h).2]; trivial
+  | .base b, _, _, _ => b.elim
+  | .arr a c, f, k, h => by
+    rcases skey_arr h with ⟨K, e, hK⟩ | ⟨_, hs⟩
+    · obtain ⟨x0⟩ := Univ.El_nonempty (U := unitUniv) a
+      rw [e]; exact skey_isE c (f x0) (k.1, K) (hK x0)
+    · rw [(seedK_eq hs).1]; trivial
+
+theorem skey_false : ∀ (c : Code Empty) (x : unitUniv.El c) (K : Code Empty), skey c x = some (false, K) → K = finE c
+  | .e, _, K, h => by change some (false, Code.e) = some (false, K) at h; cases h; rfl
+  | .t, _, _, h => by have := (skey_t h).2; cases this; rfl
+  | .base b, _, _, _ => b.elim
+  | .arr a c, f, K, h => by
+    rcases skey_arr h with ⟨K', e, hK⟩ | ⟨_, hs⟩
+    · obtain ⟨x0⟩ := Univ.El_nonempty (U := unitUniv) a
+      injection e with _ e2
+      rw [e2, skey_false c (f x0) K' (hK x0)]; rfl
+    · have := (seedK_eq hs).1; injection this with h1; cases h1
+
+theorem skey_true : ∀ (c : Code Empty) (x : unitUniv.El c) (K : Code Empty), skey c x = some (true, K) →
+    c = sE K ∨ c = sT K
+  | .e, _, K, h => by injection h with h; injection h with h; cases h
+  | .t, _, _, h => by have := (skey_t h).2; injection this with h1; cases h1
+  | .base b, _, _, _ => b.elim
+  | .arr a c, f, K, h => by
+    rcases skey_arr h with ⟨K', e, hK⟩ | ⟨_, hs⟩
+    · obtain ⟨x0⟩ := Univ.El_nonempty (U := unitUniv) a
+      injection e with _ e2
+      subst e2
+      rcases skey_true c (f x0) K' (hK x0) with h' | h'
+      · exact Or.inl (by rw [h']; rfl)
+      · exact Or.inr (by rw [h']; rfl)
+    · obtain ⟨e1, ec, ea⟩ := seedK_eq hs
+      injection e1 with _ eK
+      subst eK; subst ec
+      rcases ea with rfl | rfl
+      · exact Or.inl rfl
+      · exact Or.inr rfl
+
+theorem sE_inj : ∀ K K' : Code Empty, isE K → isE K' → sE K = sE K' → K = K'
+  | .e, .e, _, _, _ => rfl
+  | .arr a K, .arr a' K', h1, h2, h => by
+    injection h with ea eK
+    rw [ea, sE_inj K K' h1 h2 eK]
+  | .e, .arr _ K', _, h2, h => by
+    injection h with _ e2
+    cases K' <;> simp [sE, isE] at e2 h2
+  | .arr _ K, .e, h1, _, h => by
+    injection h with _ e2
+    cases K <;> simp [sE, isE] at e2 h1
+  | .t, _, h1, _, _ => h1.elim
+  | .base b, _, _, _, _ => b.elim
+  | _, .t, _, h2, _ => h2.elim
+  | _, .base b, _, _, _ => b.elim
+
+theorem sT_inj : ∀ K K' : Code Empty, isE K → isE K' → sT K = sT K' → K = K'
+  | .e, .e, _, _, _ => rfl
+  | .arr a K, .arr a' K', h1, h2, h => by
+    injection h with ea eK
+    rw [ea, sT_inj K K' h1 h2 eK]
+  | .e, .arr _ K', _, h2, h => by
+    injection h with _ e2
+    cases K' <;> simp [sT, isE] at e2 h2
+  | .arr _ K, .e, h1, _, h => by
+    injection h with _ e2
+    cases K <;> simp [sT, isE] at e2 h1
+  | .t, _, h1, _, _ => h1.elim
+  | .base b, _, _, _, _ => b.elim
+  | _, .t, _, h2, _ => h2.elim
+  | _, .base b, _, _, _ => b.elim
+
+theorem sE_ne_sT : ∀ K K' : Code Empty, isE K → isE K' → sE K ≠ sT K'
+  | .e, .e, _, _, h => by injection h with h1; cases h1
+  | .arr a K, .arr a' K', h1, h2, h => by injection h with _ eK; exact sE_ne_sT K K' h1 h2 eK
+  | .e, .arr _ K', _, h2, h => by
+    injection h with _ e2
+    cases K' <;> simp [sT, isE] at e2 h2
+  | .arr _ K, .e, h1, _, h => by
+    injection h with _ e2
+    cases K <;> simp [sE, isE] at e2 h1
+  | .t, _, h1, _, _ => h1.elim
+  | .base b, _, _, _, _ => b.elim
+  | _, .t, _, h2, _ => h2.elim
+  | _, .base b, _, _, _ => b.elim
+
+theorem finE_sE_ne : ∀ K : Code Empty, isE K → finE (sE K) ≠ finE (sT K)
+  | .e, _, h => by injection h with h1; cases h1
+  | .arr _ K, hK, h => by injection h with _ e2; exact finE_sE_ne K hK e2
+  | .t, h, _ => h.elim
+  | .base b, _, _ => b.elim
+
+theorem skey_unique : ∀ (c : Code Empty) (x y : unitUniv.El c) (k : Bool × Code Empty),
+    skey c x = some k → skey c y = some k → x = y
+  | .e, (), (), _, _, _ => rfl
+  | .t, _, _, _, hx, hy => propext ⟨fun h => ((skey_t hx).1 h).elim, fun h => ((skey_t hy).1 h).elim⟩
+  | .base b, _, _, _, _, _ => b.elim
+  | .arr a c, f, g, k, hf, hg => by
+    rcases skey_arr hf with ⟨K1, e1, h1⟩ | ⟨_, s1⟩ <;> rcases skey_arr hg with ⟨K2, e2, h2⟩ | ⟨_, s2⟩
+    · have : Code.arr a K1 = .arr a K2 := by
+        have := e1.symm.trans e2; injection this
+      injection this with _ eK; subst eK
+      exact funext fun z => skey_unique c (f z) (g z) _ (h1 z) (h2 z)
+    · have := (seedK_eq s2).1; rw [this] at e1; injection e1 with _ e; cases e
+    · have := (seedK_eq s1).1; rw [this] at e2; injection e2 with _ e; cases e
+    · obtain ⟨_, ec, ea⟩ := seedK_eq s1
+      subst ec
+      rcases ea with rfl | rfl
+      · exact funext fun z => propext ⟨fun _ => seedK_t' g z s2, fun _ => seedK_e s1 z⟩
+      · exact funext fun p => propext ⟨fun h => (seedK_t s2 p).mpr ((seedK_t s1 p).mp h),
+          fun h => (seedK_t s1 p).mpr ((seedK_t s2 p).mp h)⟩
+where seedK_t' (g : unitUniv.El (.arr .e .t)) (z : Unit) {k : Bool × Code Empty} (h : seedK .e .t g = some k) : g z :=
+  seedK_e h z
+
+end Tow2b
+
+section Tow2c
+open Classical
+
+def tow2Rel (p q : Σ c, unitUniv.El c) : Prop := p = q ∨ ∃ k, skey p.1 p.2 = some k ∧ skey q.1 q.2 = some k
+
+def tow2D : IdentData where
+  U := unitUniv
+  rel := tow2Rel
+  refl := fun _ => Or.inl rfl
+  symm := by
+    rintro p q (h | ⟨k, h1, h2⟩)
+    · exact Or.inl h.symm
+    · exact Or.inr ⟨k, h2, h1⟩
+  trans := by
+    rintro p q r (h | ⟨k, h1, h2⟩) (h' | ⟨k', h1', h2'⟩)
+    · exact Or.inl (h.trans h')
+    · subst h; exact Or.inr ⟨k', h1', h2'⟩
+    · subst h'; exact Or.inr ⟨k, h1, h2⟩
+    · rw [h2] at h1'; injection h1' with e; subst e; exact Or.inr ⟨k, h1, h2'⟩
+
+theorem tow2_within (c : Code Empty) (x y : unitUniv.El c) (h : tow2Rel ⟨c, x⟩ ⟨c, y⟩) : x = y := by
+  rcases h with h | ⟨k, h1, h2⟩
+  · exact eq_of_heq (Sigma.mk.inj h).2
+  · exact skey_unique c x y k h1 h2
+
+abbrev Mtow2 : Frame := tow2D.frame
+theorem Mtow2_model : Mtow2.IsModelPIm := tow2D.model
+theorem Mtow2_LLEqv : Mtow2.Valid LLEqv := tow2D.LLEqv_valid tow2_within
+theorem Mtow2_Class : ∀ χ, ClassSch χ → Mtow2.Valid χ := Mtow2.Class_valid Mtow2_model Mtow2_LLEqv
+
+theorem Mtow2_PCong : Mtow2.Valid PCong := by
+  refine (Mtow2.valid_iff_tr _).mpr (Mtow2.tr_PCong.mpr ?_)
+  intro a c d f g x h
+  rcases h with h | ⟨k, k1, k2⟩
+  · obtain ⟨e1, e2⟩ := Sigma.mk.inj h
+    injection e1 with _ ec
+    subst ec
+    have ef : f = g := eq_of_heq e2
+    subst ef
+    exact Or.inl rfl
+  · rcases skey_arr k1 with ⟨K1, e1, h1⟩ | ⟨_, s1⟩ <;> rcases skey_arr k2 with ⟨K2, e2, h2⟩ | ⟨_, s2⟩
+    · have : Code.arr a K1 = .arr a K2 := by have := e1.symm.trans e2; injection this
+      injection this with _ eK; subst eK
+      exact Or.inr ⟨_, h1 x, h2 x⟩
+    · have := (seedK_eq s2).1; rw [this] at e1; injection e1 with _ e; cases e
+    · have := (seedK_eq s1).1; rw [this] at e2; injection e2 with _ e; cases e
+    · have ec := (seedK_eq s1).2.1
+      have ed := (seedK_eq s2).2.1
+      subst ec; subst ed
+      have ef : f = g := skey_unique (Code.arr a .t) f g k k1 k2
+      subst ef
+      exact Or.inl rfl
+
+/-- Along a pointwise identification of distinct types, the keys are constant. -/
+theorem key_const {c d : Code Empty} (hcd : c ≠ d) {x1 x2 : unitUniv.El c} {y1 y2 : unitUniv.El d}
+    {k1 k2 : Bool × Code Empty} (hx1 : skey c x1 = some k1) (hy1 : skey d y1 = some k1)
+    (hx2 : skey c x2 = some k2) (hy2 : skey d y2 = some k2) : k1 = k2 := by
+  obtain ⟨b1, K1⟩ := k1
+  obtain ⟨b2, K2⟩ := k2
+  have i1 : isE K1 := skey_isE c x1 _ hx1
+  have i2 : isE K2 := skey_isE c x2 _ hx2
+  cases b1 <;> cases b2
+  · rw [skey_false c x1 K1 hx1, skey_false c x2 K2 hx2]
+  · exfalso
+    have f1 := skey_false c x1 K1 hx1
+    have f2 := skey_false d y1 K1 hy1
+    rcases skey_true c x2 K2 hx2 with hc | hc <;> rcases skey_true d y2 K2 hy2 with hd | hd
+    · exact hcd (hc.trans hd.symm)
+    · exact finE_sE_ne K2 i2 (by rw [← hc, ← hd, ← f1, ← f2])
+    · exact finE_sE_ne K2 i2 (by rw [← hc, ← hd, ← f1, ← f2])
+    · exact hcd (hc.trans hd.symm)
+  · exfalso
+    have f1 := skey_false c x2 K2 hx2
+    have f2 := skey_false d y2 K2 hy2
+    rcases skey_true c x1 K1 hx1 with hc | hc <;> rcases skey_true d y1 K1 hy1 with hd | hd
+    · exact hcd (hc.trans hd.symm)
+    · exact finE_sE_ne K1 i1 (by rw [← hc, ← hd, ← f1, ← f2])
+    · exact finE_sE_ne K1 i1 (by rw [← hc, ← hd, ← f1, ← f2])
+    · exact hcd (hc.trans hd.symm)
+  · rcases skey_true c x1 K1 hx1 with hc | hc <;> rcases skey_true c x2 K2 hx2 with hc' | hc'
+    · rw [sE_inj K1 K2 i1 i2 (hc.symm.trans hc')]
+    · exact (sE_ne_sT K1 K2 i1 i2 (hc.symm.trans hc')).elim
+    · exact (sE_ne_sT K2 K1 i2 i1 (hc'.symm.trans hc)).elim
+    · rw [sT_inj K1 K2 i1 i2 (hc.symm.trans hc')]
+
+theorem Mtow2_PExt : Mtow2.Valid PExt := by
+  refine (Mtow2.valid_iff_tr _).mpr (Mtow2.tr_PExt.mpr ?_)
+  intro a c d f g h
+  haveI : Nonempty (Mtow2.U.El a) := Univ.El_nonempty (U := unitUniv) a
+  obtain ⟨x0⟩ := (inferInstance : Nonempty (Mtow2.U.El a))
+  by_cases ecd : c = d
+  · subst ecd
+    exact Or.inl (by rw [funext fun z => tow2_within c (f z) (g z) (h z)])
+  · have hk : ∀ z, ∃ k, skey c (f z) = some k ∧ skey d (g z) = some k := fun z => by
+      rcases h z with h' | hk
+      · exact (ecd (congrArg Sigma.fst h')).elim
+      · exact hk
+    obtain ⟨k, k1, k2⟩ := hk x0
+    have hall : ∀ z, skey c (f z) = some k ∧ skey d (g z) = some k := fun z => by
+      obtain ⟨k', k1', k2'⟩ := hk z
+      have e := key_const ecd k1 k2 k1' k2'
+      subst e; exact ⟨k1', k2'⟩
+    have hl1 : liftK a (fun z => skey c (f z)) = some (k.1, Code.arr a k.2) := liftK_some fun z => (hall z).1
+    have hl2 : liftK a (fun z => skey d (g z)) = some (k.1, Code.arr a k.2) := liftK_some fun z => (hall z).2
+    have ef : skey (.arr a c) f = some (k.1, .arr a k.2) :=
+      (congrArg (fun o => Option.orElse o (fun _ => seedK a c f)) hl1).trans rfl
+    have eg : skey (.arr a d) g = some (k.1, .arr a k.2) :=
+      (congrArg (fun o => Option.orElse o (fun _ => seedK a d g)) hl2).trans rfl
+    exact Or.inr ⟨_, ef, eg⟩
+
+theorem skey_true_t : skey .t True = none := by
+  change (bkeyT True).map (fun K => (false, K)) = none
+  unfold bkeyT; split
+  · rename_i h; exact (h trivial).elim
+  · rfl
+
+theorem Mtow2_not_Cong : ¬ Mtow2.Valid Cong := fun h => by
+  have hc := Mtow2.tr_Cong.mp ((Mtow2.valid_iff_tr _).mp h) .e .t .t .t (fun _ => True) (fun p => p) () False
+  have hf : skey (.arr .e .t) (fun _ => True) = some (true, .e) := by
+    show (liftK .e (fun z => skey .t True)).orElse (fun _ => seedK .e .t (fun _ => True)) = _
+    rw [liftK_none (fun ⟨K, hK⟩ => by rw [skey_true_t] at hK; cases hK ())]
+    show seedK .e .t (fun _ => True) = _
+    simp only [seedK]; split
+    · rfl
+    · rename_i h; exact (h fun _ => trivial).elim
+  have hg : skey (.arr .t .t) (fun p => p) = some (true, .e) := by
+    show (liftK .t (fun p => skey .t p)).orElse (fun _ => seedK .t .t (fun p => p)) = _
+    rw [liftK_none (fun ⟨K, hK⟩ => by have := hK True; rw [skey_true_t] at this; cases this)]
+    show seedK .t .t (fun p => p) = _
+    simp only [seedK]; split
+    · rfl
+    · rename_i h; exact (h fun _ => Iff.rfl).elim
+  have hb : skey .t False = some (false, .e) := by
+    change (bkeyT False).map (fun K => (false, K)) = some (false, .e)
+    unfold bkeyT; split
+    · rfl
+    · rename_i h; exact (h not_false).elim
+  have := hc ⟨Or.inr ⟨_, hf, hg⟩, Or.inr ⟨_, rfl, hb⟩⟩
+  rcases this with h' | ⟨k, k1, _⟩
+  · have := eq_of_heq (Sigma.mk.inj h').2
+    exact cast this trivial
+  · have k1' : skey .t True = some k := k1
+    rw [skey_true_t] at k1'; cases k1'
+
+end Tow2c
+
 end PIF

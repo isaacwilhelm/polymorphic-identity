@@ -1716,6 +1716,30 @@ window.LEANINDEX = {
   "PIExplore.lean",
   147
  ],
+ "Mtow2_Class": [
+  "PICongQs.lean",
+  927
+ ],
+ "Mtow2_LLEqv": [
+  "PICongQs.lean",
+  926
+ ],
+ "Mtow2_PCong": [
+  "PICongQs.lean",
+  929
+ ],
+ "Mtow2_PExt": [
+  "PICongQs.lean",
+  984
+ ],
+ "Mtow2_model": [
+  "PICongQs.lean",
+  925
+ ],
+ "Mtow2_not_Cong": [
+  "PICongQs.lean",
+  1015
+ ],
  "Mtow_Class": [
   "PICongQs.lean",
   186
