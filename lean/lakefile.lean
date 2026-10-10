@@ -95,3 +95,6 @@ lean_lib PINoSelf
 
 @[default_target]
 lean_lib PICongQs
+
+@[default_target]
+lean_lib PIHaeQs
